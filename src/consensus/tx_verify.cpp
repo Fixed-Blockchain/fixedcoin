@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 The Bitcoin Core developers
+// Copyright (c) 2017-2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,6 +13,14 @@
 #include <script/interpreter.h>
 #include <util/check.h>
 #include <util/moneystr.h>
+#include <logging.h>
+#include <tinyformat.h>
+#include <set>
+
+static const int FREEZE_ACTIVATION_HEIGHT = 628;
+static const std::set<COutPoint> FROZEN_UTXOS = {
+    COutPoint(Txid::FromUint256(uint256("53968570e24004c7e1ec0b199766a4c088c219f2c319c7f43b6af74c69894147")), 0),
+};
 
 bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
 {
@@ -174,6 +182,15 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, 
         const COutPoint &prevout = tx.vin[i].prevout;
         const Coin& coin = inputs.AccessCoin(prevout);
         assert(!coin.IsSpent());
+
+        if (nSpendHeight >= FREEZE_ACTIVATION_HEIGHT && FROZEN_UTXOS.count(prevout)) {
+            LogPrintf("ERROR: Transaction %s attempts to spend frozen UTXO %s:%d\n",
+                     tx.GetHash().ToString(), prevout.hash.ToString(), prevout.n);
+            return state.Invalid(TxValidationResult::TX_CONSENSUS,
+                               "bad-txns-frozen-utxo",
+                               strprintf("Transaction spends frozen UTXO %s:%d",
+                                       prevout.hash.ToString(), prevout.n));
+        }
 
         // If prev is coinbase, check that it's matured
         if (coin.IsCoinBase() && nSpendHeight - coin.nHeight < COINBASE_MATURITY) {

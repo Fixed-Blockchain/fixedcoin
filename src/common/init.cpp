@@ -1,4 +1,4 @@
-// Copyright (c) 2023 The Bitcoin Core developers
+// Copyright (c) 2023 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,9 +30,9 @@ std::optional<ConfigError> InitConfig(ArgsManager& args, SettingsAbortFn setting
         // possible for the config file to cause another configuration to be
         // used, though. Specifying a conf= option in the config file causes a
         // parse error, and specifying a datadir= location containing another
-        // bitcoin.conf file just ignores the other file.)
+        // fixedcoin.conf file just ignores the other file.)
         const fs::path orig_datadir_path{args.GetDataDirBase()};
-        const fs::path orig_config_path{AbsPathForConfigVal(args, args.GetPathArg("-conf", BITCOIN_CONF_FILENAME), /*net_specific=*/false)};
+        const fs::path orig_config_path{AbsPathForConfigVal(args, args.GetPathArg("-conf", FIXEDCOIN_CONF_FILENAME), /*net_specific=*/false)};
 
         std::string error;
         if (!args.ReadConfigFiles(error, true)) {
@@ -52,7 +52,7 @@ std::optional<ConfigError> InitConfig(ArgsManager& args, SettingsAbortFn setting
             // wallets could be mixed up with other files. For backwards
             // compatibility, wallet code will use the "wallets" subdirectory only
             // if it already exists, but never create it itself. There is discussion
-            // in https://github.com/bitcoin/bitcoin/issues/16220 about ways to
+            // in https://github.com/fixedcoin/fixedcoin/issues/16220 about ways to
             // change wallet code so it would no longer be necessary to create
             // "wallets" subdirectories here.
             fs::create_directories(base_path / "wallets");
@@ -62,15 +62,15 @@ std::optional<ConfigError> InitConfig(ArgsManager& args, SettingsAbortFn setting
             fs::create_directories(net_path / "wallets");
         }
 
-        // Show an error or warn/log if there is a bitcoin.conf file in the
+        // Show an error or warn/log if there is a fixedcoin.conf file in the
         // datadir that is being ignored.
-        const fs::path base_config_path = base_path / BITCOIN_CONF_FILENAME;
+        const fs::path base_config_path = base_path / FIXEDCOIN_CONF_FILENAME;
         if (fs::exists(base_config_path)) {
             if (orig_config_path.empty()) {
                 LogInfo(
                     "Data directory %s contains a %s file which is explicitly ignored using -noconf.",
                     fs::quoted(fs::PathToString(base_path)),
-                    fs::quoted(BITCOIN_CONF_FILENAME));
+                    fs::quoted(FIXEDCOIN_CONF_FILENAME));
             } else if (!fs::equivalent(orig_config_path, base_config_path)) {
                 const std::string cli_config_path = args.GetArg("-conf", "");
                 const std::string config_source = cli_config_path.empty()
@@ -83,7 +83,7 @@ std::optional<ConfigError> InitConfig(ArgsManager& args, SettingsAbortFn setting
                     "- Change datadir= or conf= options to specify one configuration file, not two, and use "
                     "includeconf= to include any other configuration files.",
                     fs::quoted(fs::PathToString(base_path)),
-                    fs::quoted(BITCOIN_CONF_FILENAME),
+                    fs::quoted(FIXEDCOIN_CONF_FILENAME),
                     fs::quoted(fs::PathToString(orig_config_path)),
                     config_source);
                 if (args.GetBoolArg("-allowignoredconf", false)) {

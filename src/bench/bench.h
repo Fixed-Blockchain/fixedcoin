@@ -1,9 +1,9 @@
-// Copyright (c) 2015-2022 The Bitcoin Core developers
+// Copyright (c) 2015-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BENCH_BENCH_H
-#define BITCOIN_BENCH_BENCH_H
+#ifndef FIXEDCOIN_BENCH_BENCH_H
+#define FIXEDCOIN_BENCH_BENCH_H
 
 #include <bench/nanobench.h> // IWYU pragma: export
 #include <util/fs.h>
@@ -81,4 +81,4 @@ public:
 #define BENCHMARK(n, priority_level) \
     benchmark::BenchRunner PASTE2(bench_, PASTE2(__LINE__, n))(STRINGIZE(n), n, priority_level);
 
-#endif // BITCOIN_BENCH_BENCH_H
+#endif // FIXEDCOIN_BENCH_BENCH_H

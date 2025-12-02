@@ -1,6 +1,6 @@
 # Windows / MSVC Build Guide
 
-This guide describes how to build bitcoind, command-line utilities, and GUI on Windows using Microsoft Visual Studio.
+This guide describes how to build fixedcoind, command-line utilities, and GUI on Windows using Microsoft Visual Studio.
 
 For cross-compiling options, please see [`build-windows.md`](./build-windows.md).
 
@@ -21,21 +21,21 @@ The former is assumed hereinafter.
 
 Download and install [Git for Windows](https://git-scm.com/download/win). Once installed, Git is available from PowerShell or the Command Prompt.
 
-### 3. Clone Bitcoin Repository
+### 3. Clone FixedCoin Repository
 
-Clone the Bitcoin Core repository to a directory. All build scripts and commands will run from this directory.
+Clone the FixedCoin Core repository to a directory. All build scripts and commands will run from this directory.
 ```
-git clone https://github.com/bitcoin/bitcoin.git
+git clone https://github.com/fixedcoin/fixedcoin.git
 ```
 
 
 ## Triplets and Presets
 
-The Bitcoin Core project supports the following vcpkg triplets:
+The FixedCoin Core project supports the following vcpkg triplets:
 - `x64-windows` (both CRT and library linkage is dynamic)
 - `x64-windows-static` (both CRT and library linkage is static)
 
-To facilitate build process, the Bitcoin Core project provides presets, which are used in this guide.
+To facilitate build process, the FixedCoin Core project provides presets, which are used in this guide.
 
 Available presets can be listed as follows:
 ```
@@ -92,4 +92,4 @@ Available features are listed in the [`vcpkg.json`](/vcpkg.json) file.
 
 ### 7. Antivirus Software
 
-To improve the build process performance, one might add the Bitcoin repository directory to the Microsoft Defender Antivirus exclusions.
+To improve the build process performance, one might add the FixedCoin repository directory to the Microsoft Defender Antivirus exclusions.

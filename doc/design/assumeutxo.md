@@ -1,21 +1,33 @@
-# Assumeutxo Design
+# assumeutxo
 
-For notes on the usage of Assumeutxo, please refer to [the usage doc](/doc/assumeutxo.md).
+Assumeutxo is a feature that allows fast bootstrapping of a validating fixedcoind
+instance with a very similar security model to assumevalid.
+
+The RPC commands `dumptxoutset` and `loadtxoutset` (yet to be merged) are used to
+respectively generate and load UTXO snapshots. The utility script
+`./contrib/devtools/utxo_snapshot.sh` may be of use.
 
 ## General background
 
 - [assumeutxo proposal](https://github.com/jamesob/assumeutxo-docs/tree/2019-04-proposal/proposal)
-- [Github issue](https://github.com/bitcoin/bitcoin/issues/15605)
-- [draft PR](https://github.com/bitcoin/bitcoin/pull/15606)
+- [Github issue](https://github.com/fixedcoin/fixedcoin/issues/15605)
+- [draft PR](https://github.com/fixedcoin/fixedcoin/pull/15606)
 
 ## Design notes
+
+- A new block index `nStatus` flag is introduced, `BLOCK_ASSUMED_VALID`, to mark block
+  index entries that are required to be assumed-valid by a chainstate created
+  from a UTXO snapshot. This flag is mostly used as a way to modify certain
+  CheckBlockIndex() logic to account for index entries that are pending validation by a
+  chainstate running asynchronously in the background. We also use this flag to control
+  which index entries are added to setBlockIndexCandidates during LoadBlockIndex().
 
 - The concept of UTXO snapshots is treated as an implementation detail that lives
   behind the ChainstateManager interface. The external presentation of the changes
   required to facilitate the use of UTXO snapshots is the understanding that there are
-  now certain regions of the chain that can be temporarily assumed to be valid.
-  In certain cases, e.g. wallet rescanning, this is very similar to dealing with
-  a pruned chain.
+  now certain regions of the chain that can be temporarily assumed to be valid (using
+  the nStatus flag mentioned above). In certain cases, e.g. wallet rescanning, this is
+  very similar to dealing with a pruned chain.
 
   Logic outside ChainstateManager should try not to know about snapshots, instead
   preferring to work in terms of more general states like assumed-valid.
@@ -38,8 +50,8 @@ data.
 ### "Normal" operation via initial block download
 
 `ChainstateManager` manages a single Chainstate object, for which
-`m_from_snapshot_blockhash` is `std::nullopt`. This chainstate is (maybe obviously)
-considered active. This is the "traditional" mode of operation for bitcoind.
+`m_snapshot_blockhash` is null. This chainstate is (maybe obviously)
+considered active. This is the "traditional" mode of operation for fixedcoind.
 
 |    |    |
 | ---------- | ----------- |
@@ -98,7 +110,7 @@ sequentially.
 
 Once the tip of the background chainstate hits the base block of the snapshot
 chainstate, we stop use of the background chainstate by setting `m_disabled`, in
-`MaybeCompleteSnapshotValidation()`, which is checked in `ActivateBestChain()`). We hash the
+`CompleteSnapshotValidation()`, which is checked in `ActivateBestChain()`). We hash the
 background chainstate's UTXO set contents and ensure it matches the compiled value in
 `CMainParams::m_assumeutxo_data`.
 
@@ -109,7 +121,7 @@ background chainstate's UTXO set contents and ensure it matches the compiled val
 
 The background chainstate data lingers on disk until the program is restarted.
 
-### Bitcoind restarts sometime after snapshot validation has completed
+### FixedCoind restarts sometime after snapshot validation has completed
 
 After a shutdown and subsequent restart, `LoadChainstate()` cleans up the background
 chainstate with `ValidatedSnapshotCleanup()`, which renames the `chainstate_snapshot`

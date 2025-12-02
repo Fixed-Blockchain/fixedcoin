@@ -617,7 +617,7 @@ def run_tests(*, test_list, build_dir, tmpdir, jobs=1, enable_coverage=False, ar
 
     tests_dir = f"{build_dir}/test/functional/"
     # This allows `test_runner.py` to work from an out-of-source build directory using a symlink,
-    # a hard link or a copy on any platform. See https://github.com/bitcoin/bitcoin/pull/27561.
+    # a hard link or a copy on any platform. See https://github.com/Fixed-Blockchain/fixedcoin/pull/27561.
     sys.path.append(tests_dir)
 
     flags = ['--cachedir={}'.format(cache_dir)] + args

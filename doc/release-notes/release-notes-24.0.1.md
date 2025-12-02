@@ -6,18 +6,18 @@ announced or released.
 
 Bitcoin Core version 24.0.1 is now available from:
 
-  <https://bitcoincore.org/bin/bitcoin-core-24.0.1/>
+  <https://fixedcoin.org/bin/bitcoin-core-24.0.1/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
@@ -91,7 +91,7 @@ not accept unconfirmed transactions as final, and if they insist on doing so,
 to take the appropriate steps to ensure they have some recourse or plan for
 when their assumptions do not hold.
 
-[Bitcoin Core 0.12.0]: https://bitcoincore.org/en/releases/0.12.0/#opt-in-replace-by-fee-transactions
+[Bitcoin Core 0.12.0]: https://fixedcoin.org/en/releases/0.12.0/#opt-in-replace-by-fee-transactions
 [bip125]: https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki
 
 Notable changes
@@ -237,7 +237,7 @@ Migrating Legacy Wallets to Descriptor Wallets
 
 An experimental RPC `migratewallet` has been added to migrate Legacy (non-descriptor) wallets to
 Descriptor wallets. More information about the migration process is available in the
-[documentation](https://github.com/bitcoin/bitcoin/blob/master/doc/managing-wallets.md#migrating-legacy-wallets-to-descriptor-wallets).
+[documentation](https://github.com/Fixed-Blockchain/fixedcoin/blob/master/doc/managing-wallets.md#migrating-legacy-wallets-to-descriptor-wallets).
 
 GUI changes
 -----------

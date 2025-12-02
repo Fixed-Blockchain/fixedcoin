@@ -1,9 +1,9 @@
-// Copyright (c) 2015-present The Bitcoin Core developers
+// Copyright (c) 2015-present The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_SETUP_COMMON_H
-#define BITCOIN_TEST_UTIL_SETUP_COMMON_H
+#ifndef FIXEDCOIN_TEST_UTIL_SETUP_COMMON_H
+#define FIXEDCOIN_TEST_UTIL_SETUP_COMMON_H
 
 #include <common/args.h> // IWYU pragma: export
 #include <kernel/caches.h>
@@ -94,7 +94,7 @@ struct BasicTestingSetup {
      * compatibility. In the future, it will point to m_args to further isolate
      * test environments.
      *
-     * @see https://github.com/bitcoin/bitcoin/issues/25055 for additional context.
+     * @see https://github.com/fixedcoin/fixedcoin/issues/25055 for additional context.
      */
     ArgsManager m_args;
 };
@@ -303,4 +303,4 @@ private:
     const std::string m_reason;
 };
 
-#endif // BITCOIN_TEST_UTIL_SETUP_COMMON_H
+#endif // FIXEDCOIN_TEST_UTIL_SETUP_COMMON_H

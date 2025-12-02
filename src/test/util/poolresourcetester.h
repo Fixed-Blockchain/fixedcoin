@@ -1,9 +1,9 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_POOLRESOURCETESTER_H
-#define BITCOIN_TEST_UTIL_POOLRESOURCETESTER_H
+#ifndef FIXEDCOIN_TEST_UTIL_POOLRESOURCETESTER_H
+#define FIXEDCOIN_TEST_UTIL_POOLRESOURCETESTER_H
 
 #include <support/allocators/pool.h>
 
@@ -126,4 +126,4 @@ public:
     }
 };
 
-#endif // BITCOIN_TEST_UTIL_POOLRESOURCETESTER_H
+#endif // FIXEDCOIN_TEST_UTIL_POOLRESOURCETESTER_H

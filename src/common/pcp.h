@@ -1,9 +1,9 @@
-// Copyright (c) 2024 The Bitcoin Core developers
+// Copyright (c) 2024 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_COMMON_PCP_H
-#define BITCOIN_COMMON_PCP_H
+#ifndef FIXEDCOIN_COMMON_PCP_H
+#define FIXEDCOIN_COMMON_PCP_H
 
 #include <netaddress.h>
 
@@ -65,4 +65,4 @@ std::variant<MappingResult, MappingError> NATPMPRequestPortMap(const CNetAddr &g
 //! Returns the external_ip:external_port of the mapping if successful, otherwise a MappingError.
 std::variant<MappingResult, MappingError> PCPRequestPortMap(const PCPMappingNonce &nonce, const CNetAddr &gateway, const CNetAddr &bind, uint16_t port, uint32_t lifetime, int num_tries = 3, std::chrono::milliseconds timeout_per_try = std::chrono::milliseconds(1000));
 
-#endif // BITCOIN_COMMON_PCP_H
+#endif // FIXEDCOIN_COMMON_PCP_H

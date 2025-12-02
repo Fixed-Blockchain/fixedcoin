@@ -83,7 +83,7 @@ class UpgradeWalletTest(BitcoinTestFramework):
         v0.15.2 is only being used to test for version upgrade
         and master hash key presence.
         v0.16.3 is being used to test for version upgrade and balances.
-        Further info: https://github.com/bitcoin/bitcoin/pull/18774#discussion_r416967844
+        Further info: https://github.com/Fixed-Blockchain/fixedcoin/pull/18774#discussion_r416967844
         """
         node_from = self.nodes[0]
         v16_3_node = self.nodes[1]

@@ -1,9 +1,9 @@
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NETBASE_H
-#define BITCOIN_NETBASE_H
+#ifndef FIXEDCOIN_NETBASE_H
+#define FIXEDCOIN_NETBASE_H
 
 #include <compat/compat.h>
 #include <netaddress.h>
@@ -351,4 +351,4 @@ bool IsBadPort(uint16_t port);
  */
 CService MaybeFlipIPv6toCJDNS(const CService& service);
 
-#endif // BITCOIN_NETBASE_H
+#endif // FIXEDCOIN_NETBASE_H

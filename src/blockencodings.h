@@ -1,9 +1,9 @@
-// Copyright (c) 2016-2022 The Bitcoin Core developers
+// Copyright (c) 2016-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BLOCKENCODINGS_H
-#define BITCOIN_BLOCKENCODINGS_H
+#ifndef FIXEDCOIN_BLOCKENCODINGS_H
+#define FIXEDCOIN_BLOCKENCODINGS_H
 
 #include <primitives/block.h>
 
@@ -152,4 +152,4 @@ public:
     ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing);
 };
 
-#endif // BITCOIN_BLOCKENCODINGS_H
+#endif // FIXEDCOIN_BLOCKENCODINGS_H

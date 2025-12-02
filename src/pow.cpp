@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,11 +10,18 @@
 #include <primitives/block.h>
 #include <uint256.h>
 #include <util/check.h>
+#include <cmath>
+
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     assert(pindexLast != nullptr);
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
+
+    // ASERT DAA
+    if (pindexLast->nHeight + 1 >= params.nASERTActivationHeight) {
+        return GetNextASERTWorkRequired(pindexLast, pblock, params);
+    }
 
     // Only change once per difficulty adjustment interval
     if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
@@ -45,6 +52,62 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     assert(pindexFirst);
 
     return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
+}
+
+static arith_uint256 DoubleToArith256(double val) {
+    if (val <= 0) return arith_uint256(0);
+    int exp;
+    double frac = std::frexp(val, &exp);
+    // frac is in [0.5, 1).
+    // Multiply by 2^63 to get a 64-bit integer with MSB set.
+    uint64_t m = (uint64_t)(frac * 9223372036854775808.0); // 2^63
+    arith_uint256 a(m);
+    // a is now m. Value is m.
+    // Real value is frac * 2^exp = (m / 2^63) * 2^exp = m * 2^(exp - 63).
+    int shift = exp - 63;
+    if (shift > 0) a <<= shift;
+    else if (shift < 0) a >>= -shift;
+    return a;
+}
+
+
+
+unsigned int GetNextASERTWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
+{
+    const arith_uint256 powLimit = UintToArith256(params.powLimit);
+
+    // Anchor block is the parent of the activation block.
+    int nAnchorHeight = params.nASERTActivationHeight - 1;
+    if (nAnchorHeight < 0) nAnchorHeight = 0;
+
+    const CBlockIndex* pindexAnchor = pindexLast->GetAncestor(nAnchorHeight);
+    if (!pindexAnchor) {
+        return powLimit.GetCompact();
+    }
+
+    arith_uint256 anchorTarget;
+    anchorTarget.SetCompact(pindexAnchor->nBits);
+
+    int64_t nTimeDiff = pindexLast->GetBlockTime() - pindexAnchor->GetBlockTime();
+    int64_t nHeightDiff = pindexLast->nHeight - pindexAnchor->nHeight;
+    int64_t nIdealBlockTime = params.nPowTargetSpacing;
+    int64_t nHalflife = params.nASERTHalflife;
+
+    // Formula: next_target = anchor_target * 2^((time_delta - ideal_time * (height_delta + 1)) / halflife)
+    double exponent = (double)(nTimeDiff - nIdealBlockTime * (nHeightDiff + 1)) / (double)nHalflife;
+    double factor = std::pow(2.0, exponent);
+
+    double dTarget = anchorTarget.getdouble();
+    dTarget *= factor;
+
+    if (dTarget > powLimit.getdouble()) {
+        return powLimit.GetCompact();
+    }
+    if (dTarget < 1.0) {
+        dTarget = 1.0;
+    }
+
+    return DoubleToArith256(dTarget).GetCompact();
 }
 
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)

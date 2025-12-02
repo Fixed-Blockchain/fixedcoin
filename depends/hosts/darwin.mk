@@ -29,7 +29,7 @@ darwin_STRIP=$(shell $(SHELL) $(.SHELLFLAGS) "command -v llvm-strip")
 #     -mlinker-version
 #
 #         Ensures that modern linker features are enabled. See here for more
-#         details: https://github.com/bitcoin/bitcoin/pull/19407.
+#         details: https://github.com/Fixed-Blockchain/fixedcoin/pull/19407.
 #
 #     -isysroot$(OSX_SDK) -nostdlibinc
 #

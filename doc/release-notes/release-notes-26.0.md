@@ -3,18 +3,18 @@
 
 Bitcoin Core version 26.0 is now available from:
 
-  <https://bitcoincore.org/bin/bitcoin-core-26.0/>
+  <https://fixedcoin.org/bin/bitcoin-core-26.0/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
@@ -103,7 +103,7 @@ New RPCs
   are always checked by hash.
 
   You can find more information on this process in the `assumeutxo` design
-  document (<https://github.com/bitcoin/bitcoin/blob/master/doc/design/assumeutxo.md>).
+  document (<https://github.com/Fixed-Blockchain/fixedcoin/blob/master/doc/design/assumeutxo.md>).
 
   `getchainstates` has been added to aid in monitoring the assumeutxo sync process.
 

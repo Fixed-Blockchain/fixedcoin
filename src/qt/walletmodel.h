@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_WALLETMODEL_H
-#define BITCOIN_QT_WALLETMODEL_H
+#ifndef FIXEDCOIN_QT_WALLETMODEL_H
+#define FIXEDCOIN_QT_WALLETMODEL_H
 
 #include <key.h>
 
@@ -43,7 +43,7 @@ QT_BEGIN_NAMESPACE
 class QTimer;
 QT_END_NAMESPACE
 
-/** Interface to Bitcoin wallet from Qt view code. */
+/** Interface to FixedCoin wallet from Qt view code. */
 class WalletModel : public QObject
 {
     Q_OBJECT
@@ -238,4 +238,4 @@ public Q_SLOTS:
     void pollBalanceChanged();
 };
 
-#endif // BITCOIN_QT_WALLETMODEL_H
+#endif // FIXEDCOIN_QT_WALLETMODEL_H

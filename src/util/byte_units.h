@@ -1,9 +1,9 @@
-// Copyright (c) 2025-present The Bitcoin Core developers
+// Copyright (c) 2025-present The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_BYTE_UNITS_H
-#define BITCOIN_UTIL_BYTE_UNITS_H
+#ifndef FIXEDCOIN_UTIL_BYTE_UNITS_H
+#define FIXEDCOIN_UTIL_BYTE_UNITS_H
 
 #include <util/overflow.h>
 
@@ -19,4 +19,4 @@ constexpr size_t operator""_MiB(unsigned long long mebibytes)
     return *bytes;
 }
 
-#endif // BITCOIN_UTIL_BYTE_UNITS_H
+#endif // FIXEDCOIN_UTIL_BYTE_UNITS_H

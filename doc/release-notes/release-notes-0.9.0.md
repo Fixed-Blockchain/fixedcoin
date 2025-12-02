@@ -1,13 +1,13 @@
 Bitcoin Core version 0.9.0 is now available from:
 
-  https://bitcoin.org/bin/0.9.0/
+  https://fixedcoin.org/bin/0.9.0/
 
 This is a new major version release, bringing both new features and
 bug fixes.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/bitcoin/bitcoin/issues
+  https://github.com/Fixed-Blockchain/fixedcoin/issues
 
 How to Upgrade
 --------------

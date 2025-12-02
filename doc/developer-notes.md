@@ -13,6 +13,7 @@ Developer Notes
     - [Development tips and tricks](#development-tips-and-tricks)
         - [Compiling for debugging](#compiling-for-debugging)
         - [Show sources in debugging](#show-sources-in-debugging)
+        - [Compiling for gprof profiling](#compiling-for-gprof-profiling)
         - [`debug.log`](#debuglog)
         - [Signet, testnet, and regtest modes](#signet-testnet-and-regtest-modes)
         - [DEBUG_LOCKORDER](#debug_lockorder)
@@ -25,7 +26,7 @@ Developer Notes
     - [Threads](#threads)
     - [Ignoring IDE/editor files](#ignoring-ideeditor-files)
 - [Development guidelines](#development-guidelines)
-    - [General Bitcoin Core](#general-bitcoin-core)
+    - [General FixedCoin Core](#general-fixedcoin-core)
     - [Wallet](#wallet)
     - [General C++](#general-c)
     - [C++ data structures](#c-data-structures)
@@ -112,10 +113,6 @@ code.
     between integer types, use functional casts such as `int(x)` or `int{x}`
     instead of `(int) x`. When casting between more complex types, use `static_cast`.
     Use `reinterpret_cast` and `const_cast` as appropriate.
-  - Prefer [`list initialization ({})`](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-list) where possible.
-    For example `int x{0};` instead of `int x = 0;` or `int x(0);`
-  - Recursion is checked by clang-tidy and thus must be made explicit. Use
-    `NOLINTNEXTLINE(misc-no-recursion)` to suppress the check.
 
 For function calls a namespace should be specified explicitly, unless such functions have been declared within it.
 Otherwise, [argument-dependent lookup](https://en.cppreference.com/w/cpp/language/adl), also known as ADL, could be
@@ -141,7 +138,7 @@ int main()
 
 Block style example:
 ```c++
-int g_count{0};
+int g_count = 0;
 
 namespace foo {
 class Class
@@ -153,7 +150,7 @@ public:
     {
         // Comment summarising what this section of code does
         for (int i = 0; i < n; ++i) {
-            int total_sum{0};
+            int total_sum = 0;
             // When something fails, return early
             if (!Something()) return false;
             ...
@@ -214,28 +211,30 @@ int main()
 To run clang-tidy on Ubuntu/Debian, install the dependencies:
 
 ```sh
-apt install clang-tidy clang
+apt install clang-tidy bear clang
 ```
 
-Configure with clang as the compiler:
+Then, pass clang as compiler to configure, and use bear to produce the `compile_commands.json`:
 
 ```sh
-cmake -B build -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-cmake --build build -j $(nproc)
+./autogen.sh && ./configure CC=clang CXX=clang++ --enable-suppress-external-warnings
+make clean && bear --config src/.bear-tidy-config -- make -j $(nproc)
 ```
 
-The output is denoised of errors from external dependencies.
+The output is denoised of errors from external dependencies and includes with
+`--enable-suppress-external-warnings` and `--config src/.bear-tidy-config`. Both
+options may be omitted to view the full list of errors.
 
 To run clang-tidy on all source files:
 
 ```sh
-( cd ./src/ && run-clang-tidy -p ../build -j $(nproc) )
+( cd ./src/ && run-clang-tidy  -j $(nproc) )
 ```
 
 To run clang-tidy on the changed source lines:
 
 ```sh
-git diff | ( cd ./src/ && clang-tidy-diff -p2 -path ../build -j $(nproc) )
+git diff | ( cd ./src/ && clang-tidy-diff -p2 -j $(nproc) )
 ```
 
 Coding Style (Python)
@@ -247,7 +246,7 @@ Refer to [/test/functional/README.md#style-guidelines](/test/functional/README.m
 Coding Style (Doxygen-compatible comments)
 ------------------------------------------
 
-Bitcoin Core uses [Doxygen](https://www.doxygen.nl/) to generate its official documentation.
+FixedCoin Core uses [Doxygen](https://www.doxygen.nl/) to generate its official documentation.
 
 Use Doxygen-compatible comment blocks for functions, methods, and fields.
 
@@ -333,17 +332,16 @@ Recommendations:
 - Avoid linking to external documentation; links can break.
 
 - Javadoc and all valid Doxygen comments are stripped from Doxygen source code
-  previews (`STRIP_CODE_COMMENTS = YES` in [Doxyfile.in](/doc/Doxyfile.in)). If
+  previews (`STRIP_CODE_COMMENTS = YES` in [Doxyfile.in](doc/Doxyfile.in)). If
   you want a comment to be preserved, it must instead use `//` or `/* */`.
 
 ### Generating Documentation
 
-Assuming the build directory is named `build`,
-the documentation can be generated with `cmake --build build --target docs`.
-The resulting files will be located in `build/doc/doxygen/html`;
-open `index.html` in that directory to view the homepage.
+The documentation can be generated with `make docs` and cleaned up with `make
+clean-docs`. The resulting files are located in `doc/doxygen/html`; open
+`index.html` in that directory to view the homepage.
 
-Before building the `docs` target, you'll need to install these dependencies:
+Before running `make docs`, you'll need to install these dependencies:
 
 Linux: `sudo apt install doxygen graphviz`
 
@@ -354,33 +352,27 @@ Development tips and tricks
 
 ### Compiling for debugging
 
-When using the default build configuration by running `cmake -B build`, the
-`-DCMAKE_BUILD_TYPE` is set to `RelWithDebInfo`. This option adds debug symbols
-but also performs some compiler optimizations that may make debugging trickier
-as the code may not correspond directly to the source.
-
-If you need to build exclusively for debugging, set the `-DCMAKE_BUILD_TYPE`
-to `Debug` (i.e. `-DCMAKE_BUILD_TYPE=Debug`). You can always check the cmake
-build options of an existing build with `ccmake build`.
+Run configure with `--enable-debug` to add additional compiler flags that
+produce better debugging builds.
 
 ### Show sources in debugging
 
 If you have ccache enabled, absolute paths are stripped from debug information
-with the `-fdebug-prefix-map` and `-fmacro-prefix-map` options (if supported by the
+with the -fdebug-prefix-map and -fmacro-prefix-map options (if supported by the
 compiler). This might break source file detection in case you move binaries
 after compilation, debug from the directory other than the project root or use
-an IDE that only supports absolute paths for debugging (e.g. it won't stop at breakpoints).
+an IDE that only supports absolute paths for debugging.
 
 There are a few possible fixes:
 
 1. Configure source file mapping.
 
-For `gdb` create or append to [`.gdbinit` file](https://sourceware.org/gdb/current/onlinedocs/gdb#gdbinit-man):
+For `gdb` create or append to `.gdbinit` file:
 ```
 set substitute-path ./src /path/to/project/root/src
 ```
 
-For `lldb` create or append to [`.lldbinit` file](https://lldb.llvm.org/man/lldb.html#configuration-files):
+For `lldb` create or append to `.lldbinit` file:
 ```
 settings set target.source-map ./src /path/to/project/root/src
 ```
@@ -392,7 +384,9 @@ ln -s /path/to/project/root/src src
 
 3. Use `debugedit` to modify debug information in the binary.
 
-4. If your IDE has an option for this, change your breakpoints to use the file name only.
+### Compiling for gprof profiling
+
+Run configure with the `--enable-gprof` option, then make.
 
 ### `debug.log`
 
@@ -400,8 +394,8 @@ If the code is behaving strangely, take a look in the `debug.log` file in the da
 error and debugging messages are written there.
 
 Debug logging can be enabled on startup with the `-debug` and `-loglevel`
-configuration options and toggled while bitcoind is running with the `logging`
-RPC.  For instance, launching bitcoind with `-debug` or `-debug=1` will turn on
+configuration options and toggled while fixedcoind is running with the `logging`
+RPC.  For instance, launching fixedcoind with `-debug` or `-debug=1` will turn on
 all log categories and `-loglevel=trace` will turn on all log severity levels.
 
 The Qt code routes `qDebug()` output to `debug.log` under category "qt": run with `-debug=qt`
@@ -411,7 +405,7 @@ to see it.
 
 If you are testing multi-machine code that needs to operate across the internet,
 you can run with either the `-signet` or the `-testnet` config option to test
-with "play bitcoins" on a test network.
+with "play fixedcoins" on a test network.
 
 If you are testing something that can run on one machine, run with the
 `-regtest` option.  In regression test mode, blocks can be created on demand;
@@ -419,9 +413,9 @@ see [test/functional/](/test/functional) for tests that run in `-regtest` mode.
 
 ### DEBUG_LOCKORDER
 
-Bitcoin Core is a multi-threaded application, and deadlocks or other
-multi-threading bugs can be very difficult to track down. The `-DCMAKE_BUILD_TYPE=Debug`
-build option adds `-DDEBUG_LOCKORDER` to the compiler flags. This inserts
+FixedCoin Core is a multi-threaded application, and deadlocks or other
+multi-threading bugs can be very difficult to track down. The `--enable-debug`
+configure option adds `-DDEBUG_LOCKORDER` to the compiler flags. This inserts
 run-time checks to keep track of which locks are held and adds warnings to the
 `debug.log` file if inconsistencies are detected.
 
@@ -431,13 +425,14 @@ Defining `DEBUG_LOCKCONTENTION` adds a "lock" logging category to the logging
 RPC that, when enabled, logs the location and duration of each lock contention
 to the `debug.log` file.
 
-The `-DCMAKE_BUILD_TYPE=Debug` build option adds `-DDEBUG_LOCKCONTENTION` to the
-compiler flags. You may also enable it manually by building with `-DDEBUG_LOCKCONTENTION`
-added to your CPPFLAGS, i.e. `-DAPPEND_CPPFLAGS="-DDEBUG_LOCKCONTENTION"`.
+The `--enable-debug` configure option adds `-DDEBUG_LOCKCONTENTION` to the
+compiler flags. You may also enable it manually for a non-debug build by running
+configure with `-DDEBUG_LOCKCONTENTION` added to your CPPFLAGS,
+i.e. `CPPFLAGS="-DDEBUG_LOCKCONTENTION"`, then build and run fixedcoind.
 
-You can then use the `-debug=lock` configuration option at bitcoind startup or
-`bitcoin-cli logging '["lock"]'` at runtime to turn on lock contention logging.
-It can be toggled off again with `bitcoin-cli logging [] '["lock"]'`.
+You can then use the `-debug=lock` configuration option at fixedcoind startup or
+`fixedcoin-cli logging '["lock"]'` at runtime to turn on lock contention logging.
+It can be toggled off again with `fixedcoin-cli logging [] '["lock"]'`.
 
 ### Assertions and Checks
 
@@ -470,47 +465,32 @@ other input.
 
 Valgrind is a programming tool for memory debugging, memory leak detection, and
 profiling. The repo contains a Valgrind suppressions file
-([`valgrind.supp`](https://github.com/bitcoin/bitcoin/blob/master/contrib/valgrind.supp))
+([`valgrind.supp`](https://github.com/fixedcoin/fixedcoin/blob/master/contrib/valgrind.supp))
 which includes known Valgrind warnings in our dependencies that cannot be fixed
 in-tree. Example use:
 
 ```shell
-$ valgrind --suppressions=contrib/valgrind.supp build/bin/test_bitcoin
+$ valgrind --suppressions=contrib/valgrind.supp src/test/test_fixedcoin
 $ valgrind --suppressions=contrib/valgrind.supp --leak-check=full \
-      --show-leak-kinds=all build/bin/test_bitcoin --log_level=test_suite
-$ valgrind -v --leak-check=full build/bin/bitcoind -printtoconsole
-$ ./build/test/functional/test_runner.py --valgrind
+      --show-leak-kinds=all src/test/test_fixedcoin --log_level=test_suite
+$ valgrind -v --leak-check=full src/fixedcoind -printtoconsole
+$ ./test/functional/test_runner.py --valgrind
 ```
 
 ### Compiling for test coverage
 
-LCOV can be used to generate a test coverage report based upon `ctest`
+LCOV can be used to generate a test coverage report based upon `make check`
 execution. LCOV must be installed on your system (e.g. the `lcov` package
 on Debian/Ubuntu).
 
 To enable LCOV report generation during test runs:
 
 ```shell
-cmake -B build -DCMAKE_BUILD_TYPE=Coverage
-cmake --build build
-cmake -P build/Coverage.cmake
+./configure --enable-lcov
+make
+make cov
 
-# A coverage report will now be accessible at `./build/test_bitcoin.coverage/index.html`,
-# which covers unit tests, and `./build/total.coverage/index.html`, which covers
-# unit and functional tests.
-```
-
-Additional LCOV options can be specified using `LCOV_OPTS`, but may be dependent
-on the version of LCOV. For example, when using LCOV `2.x`, branch coverage can be
-enabled by setting `LCOV_OPTS="--rc branch_coverage=1"`:
-
-```
-cmake -DLCOV_OPTS="--rc branch_coverage=1" -P build/Coverage.cmake
-```
-
-To enable test parallelism:
-```
-cmake -DJOBS=$(nproc) -P build/Coverage.cmake
+# A coverage report will now be accessible at `./test_fixedcoin.coverage/index.html`.
 ```
 
 ### Performance profiling with perf
@@ -537,13 +517,13 @@ Make sure you [understand the security
 trade-offs](https://lwn.net/Articles/420403/) of setting these kernel
 parameters.
 
-To profile a running bitcoind process for 60 seconds, you could use an
+To profile a running fixedcoind process for 60 seconds, you could use an
 invocation of `perf record` like this:
 
 ```sh
 $ perf record \
     -g --call-graph dwarf --per-thread -F 140 \
-    -p `pgrep bitcoind` -- sleep 60
+    -p `pgrep fixedcoind` -- sleep 60
 ```
 
 You could then analyze the results by running:
@@ -559,10 +539,10 @@ See the functional test documentation for how to invoke perf within tests.
 
 ### Sanitizers
 
-Bitcoin Core can be compiled with various "sanitizers" enabled, which add
+FixedCoin Core can be compiled with various "sanitizers" enabled, which add
 instrumentation for issues regarding things like memory safety, thread race
 conditions, or undefined behavior. This is controlled with the
-`-DSANITIZERS` cmake build flag, which should be a comma separated list of
+`--with-sanitizers` configure flag, which should be a comma separated list of
 sanitizers to enable. The sanitizer list should correspond to supported
 `-fsanitize=` options in your compiler. These sanitizers have runtime overhead,
 so they are most useful when testing changes or producing debugging builds.
@@ -571,16 +551,16 @@ Some examples:
 
 ```bash
 # Enable both the address sanitizer and the undefined behavior sanitizer
-cmake -B build -DSANITIZERS=address,undefined
+./configure --with-sanitizers=address,undefined
 
 # Enable the thread sanitizer
-cmake -B build -DSANITIZERS=thread
+./configure --with-sanitizers=thread
 ```
 
 If you are compiling with GCC you will typically need to install corresponding
 "san" libraries to actually compile with these flags, e.g. libasan for the
 address sanitizer, libtsan for the thread sanitizer, and libubsan for the
-undefined sanitizer. If you are missing required libraries, the build
+undefined sanitizer. If you are missing required libraries, the configure script
 will fail with a linker error when testing the sanitizer flags.
 
 The test suite should pass cleanly with the `thread` and `undefined` sanitizers. You
@@ -595,8 +575,15 @@ export UBSAN_OPTIONS="suppressions=$(pwd)/test/sanitizer_suppressions/ubsan:prin
 See the CI config for more examples, and upstream documentation for more information
 about any additional options.
 
+There are a number of known problems when using the `address` sanitizer. The
+address sanitizer is known to fail in
+[sha256_sse4::Transform](/src/crypto/sha256_sse4.cpp) which makes it unusable
+unless you also use `--disable-asm` when running configure. We would like to fix
+sanitizer issues, so please send pull requests if you can fix any errors found
+by the address sanitizer (or any other sanitizer).
+
 Not all sanitizer options can be enabled at the same time, e.g. trying to build
-with `-DSANITIZERS=address,thread` will fail in the build as
+with `--with-sanitizers=address,thread` will fail in the configure script as
 these sanitizers are mutually incompatible. Refer to your compiler manual to
 learn more about these options and which sanitizers are supported by your
 compiler.
@@ -610,6 +597,7 @@ Additional resources:
  * [UndefinedBehaviorSanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
  * [GCC Instrumentation Options](https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html)
  * [Google Sanitizers Wiki](https://github.com/google/sanitizers/wiki)
+ * [Issue #12691: Enable -fsanitize flags in Travis](https://github.com/fixedcoin/fixedcoin/issues/12691)
 
 Locking/mutex usage notes
 -------------------------
@@ -620,7 +608,7 @@ The code is multi-threaded and uses mutexes and the
 Deadlocks due to inconsistent lock ordering (thread 1 locks `cs_main` and then
 `cs_wallet`, while thread 2 locks them in the opposite order: result, deadlock
 as each waits for the other to release its lock) are a problem. Compile with
-`-DDEBUG_LOCKORDER` (or use `-DCMAKE_BUILD_TYPE=Debug`) to get lock order inconsistencies
+`-DDEBUG_LOCKORDER` (or use `--enable-debug`) to get lock order inconsistencies
 reported in the `debug.log` file.
 
 Re-architecting the core code so there are better-defined interfaces
@@ -631,55 +619,54 @@ and its `cs_KeyStore` lock for example).
 Threads
 -------
 
-- [Main thread (`bitcoind`)](https://doxygen.bitcoincore.org/bitcoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97)
-  : Started from `main()` in `bitcoind.cpp`. Responsible for starting up and
+- [Main thread (`fixedcoind`)](https://doxygen.fixedcoincore.org/fixedcoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97)
+  : Started from `main()` in `fixedcoind.cpp`. Responsible for starting up and
   shutting down the application.
 
-- [Init load (`b-initload`)](https://doxygen.bitcoincore.org/namespacenode.html#ab4305679079866f0f420f7dbf278381d)
-  : Performs various loading tasks that are part of init but shouldn't block the node from being started: external block import,
-   reindex, reindex-chainstate, main chain activation, spawn indexes background sync threads and mempool load.
+- [ThreadImport (`b-loadblk`)](https://doxygen.fixedcoincore.org/namespacenode.html#ab4305679079866f0f420f7dbf278381d)
+  : Loads blocks from `blk*.dat` files or `-loadblock=<file>` on startup.
 
-- [CCheckQueue::Loop (`b-scriptch.x`)](https://doxygen.bitcoincore.org/class_c_check_queue.html#a6e7fa51d3a25e7cb65446d4b50e6a987)
+- [CCheckQueue::Loop (`b-scriptch.x`)](https://doxygen.fixedcoincore.org/class_c_check_queue.html#a6e7fa51d3a25e7cb65446d4b50e6a987)
   : Parallel script validation threads for transactions in blocks.
 
-- [ThreadHTTP (`b-http`)](https://doxygen.bitcoincore.org/httpserver_8cpp.html#abb9f6ea8819672bd9a62d3695070709c)
+- [ThreadHTTP (`b-http`)](https://doxygen.fixedcoincore.org/httpserver_8cpp.html#abb9f6ea8819672bd9a62d3695070709c)
   : Libevent thread to listen for RPC and REST connections.
 
-- [HTTP worker threads(`b-httpworker.x`)](https://doxygen.bitcoincore.org/httpserver_8cpp.html#aa6a7bc27265043bc0193220c5ae3a55f)
+- [HTTP worker threads(`b-httpworker.x`)](https://doxygen.fixedcoincore.org/httpserver_8cpp.html#aa6a7bc27265043bc0193220c5ae3a55f)
   : Threads to service RPC and REST requests.
 
-- [Indexer threads (`b-txindex`, etc)](https://doxygen.bitcoincore.org/class_base_index.html#a96a7407421fbf877509248bbe64f8d87)
+- [Indexer threads (`b-txindex`, etc)](https://doxygen.fixedcoincore.org/class_base_index.html#a96a7407421fbf877509248bbe64f8d87)
   : One thread per indexer.
 
-- [SchedulerThread (`b-scheduler`)](https://doxygen.bitcoincore.org/class_c_scheduler.html#a14d2800815da93577858ea078aed1fba)
+- [SchedulerThread (`b-scheduler`)](https://doxygen.fixedcoincore.org/class_c_scheduler.html#a14d2800815da93577858ea078aed1fba)
   : Does asynchronous background tasks like dumping wallet contents, dumping
   addrman and running asynchronous validationinterface callbacks.
 
-- [TorControlThread (`b-torcontrol`)](https://doxygen.bitcoincore.org/torcontrol_8cpp.html#a52a3efff23634500bb42c6474f306091)
+- [TorControlThread (`b-torcontrol`)](https://doxygen.fixedcoincore.org/torcontrol_8cpp.html#a52a3efff23634500bb42c6474f306091)
   : Libevent thread for tor connections.
 
 - Net threads:
 
-  - [ThreadMessageHandler (`b-msghand`)](https://doxygen.bitcoincore.org/class_c_connman.html#aacdbb7148575a31bb33bc345e2bf22a9)
+  - [ThreadMessageHandler (`b-msghand`)](https://doxygen.fixedcoincore.org/class_c_connman.html#aacdbb7148575a31bb33bc345e2bf22a9)
     : Application level message handling (sending and receiving). Almost
     all net_processing and validation logic runs on this thread.
 
-  - [ThreadDNSAddressSeed (`b-dnsseed`)](https://doxygen.bitcoincore.org/class_c_connman.html#aa7c6970ed98a4a7bafbc071d24897d13)
+  - [ThreadDNSAddressSeed (`b-dnsseed`)](https://doxygen.fixedcoincore.org/class_c_connman.html#aa7c6970ed98a4a7bafbc071d24897d13)
     : Loads addresses of peers from the DNS.
 
   - ThreadMapPort (`b-mapport`)
     : Universal plug-and-play startup/shutdown.
 
-  - [ThreadSocketHandler (`b-net`)](https://doxygen.bitcoincore.org/class_c_connman.html#a765597cbfe99c083d8fa3d61bb464e34)
-    : Sends/Receives data from peers on port 8333.
+  - [ThreadSocketHandler (`b-net`)](https://doxygen.fixedcoincore.org/class_c_connman.html#a765597cbfe99c083d8fa3d61bb464e34)
+    : Sends/Receives data from peers on port 24768.
 
-  - [ThreadOpenAddedConnections (`b-addcon`)](https://doxygen.bitcoincore.org/class_c_connman.html#a0b787caf95e52a346a2b31a580d60a62)
+  - [ThreadOpenAddedConnections (`b-addcon`)](https://doxygen.fixedcoincore.org/class_c_connman.html#a0b787caf95e52a346a2b31a580d60a62)
     : Opens network connections to added nodes.
 
-  - [ThreadOpenConnections (`b-opencon`)](https://doxygen.bitcoincore.org/class_c_connman.html#a55e9feafc3bab78e5c9d408c207faa45)
+  - [ThreadOpenConnections (`b-opencon`)](https://doxygen.fixedcoincore.org/class_c_connman.html#a55e9feafc3bab78e5c9d408c207faa45)
     : Initiates new connections to peers.
 
-  - [ThreadI2PAcceptIncoming (`b-i2paccept`)](https://doxygen.bitcoincore.org/class_c_connman.html#a57787b4f9ac847d24065fbb0dd6e70f8)
+  - [ThreadI2PAcceptIncoming (`b-i2paccept`)](https://doxygen.fixedcoincore.org/class_c_connman.html#a57787b4f9ac847d24065fbb0dd6e70f8)
     : Listens for and accepts incoming I2P connections through the I2P SAM proxy.
 
 Ignoring IDE/editor files
@@ -688,7 +675,7 @@ Ignoring IDE/editor files
 In closed-source environments in which everyone uses the same IDE, it is common
 to add temporary files it produces to the project-wide `.gitignore` file.
 
-However, in open source software such as Bitcoin Core, where everyone uses
+However, in open source software such as FixedCoin Core, where everyone uses
 their own editors/IDE/tools, it is less common. Only you know what files your
 editor produces and this may change from version to version. The canonical way
 to do this is thus to create your local gitignore. Add this to `~/.gitconfig`:
@@ -718,9 +705,9 @@ Development guidelines
 ============================
 
 A few non-style-related recommendations for developers, as well as points to
-pay attention to for reviewers of Bitcoin Core code.
+pay attention to for reviewers of FixedCoin Core code.
 
-General Bitcoin Core
+General FixedCoin Core
 ----------------------
 
 - New features should be exposed on RPC first, then can be made available in the GUI.
@@ -737,45 +724,6 @@ General Bitcoin Core
   - *Explanation*: If the test suite is to be updated for a change, this has to
     be done first.
 
-Logging
--------
-
-The macros `LogInfo`, `LogDebug`, `LogTrace`, `LogWarning` and `LogError` are available for
-logging messages. They should be used as follows:
-
-- `LogDebug(BCLog::CATEGORY, fmt, params...)` is what you want
-  most of the time, and it should be used for log messages that are
-  useful for debugging and can reasonably be enabled on a production
-  system (that has sufficient free storage space). They will be logged
-  if the program is started with `-debug=category` or `-debug=1`.
-
-- `LogInfo(fmt, params...)` should only be used rarely, e.g. for startup
-  messages or for infrequent and important events such as a new block tip
-  being found or a new outbound connection being made. These log messages
-  are unconditional, so care must be taken that they can't be used by an
-  attacker to fill up storage. Note that `LogPrintf(fmt, params...)` is
-  a deprecated alias for `LogInfo`.
-
-- `LogError(fmt, params...)` should be used in place of `LogInfo` for
-  severe problems that require the node (or a subsystem) to shut down
-  entirely (e.g., insufficient storage space).
-
-- `LogWarning(fmt, params...)` should be used in place of `LogInfo` for
-  severe problems that the node admin should address, but are not
-  severe enough to warrant shutting down the node (e.g., system time
-  appears to be wrong, unknown soft fork appears to have activated).
-
-- `LogTrace(BCLog::CATEGORY, fmt, params...)` should be used in place of
-  `LogDebug` for log messages that would be unusable on a production
-  system, e.g. due to being too noisy in normal use, or too resource
-  intensive to process. These will be logged if the startup
-  options `-debug=category -loglevel=category:trace` or `-debug=1
-  -loglevel=trace` are selected.
-
-Note that the format strings and parameters of `LogDebug` and `LogTrace`
-are only evaluated if the logging category is enabled, so you must be
-careful to avoid side-effects in those expressions.
-
 Wallet
 -------
 
@@ -791,6 +739,12 @@ Common misconceptions are clarified in those sections:
 
 - Passing (non-)fundamental types in the [C++ Core
   Guideline](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-conventional).
+
+- Assertions should not have side-effects.
+
+  - *Rationale*: Even though the source code is set to refuse to compile
+    with assertions disabled, having side-effects in assertions is unexpected and
+    makes the code harder to understand.
 
 - If you use the `.h`, you must link the `.cpp`.
 
@@ -938,9 +892,9 @@ Strings and formatting
     `wcstoll`, `wcstombs`, `wcstoul`, `wcstoull`, `wcstoumax`, `wcswidth`,
     `wcsxfrm`, `wctob`, `wctomb`, `wctrans`, `wctype`, `wcwidth`, `wprintf`
 
-- For `strprintf`, `LogInfo`, `LogDebug`, etc formatting characters don't need size specifiers.
+- For `strprintf`, `LogPrint`, `LogPrintf` formatting characters don't need size specifiers.
 
-  - *Rationale*: Bitcoin Core uses tinyformat, which is type safe. Leave them out to avoid confusion.
+  - *Rationale*: FixedCoin Core uses tinyformat, which is type safe. Leave them out to avoid confusion.
 
 - Use `.c_str()` sparingly. Its only valid use is to pass C++ strings to C functions that take NULL-terminated
   strings.
@@ -950,7 +904,7 @@ Strings and formatting
 
     - *Rationale*: Although this is guaranteed to be safe starting with C++11, `.data()` communicates the intent better.
 
-  - Do not use it when passing strings to `tfm::format`, `strprintf`, `LogInfo`, `LogDebug`, etc.
+  - Do not use it when passing strings to `tfm::format`, `strprintf`, `LogPrint[f]`.
 
     - *Rationale*: This is redundant. Tinyformat handles strings.
 
@@ -959,7 +913,7 @@ Strings and formatting
     - *Rationale*: Qt has built-in functionality for converting their string
       type from/to C++. No need to roll your own.
 
-  - In cases where you do call `.c_str()`, you might want to additionally check that the string does not contain embedded '\0' characters, because
+  - In cases where do you call `.c_str()`, you might want to additionally check that the string does not contain embedded '\0' characters, because
     it will (necessarily) truncate the string. This might be used to hide parts of the string from logging or to circumvent
     checks. If a use of strings is sensitive to this, take care to check the string for embedded NULL characters first
     and reject it if there are any (see `ParsePrechecks` in `strencodings.cpp` for an example).
@@ -1001,9 +955,7 @@ Threads and synchronization
     internal to a class (private or protected) rather than public.
 
   - Combine annotations in function declarations with run-time asserts in
-    function definitions (`AssertLockNotHeld()` can be omitted if `LOCK()` is
-    called unconditionally after it because `LOCK()` does the same check as
-    `AssertLockNotHeld()` internally, for non-recursive mutexes):
+    function definitions:
 
 ```C++
 // txmempool.h
@@ -1063,8 +1015,8 @@ bool Chainstate::PreciousBlock(BlockValidationState& state, CBlockIndex* pindex)
 ```
 
 - Build and run tests with `-DDEBUG_LOCKORDER` to verify that no potential
-  deadlocks are introduced. This is defined by default when
-  building with `-DCMAKE_BUILD_TYPE=Debug`.
+  deadlocks are introduced. As of 0.12, this is defined by default when
+  configuring with `--enable-debug`.
 
 - When using `LOCK`/`TRY_LOCK` be aware that the lock exists in the context of
   the current scope, so surround the statement and the code that needs the lock
@@ -1161,13 +1113,13 @@ namespace {
     the location of the source file actually is relevant.
 
 - Use include guards to avoid the problem of double inclusion. The header file
-  `foo/bar.h` should use the include guard identifier `BITCOIN_FOO_BAR_H`, e.g.
+  `foo/bar.h` should use the include guard identifier `FIXEDCOIN_FOO_BAR_H`, e.g.
 
 ```c++
-#ifndef BITCOIN_FOO_BAR_H
-#define BITCOIN_FOO_BAR_H
+#ifndef FIXEDCOIN_FOO_BAR_H
+#define FIXEDCOIN_FOO_BAR_H
 ...
-#endif // BITCOIN_FOO_BAR_H
+#endif // FIXEDCOIN_FOO_BAR_H
 ```
 
 GUI
@@ -1197,13 +1149,13 @@ Subtrees
 
 Several parts of the repository are subtrees of software maintained elsewhere.
 
-Some of these are maintained by active developers of Bitcoin Core, in which case
+Some of these are maintained by active developers of FixedCoin Core, in which case
 changes should go directly upstream without being PRed directly against the project.
 They will be merged back in the next subtree merge.
 
 Others are external projects without a tight relationship with our project. Changes
 to these should also be sent upstream, but bugfixes may also be prudent to PR against
-a Bitcoin Core subtree, so that they can be integrated quickly. Cosmetic changes
+a FixedCoin Core subtree, so that they can be integrated quickly. Cosmetic changes
 should be taken upstream.
 
 There is a tool in `test/lint/git-subtree-check.sh` ([instructions](../test/lint#git-subtree-checksh))
@@ -1212,7 +1164,7 @@ to check a subtree directory for consistency with its upstream repository.
 Current subtrees include:
 
 - src/leveldb
-  - Subtree at https://github.com/bitcoin-core/leveldb-subtree ; maintained by Core contributors.
+  - Subtree at https://github.com/fixedcoin-core/leveldb-subtree ; maintained by Core contributors.
   - Upstream at https://github.com/google/leveldb ; maintained by Google. Open
     important PRs to the subtree to avoid delay.
   - **Note**: Follow the instructions in [Upgrading LevelDB](#upgrading-leveldb) when
@@ -1220,17 +1172,17 @@ Current subtrees include:
 
 - src/crc32c
   - Used by leveldb for hardware acceleration of CRC32C checksums for data integrity.
-  - Subtree at https://github.com/bitcoin-core/crc32c-subtree ; maintained by Core contributors.
+  - Subtree at https://github.com/fixedcoin-core/crc32c-subtree ; maintained by Core contributors.
   - Upstream at https://github.com/google/crc32c ; maintained by Google.
 
 - src/secp256k1
-  - Upstream at https://github.com/bitcoin-core/secp256k1/ ; maintained by Core contributors.
+  - Upstream at https://github.com/fixedcoin-core/secp256k1/ ; maintained by Core contributors.
 
 - src/crypto/ctaes
-  - Upstream at https://github.com/bitcoin-core/ctaes ; maintained by Core contributors.
+  - Upstream at https://github.com/fixedcoin-core/ctaes ; maintained by Core contributors.
 
 - src/minisketch
-  - Upstream at https://github.com/bitcoin-core/minisketch ; maintained by Core contributors.
+  - Upstream at https://github.com/sipa/minisketch ; maintained by Core contributors.
 
 Upgrading LevelDB
 ---------------------
@@ -1242,7 +1194,7 @@ you must be aware of.
 
 In most configurations, we use the default LevelDB value for `max_open_files`,
 which is 1000 at the time of this writing. If LevelDB actually uses this many
-file descriptors, it will cause problems with Bitcoin's `select()` loop, because
+file descriptors, it will cause problems with FixedCoin's `select()` loop, because
 it may cause new sockets to be created where the fd value is >= 1024. For this
 reason, on 64-bit Unix systems, we rely on an internal LevelDB optimization that
 uses `mmap()` + `close()` to open table files without actually retaining
@@ -1253,7 +1205,7 @@ In addition to reviewing the upstream changes in `env_posix.cc`, you can use `ls
 check this. For example, on Linux this command will show open `.ldb` file counts:
 
 ```bash
-$ lsof -p $(pidof bitcoind) |\
+$ lsof -p $(pidof fixedcoind) |\
     awk 'BEGIN { fd=0; mem=0; } /ldb$/ { if ($4 == "mem") mem++; else fd++ } END { printf "mem = %s, fd = %s\n", mem, fd}'
 mem = 119, fd = 0
 ```
@@ -1268,14 +1220,14 @@ details.
 ### Consensus Compatibility
 
 It is possible for LevelDB changes to inadvertently change consensus
-compatibility between nodes. This happened in Bitcoin 0.8 (when LevelDB was
+compatibility between nodes. This happened in FixedCoin 0.8 (when LevelDB was
 first introduced). When upgrading LevelDB, you should review the upstream changes
 to check for issues affecting consensus compatibility.
 
 For example, if LevelDB had a bug that accidentally prevented a key from being
 returned in an edge case, and that bug was fixed upstream, the bug "fix" would
 be an incompatible consensus change. In this situation, the correct behavior
-would be to revert the upstream fix before applying the updates to Bitcoin's
+would be to revert the upstream fix before applying the updates to FixedCoin's
 copy of LevelDB. In general, you should be wary of any upstream changes affecting
 what data is returned from LevelDB queries.
 
@@ -1321,13 +1273,13 @@ introduce accidental changes.
 
 Some good examples of scripted-diff:
 
-- [scripted-diff: Rename InitInterfaces to NodeContext](https://github.com/bitcoin/bitcoin/commit/301bd41a2e6765b185bd55f4c541f9e27aeea29d)
+- [scripted-diff: Rename InitInterfaces to NodeContext](https://github.com/fixedcoin/fixedcoin/commit/301bd41a2e6765b185bd55f4c541f9e27aeea29d)
 uses an elegant script to replace occurrences of multiple terms in all source files.
 
-- [scripted-diff: Remove g_connman, g_banman globals](https://github.com/bitcoin/bitcoin/commit/8922d7f6b751a3e6b3b9f6fb7961c442877fb65a)
+- [scripted-diff: Remove g_connman, g_banman globals](https://github.com/fixedcoin/fixedcoin/commit/8922d7f6b751a3e6b3b9f6fb7961c442877fb65a)
 replaces specific terms in a list of specific source files.
 
-- [scripted-diff: Replace fprintf with tfm::format](https://github.com/bitcoin/bitcoin/commit/fac03ec43a15ad547161e37e53ea82482cc508f9)
+- [scripted-diff: Replace fprintf with tfm::format](https://github.com/fixedcoin/fixedcoin/commit/fac03ec43a15ad547161e37e53ea82482cc508f9)
 does a global replacement but excludes certain directories.
 
 To find all previous uses of scripted diffs in the repository, do:
@@ -1348,7 +1300,8 @@ Release notes should be written for any PR that:
 
 Release notes should be added to a PR-specific release note file at
 `/doc/release-notes-<PR number>.md` to avoid conflicts between multiple PRs.
-All `release-notes*` files are merged into a single `release-notes-<version>.md` file prior to the release.
+All `release-notes*` files are merged into a single
+[/doc/release-notes.md](/doc/release-notes.md) file prior to the release.
 
 RPC interface guidelines
 --------------------------
@@ -1393,17 +1346,11 @@ A few guidelines for introducing and reviewing new RPC interfaces:
 - Try not to overload methods on argument type. E.g. don't make `getblock(true)` and `getblock("hash")`
   do different things.
 
-  - *Rationale*: This is impossible to use with `bitcoin-cli`, and can be surprising to users.
+  - *Rationale*: This is impossible to use with `fixedcoin-cli`, and can be surprising to users.
 
   - *Exception*: Some RPC calls can take both an `int` and `bool`, most notably when a bool was switched
     to a multi-value, or due to other historical reasons. **Always** have false map to 0 and
     true to 1 in this case.
-
-- For new RPC methods, if implementing a `verbosity` argument, use integer verbosity rather than boolean.
-  Disallow usage of boolean verbosity (see `ParseVerbosity()` in [util.h](/src/rpc/util.h)).
-
-  - *Rationale*: Integer verbosity allows for multiple values. Undocumented boolean verbosity is deprecated
-    and new RPC methods should prevent its use.
 
 - Don't forget to fill in the argument names correctly in the RPC command table.
 
@@ -1411,7 +1358,7 @@ A few guidelines for introducing and reviewing new RPC interfaces:
 
 - Add every non-string RPC argument `(method, idx, name)` to the table `vRPCConvertParams` in `rpc/client.cpp`.
 
-  - *Rationale*: `bitcoin-cli` and the GUI debug console use this table to determine how to
+  - *Rationale*: `fixedcoin-cli` and the GUI debug console use this table to determine how to
     convert a plaintext command line to JSON. If the types don't match, the method can be unusable
     from there.
 
@@ -1432,7 +1379,7 @@ A few guidelines for introducing and reviewing new RPC interfaces:
   RPCs whose behavior does *not* depend on the current chainstate may omit this
   call.
 
-  - *Rationale*: In previous versions of Bitcoin Core, the wallet was always
+  - *Rationale*: In previous versions of FixedCoin Core, the wallet was always
     in-sync with the chainstate (by virtue of them all being updated in the
     same cs_main lock). In order to maintain the behavior that wallet RPCs
     return results as of at least the highest best-known block an RPC
@@ -1462,7 +1409,7 @@ A few guidelines for introducing and reviewing new RPC interfaces:
 
   - *Rationale*: User-facing consistency.
 
-- Use `fs::path::u8string()`/`fs::path::utf8string()` and `fs::u8path()` functions when converting path
+- Use `fs::path::u8string()` and `fs::u8path()` functions when converting path
   to JSON strings, not `fs::PathToString` and `fs::PathFromString`
 
   - *Rationale*: JSON strings are Unicode strings, not byte strings, and
@@ -1477,9 +1424,8 @@ independent (node, wallet, GUI), are defined in
 there are [`interfaces::Chain`](../src/interfaces/chain.h), used by wallet to
 access the node's latest chain state,
 [`interfaces::Node`](../src/interfaces/node.h), used by the GUI to control the
-node, [`interfaces::Wallet`](../src/interfaces/wallet.h), used by the GUI
-to control an individual wallet and [`interfaces::Mining`](../src/interfaces/mining.h),
-used by RPC to generate block templates. There are also more specialized interface
+node, and [`interfaces::Wallet`](../src/interfaces/wallet.h), used by the GUI
+to control an individual wallet. There are also more specialized interface
 types like [`interfaces::Handler`](../src/interfaces/handler.h)
 [`interfaces::ChainClient`](../src/interfaces/chain.h) passed to and from
 various interface methods.
@@ -1578,4 +1524,4 @@ communication:
 
   Note: This last convention isn't generally followed outside of
   [`src/interfaces/`](../src/interfaces/), though it did come up for discussion
-  before in [#14635](https://github.com/bitcoin/bitcoin/pull/14635).
+  before in [#14635](https://github.com/fixedcoin/fixedcoin/pull/14635).

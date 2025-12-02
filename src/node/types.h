@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2021 The Bitcoin Core developers
+// Copyright (c) 2010-2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,8 +10,8 @@
 //! dependencies. More complicated types should be defined in dedicated header
 //! files.
 
-#ifndef BITCOIN_NODE_TYPES_H
-#define BITCOIN_NODE_TYPES_H
+#ifndef FIXEDCOIN_NODE_TYPES_H
+#define FIXEDCOIN_NODE_TYPES_H
 
 #include <cstddef>
 #include <policy/policy.h>
@@ -63,4 +63,4 @@ struct BlockCreateOptions {
 };
 } // namespace node
 
-#endif // BITCOIN_NODE_TYPES_H
+#endif // FIXEDCOIN_NODE_TYPES_H

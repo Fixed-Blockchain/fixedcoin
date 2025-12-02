@@ -3,18 +3,18 @@
 
 Bitcoin Core version 0.21.2 is now available from:
 
-  <https://bitcoincore.org/bin/bitcoin-core-0.21.2/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.21.2/>
 
 This minor release includes various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============

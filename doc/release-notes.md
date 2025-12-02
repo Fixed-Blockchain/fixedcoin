@@ -1,173 +1,232 @@
-Bitcoin Core version 29.0 is now available from:
+25.0 Release Notes
+==================
 
-  <https://bitcoincore.org/bin/bitcoin-core-29.0/>
+FixedCoin Core version 25.0 is now available from:
+
+  <https://fixedcoin.org/bin/fixedcoin-core-25.0/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/fixedcoin/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
 
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes in some cases), then run the
-installer (on Windows) or just copy over `/Applications/Bitcoin-Qt` (on macOS)
-or `bitcoind`/`bitcoin-qt` (on Linux).
+installer (on Windows) or just copy over `/Applications/FixedCoin-Qt` (on macOS)
+or `fixedcoind`/`fixedcoin-qt` (on Linux).
 
-Upgrading directly from a version of Bitcoin Core that has reached its EOL is
+Upgrading directly from a version of FixedCoin Core that has reached its EOL is
 possible, but it might take some time if the data directory needs to be migrated. Old
-wallet versions of Bitcoin Core are generally supported.
+wallet versions of FixedCoin Core are generally supported.
 
 Compatibility
 ==============
 
-Bitcoin Core is supported and tested on operating systems using the
-Linux Kernel 3.17+, macOS 13+, and Windows 10+. Bitcoin
+FixedCoin Core is supported and extensively tested on operating systems
+using the Linux kernel, macOS 10.15+, and Windows 7 and newer.  FixedCoin
 Core should also work on most other Unix-like systems but is not as
-frequently tested on them. It is not recommended to use Bitcoin Core on
+frequently tested on them.  It is not recommended to use FixedCoin Core on
 unsupported systems.
 
 Notable changes
 ===============
 
-### P2P and Network Changes
+P2P and network changes
+-----------------------
 
-- Support for UPnP was dropped. If you want to open a port automatically, consider using the `-natpmp`
-option instead, which uses PCP or NAT-PMP depending on router support. (#31130)
+- Transactions of non-witness size 65 and above are now allowed by mempool
+  and relay policy. This is to better reflect the actual afforded protections
+  against CVE-2017-12842 and open up additional use-cases of smaller transaction sizes. (#26265)
 
-- libnatpmp was replaced with a built-in implementation of PCP and NAT-PMP (still enabled using the `-natpmp` option). This supports automatic IPv4 port forwarding as well as IPv6 pinholing. (#30043)
+New RPCs
+--------
 
-- When the `-port` configuration option is used, the default onion listening port will now
-be derived to be that port + 1 instead of being set to a fixed value (8334 on mainnet).
-This re-allows setups with multiple local nodes using different `-port` and not using `-bind`,
-which would lead to a startup failure in v28.0 due to a port collision.
-Note that a `HiddenServicePort` manually configured in `torrc` may need adjustment if used in
-connection with the `-port` option.
-For example, if you are using `-port=5555` with a non-standard value and not using `-bind=...=onion`,
-previously Bitcoin Core would listen for incoming Tor connections on `127.0.0.1:8334`.
-Now it would listen on `127.0.0.1:5556` (`-port` plus one). If you configured the hidden service manually
-in torrc now you have to change it from `HiddenServicePort 8333 127.0.0.1:8334` to `HiddenServicePort 8333
-127.0.0.1:5556`, or configure bitcoind with `-bind=127.0.0.1:8334=onion` to get the previous behavior.
-(#31223)
+- The scanblocks RPC returns the relevant blockhashes from a set of descriptors by
+  scanning all blockfilters in the given range. It can be used in combination with
+  the getblockheader and rescanblockchain RPCs to achieve fast wallet rescans. Note
+  that this functionality can only be used if a compact block filter index
+  (-blockfilterindex=1) has been constructed by the node. (#23549)
 
-- Upon receiving an orphan transaction (an unconfirmed transaction that spends unknown inputs), the node will attempt to download missing parents from all peers who announced the orphan. This change may increase bandwidth usage but make orphan-handling more reliable. (#31397)
+Updated RPCs
+------------
 
-### Mempool Policy and Mining Changes
+- All JSON-RPC methods accept a new [named
+  parameter](JSON-RPC-interface.md#parameter-passing) called `args` that can
+  contain positional parameter values. This is a convenience to allow some
+  parameter values to be passed by name without having to name every value. The
+  python test framework and `fixedcoin-cli` tool both take advantage of this, so
+  for example:
 
-- Ephemeral dust is a new concept that allows a single
-dust output in a transaction, provided the transaction
-is zero fee. In order to spend any unconfirmed outputs
-from this transaction, the spender must also spend
-this dust in addition to any other desired outputs.
-In other words, this type of transaction
-should be created in a transaction package where
-the dust is both created and spent simultaneously. (#30239)
-
-- Due to a bug, the default block reserved weight (`4,000 WU`) for fixed-size block header, transactions count, and coinbase transaction was reserved twice and could not be lowered. As a result the total reserved weight was always `8,000 WU`, meaning that even when specifying a `-blockmaxweight` higher than the default (even to the max of `4,000,000 WU`), the actual block size will never exceed `3,992,000 WU`.
-The fix consolidates the reservation into a single place and introduces a new startup option, `-blockreservedweight` which specifies the reserved weight directly. The default value of `-blockreservedweight` is set to `8,000 WU` to ensure backward compatibility for users who relied on the previous behavior of `-blockmaxweight`.
-The minimum value of `-blockreservedweight` is set to `2,000 WU`. Users setting `-blockreservedweight` below the default should ensure that the total weight of their block header, transaction count, and coinbase transaction does not exceed the reduced value or they may risk mining an invalid block. (#31384)
-
-### Updated RPCs
-
-- The RPC `testmempoolaccept` response now includes a `reject-details` field in some cases,
-similar to the complete error messages returned by `sendrawtransaction` (#28121)
-
-- Duplicate blocks submitted with `submitblock` will now persist their block data
-even if it was previously pruned. If pruning is activated, the data will be
-pruned again eventually once the block file it is persisted in is selected for
-pruning. This is consistent with the behaviour of `getblockfrompeer` where the
-block is persisted as well even when pruning. (#31175)
-
-- `getmininginfo` now returns `nBits` and the current target in the `target` field. It also returns a `next` object which specifies the `height`, `nBits`, `difficulty`, and `target` for the next block. (#31583)
-
-- `getblock` and `getblockheader` now return the current target in the `target` field (#31583)
-
-- `getblockchaininfo` and `getchainstates` now return `nBits` and the current target in the `target` field (#31583)
-
-- the `getblocktemplate` RPC `curtime` (BIP22) and `mintime` (BIP23) fields now
-  account for the timewarp fix proposed in BIP94 on all networks. This ensures
-  that, in the event a timewarp fix softfork activates on mainnet, un-upgraded
-  miners will not accidentally violate the timewarp rule. (#31376, #31600)
-As a reminder, it's important that any software which uses the `getblocktemplate`
-RPC takes these values into account (either `curtime` or `mintime` is fine).
-Relying only on a clock can lead to invalid blocks under some circumstances,
-especially once a timewarp fix is deployed. (#31600)
-
-### New RPCs
-
-- `getdescriptoractivity` can be used to find all spend/receive activity relevant to
-  a given set of descriptors within a set of specified blocks. This call can be used with
-  `scanblocks` to lessen the need for additional indexing programs. (#30708)
-
-
-### Updated REST APIs
-
-- `GET /rest/block/<BLOCK-HASH>.json` and `GET /rest/headers/<BLOCK-HASH>.json` now return the current target in the `target` field
-
-### Updated Settings
-
-- The maximum allowed value for the `-dbcache` configuration option has been
-  dropped due to recent UTXO set growth. Note that before this change, large `-dbcache`
-  values were automatically reduced to 16 GiB (1 GiB on 32 bit systems). (#28358)
-
-- Handling of negated `-noseednode`, `-nobind`, `-nowhitebind`, `-norpcbind`, `-norpcallowip`, `-norpcwhitelist`, `-notest`, `-noasmap`, `-norpcwallet`, `-noonlynet`, and `-noexternalip` options has changed. Previously negating these options had various confusing and undocumented side effects. Now negating them just resets the settings and restores default behaviors, as if the options were not specified.
-
-- Starting with v28.0, the `-mempoolfullrbf` startup option was set to
-default to `1`. With widespread adoption of this policy, users no longer
-benefit from disabling it, so the option has been removed, making full
-replace-by-fee the standard behavior. (#30592)
-
-- Setting `-upnp` will now log a warning and be interpreted as `-natpmp`. Consider using `-natpmp` directly instead. (#31130, #31916)
-
-- As a safety check, Bitcoin core will **fail to start** when `-blockreservedweight` init parameter value is lower than `2000` weight units. Bitcoin Core will also **fail to start** if the `-blockmaxweight` or `-blockreservedweight` init parameter exceeds consensus limit of `4,000,000 WU`.
-
-- Passing `-debug=0` or `-debug=none` now behaves like `-nodebug`: previously set debug categories will be cleared, but subsequent `-debug` options will still be applied.
-
-- The default for `-rpcthreads` has been changed from 4 to 16, and the default for `-rpcworkqueue` has been changed from 16 to 64. (#31215).
-
-### Build System
-
-The build system has been migrated from Autotools to CMake:
-
-1. The minimum required CMake version is 3.22.
-2. In-source builds are not allowed. When using a subdirectory within the root source tree as a build directory, it is recommended that its name includes the substring "build".
-3. CMake variables may be used to configure the build system. See [Autotools to CMake Options Mapping](https://github.com/bitcoin-core/bitcoin-devwiki/wiki/Autotools-to-CMake-Options-Mapping) for details.
-4. For single-configuration generators, the default build configuration (`CMAKE_BUILD_TYPE`) is "RelWithDebInfo". However, for the "Release" configuration, CMake defaults to the compiler optimization flag `-O3`, which has not been extensively tested with Bitcoin Core. Therefore, the build system replaces it with `-O2`.
-5. By default, the built executables and libraries are located in the `bin/` and `lib/` subdirectories of the build directory.
-6. The build system supports component‐based installation. The names of the installable components coincide with the build target names. For example:
-```
-cmake -B build
-cmake --build build --target bitcoind
-cmake --install build --component bitcoind
+```sh
+fixedcoin-cli -named createwallet wallet_name=mywallet load_on_startup=1
 ```
 
-7. If any of the `CPPFLAGS`, `CFLAGS`, `CXXFLAGS` or `LDFLAGS` environment variables were used in your Autotools-based build process, you should instead use the corresponding CMake variables (`APPEND_CPPFLAGS`, `APPEND_CFLAGS`, `APPEND_CXXFLAGS` and `APPEND_LDFLAGS`). Alternatively, if you opt to use the dedicated `CMAKE_<...>_FLAGS` variables, you must ensure that the resulting compiler or linker invocations are as expected.
+Can now be shortened to:
 
-For more detailed guidance on configuring and using CMake, please refer to the official [CMake documentation](https://cmake.org/cmake/help/latest/) and [CMake’s User Interaction Guide](https://cmake.org/cmake/help/latest/guide/user-interaction/index.html). Additionally, consult platform-specific `doc/build-*.md` build guides for instructions tailored to your operating system.
+```sh
+fixedcoin-cli -named createwallet mywallet load_on_startup=1
+```
 
-## Low-Level Changes
+- The `verifychain` RPC will now return `false` if the checks didn't fail,
+  but couldn't be completed at the desired depth and level. This could be due
+  to missing data while pruning, due to an insufficient dbcache or due to
+  the node being shutdown before the call could finish. (#25574)
 
-### Tools and Utilities
+- `sendrawtransaction` has a new, optional argument, `maxburnamount` with a default value of `0`.
+  Any transaction containing an unspendable output with a value greater than `maxburnamount` will
+  not be submitted. At present, the outputs deemed unspendable are those with scripts that begin
+  with an `OP_RETURN` code (known as 'datacarriers'), scripts that exceed the maximum script size,
+  and scripts that contain invalid opcodes.
 
-- A new tool [`utxo_to_sqlite.py`](/contrib/utxo-tools/utxo_to_sqlite.py)
-  converts a compact-serialized UTXO snapshot (as created with the
-  `dumptxoutset` RPC) to a SQLite3 database. Refer to the script's `--help`
-  output for more details. (#27432)
+- The `testmempoolaccept` RPC now returns 2 additional results within the "fees" result:
+  "effective-feerate" is the feerate including fees and sizes of transactions validated together if
+  package validation was used, and also includes any modified fees from prioritisetransaction. The
+  "effective-includes" result lists the wtxids of transactions whose modified fees and sizes were used
+  in the effective-feerate (#26646).
 
-### Tests
+- `decodescript` may now infer a Miniscript descriptor under P2WSH context if it is not lacking
+  information. (#27037)
 
-- The BIP94 timewarp attack mitigation (designed for testnet4) is no longer active on the regtest network. (#31156)
+- `finalizepsbt` is now able to finalize a transaction with inputs spending Miniscript-compatible
+  P2WSH scripts. (#24149)
 
-### Dependencies
+Changes to wallet related RPCs can be found in the Wallet section below.
 
-- MiniUPnPc and libnatpmp have been removed as dependencies (#31130, #30043).
+Build System
+------------
+
+- The `--enable-upnp-default` and `--enable-natpmp-default` options
+  have been removed. If you want to use port mapping, you can
+  configure it using a .conf file, or by passing the relevant
+  options at runtime. (#26896)
+
+Updated settings
+----------------
+
+- If the `-checkblocks` or `-checklevel` options are explicitly provided by the
+user, but the verification checks cannot be completed due to an insufficient
+dbcache, FixedCoin Core will now return an error at startup. (#25574)
+
+- Ports specified in `-port` and `-rpcport` options are now validated at startup.
+  Values that previously worked and were considered valid can now result in errors. (#22087)
+
+- Setting `-blocksonly` will now reduce the maximum mempool memory
+  to 5MB (users may still use `-maxmempool` to override). Previously,
+  the default 300MB would be used, leading to unexpected memory usage
+  for users running with `-blocksonly` expecting it to eliminate
+  mempool memory usage.
+
+  As unused mempool memory is shared with dbcache, this also reduces
+  the dbcache size for users running with `-blocksonly`, potentially
+  impacting performance.
+- Setting `-maxconnections=0` will now disable `-dnsseed`
+  and `-listen` (users may still set them to override).
+
+Changes to GUI or wallet related settings can be found in the GUI or Wallet section below.
+
+New settings
+------------
+
+- The `shutdownnotify` option is used to specify a command to execute synchronously
+before FixedCoin Core has begun its shutdown sequence. (#23395)
+
+
+Wallet
+------
+
+- The `minconf` option, which allows a user to specify the minimum number
+of confirmations a UTXO being spent has, and the `maxconf` option,
+which allows specifying the maximum number of confirmations, have been
+added to the following RPCs in #25375:
+  - `fundrawtransaction`
+  - `send`
+  - `walletcreatefundedpsbt`
+  - `sendall`
+
+- Added a new `next_index` field in the response in `listdescriptors` to
+  have the same format as `importdescriptors` (#26194)
+
+- RPC `listunspent` now has a new argument `include_immature_coinbase`
+  to include coinbase UTXOs that don't meet the minimum spendability
+  depth requirement (which before were silently skipped). (#25730)
+
+- Rescans for descriptor wallets are now significantly faster if compact
+  block filters (BIP158) are available. Since those are not constructed
+  by default, the configuration option "-blockfilterindex=1" has to be
+  provided to take advantage of the optimization. This improves the
+  performance of the RPC calls `rescanblockchain`, `importdescriptors`
+  and `restorewallet`. (#25957)
+
+- RPC `unloadwallet` now fails if a rescan is in progress. (#26618)
+
+- Wallet passphrases may now contain null characters.
+  Prior to this change, only characters up to the first
+  null character were recognized and accepted. (#27068)
+
+- Address Purposes strings are now restricted to the currently known values of "send",
+  "receive", and "refund". Wallets that have unrecognized purpose strings will have
+  loading warnings, and the `listlabels` RPC will raise an error if an unrecognized purpose
+  is requested. (#27217)
+
+- In the `createwallet`, `loadwallet`, `unloadwallet`, and `restorewallet` RPCs, the
+  "warning" string field is deprecated in favor of a "warnings" field that
+  returns a JSON array of strings to better handle multiple warning messages and
+  for consistency with other wallet RPCs. The "warning" field will be fully
+  removed from these RPCs in v26. It can be temporarily re-enabled during the
+  deprecation period by launching fixedcoind with the configuration option
+  `-deprecatedrpc=walletwarningfield`. (#27279)
+
+- Descriptor wallets can now spend coins sent to P2WSH Miniscript descriptors. (#24149)
+
+GUI changes
+-----------
+
+- The "Mask values" is a persistent option now. (gui#701)
+- The "Mask values" option affects the "Transaction" view now, in addition to the
+  "Overview" one. (gui#708)
+
+REST
+----
+
+- A new `/rest/deploymentinfo` endpoint has been added for fetching various
+  state info regarding deployments of consensus changes. (#25412)
+
+Binary verification
+----
+
+- The binary verification script has been updated. In previous releases it
+  would verify that the binaries had been signed with a single "release key".
+  In this release and moving forward it will verify that the binaries are
+  signed by a _threshold of trusted keys_. For more details and
+  examples, see:
+  https://github.com/fixedcoin/fixedcoin/blob/master/contrib/verify-binaries/README.md
+  (#27358)
+
+Low-level changes
+=================
+
+RPC
+---
+
+- The JSON-RPC server now rejects requests where a parameter is specified multiple
+  times with the same name, instead of silently overwriting earlier parameter values
+  with later ones. (#26628)
+- RPC `listsinceblock` now accepts an optional `label` argument
+  to fetch incoming transactions having the specified label. (#25934)
+- Previously `setban`, `addpeeraddress`, `walletcreatefundedpsbt`, methods
+  allowed non-boolean and non-null values to be passed as boolean parameters.
+  Any string, number, array, or object value that was passed would be treated
+  as false. After this change, passing any value except `true`, `false`, or
+  `null` now triggers a JSON value is not of expected type error. (#26213)
 
 Credits
 =======
@@ -175,88 +234,107 @@ Credits
 Thanks to everyone who directly contributed to this release:
 
 - 0xb10c
-- Adlai Chandrasekhar
-- Afanti
-- Alfonso Roman Zubeldia
-- am-sq
-- Andre
-- Andre Alves
+- 721217.xyz
+- @RandyMcMillan
+- amadeuszpawlik
+- Amiti Uttarwar
+- Andrew Chow
+- Andrew Toth
 - Anthony Towns
 - Antoine Poinsot
-- Ash Manning
-- Ava Chow
-- Boris Nagaev
-- Brandon Odiwuor
+- Aurèle Oulès
+- Ben Woosley
+- FixedCoin Hodler
 - brunoerg
-- Chris Stewart
+- Bushstar
+- Carl Dong
+- Chris Geihsler
 - Cory Fields
-- costcould
-- Daniel Pfeifer
-- Daniela Brozzoni
 - David Gumberg
 - dergoegge
-- epysqyli
-- espi3
-- Eval EXEC
+- Dhruv Mehta
+- Dimitris Tsapakidis
+- dougEfish
+- Douglas Chimento
+- ekzyis
+- Elichai Turkel
+- Ethan Heilman
 - Fabian Jahr
-- fanquake
+- FractalEncrypt
 - furszy
-- Gabriele Bocchi
+- Gleb Naumenko
 - glozow
 - Greg Sanders
-- Gutflo
 - Hennadii Stepanov
-- Hodlinator
-- i-am-yuvi
-- ion-
+- hernanmarino
+- ishaanam
 - ismaelsadeeq
-- Jadi
 - James O'Beirne
-- Jeremy Rand
+- jdjkelly@gmail.com
+- Jeff Ruane
+- Jeffrey Czyz
+- Jeremy Rubin
+- Jesse Barton
+- João Barbosa
+- JoaoAJMatos
+- John Moffett
 - Jon Atack
-- jurraca
-- Kay
-- kevkevinpal
-- l0rinc
+- Jonas Schnelli
+- jonatack
+- Joshua Kelly
+- josibake
+- Juan Pablo Civile
+- kdmukai
+- klementtan
+- Kolby ML
+- kouloumos
+- Kristaps Kaupe
 - laanwj
 - Larry Ruane
-- Lőrinc
-- Maciej S. Szmigiero
-- Mackain
+- Leonardo Araujo
+- Leonardo Lazzaro
+- Luke Dashjr
+- MacroFake
 - MarcoFalke
-- marcofleon
-- Marnix
 - Martin Leitner-Ankerl
-- Martin Saposnic
 - Martin Zumsande
+- Matt Whitlock
 - Matthew Zipkin
-- Max Edwards
-- Michael Dietz
-- naiyoma
-- Nicola Leonardo Susca
+- Michael Ford
+- Miles Liu
+- mruddy
+- Murray Nesbitt
+- muxator
 - omahs
-- pablomartin4btc
+- pablomartin4fix
+- Pasta
 - Pieter Wuille
+- Pttn
 - Randall Naar
-- RiceChuan
-- rkrux
-- Roman Zeyde
+- Riahiamirreza
+- roconnor-blockstream
+- Russell O'Connor
 - Ryan Ofsky
+- S3RK
 - Sebastian Falbesoner
-- secp512k2
-- Sergi Delgado Segura
-- Simon
+- Seibart Nedor
+- sinetek
 - Sjors Provoost
+- Skuli Dulfari
+- SomberNight
+- Stacie Waleyko
 - stickies-v
+- stratospher
 - Suhas Daftuar
-- tdb3
+- Suriyaa Sundararuban
 - TheCharlatan
-- tianzedavid
-- Torkel Rogstad
 - Vasil Dimov
-- wgyt
+- Vasil Stoyanov
+- virtu
+- w0xlt
 - willcl-ark
 - yancy
+- Yusuf Sahin HAMZA
 
 As well as to everyone that helped with translations on
-[Transifex](https://www.transifex.com/bitcoin/bitcoin/).
+[Transifex](https://www.transifex.com/fixedcoin/fixedcoin/).

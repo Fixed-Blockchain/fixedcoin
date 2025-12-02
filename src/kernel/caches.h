@@ -1,9 +1,9 @@
-// Copyright (c) 2024-present The Bitcoin Core developers
+// Copyright (c) 2024-present The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_KERNEL_CACHES_H
-#define BITCOIN_KERNEL_CACHES_H
+#ifndef FIXEDCOIN_KERNEL_CACHES_H
+#define FIXEDCOIN_KERNEL_CACHES_H
 
 #include <util/byte_units.h>
 
@@ -33,4 +33,4 @@ struct CacheSizes {
 };
 } // namespace kernel
 
-#endif // BITCOIN_KERNEL_CACHES_H
+#endif // FIXEDCOIN_KERNEL_CACHES_H

@@ -1,25 +1,25 @@
 Translations
 ============
 
-The Bitcoin-Core project has been designed to support multiple localisations. This makes adding new phrases, and completely new languages easily achievable. For managing all application translations, Bitcoin-Core makes use of the Transifex online translation management tool.
+The FixedCoin-Core project has been designed to support multiple localisations. This makes adding new phrases, and completely new languages easily achievable. For managing all application translations, FixedCoin-Core makes use of the Transifex online translation management tool.
 
 ### Helping to translate (using Transifex)
 Transifex is setup to monitor the GitHub repo for updates, and when code containing new translations is found, Transifex will process any changes. It may take several hours after a pull-request has been merged, to appear in the Transifex web interface.
 
-Multiple language support is critical in assisting Bitcoin’s global adoption, and growth. One of Bitcoin’s greatest strengths is cross-border money transfers, any help making that easier is greatly appreciated.
+Multiple language support is critical in assisting FixedCoin’s global adoption, and growth. One of FixedCoin’s greatest strengths is cross-border money transfers, any help making that easier is greatly appreciated.
 
-See the [Transifex Bitcoin project](https://www.transifex.com/bitcoin/bitcoin/) to assist in translations. You should also join the translation mailing list for announcements - see details below.
+See the [Transifex FixedCoin project](https://www.transifex.com/fixedcoin/fixedcoin/) to assist in translations. You should also join the translation mailing list for announcements - see details below.
 
 ### Writing code with translations
 We use automated scripts to help extract translations in both Qt, and non-Qt source files. It is rarely necessary to manually edit the files in `src/qt/locale/`. The translation source files must adhere to the following format:
-`bitcoin_xx_YY.ts or bitcoin_xx.ts`
+`fixedcoin_xx_YY.ts or fixedcoin_xx.ts`
 
-`src/qt/locale/bitcoin_en.ts` is treated in a special way. It is used as the source for all other translations. Whenever a string in the source code is changed, this file must be updated to reflect those changes. A custom script is used to extract strings from the non-Qt parts. This script makes use of `gettext`, so make sure that utility is installed (ie, `apt-get install gettext` on Ubuntu/Debian). Once this has been updated, `lupdate` (included in the Qt SDK) is used to update `bitcoin_en.ts`.
+`src/qt/locale/fixedcoin_en.ts` is treated in a special way. It is used as the source for all other translations. Whenever a string in the source code is changed, this file must be updated to reflect those changes. A custom script is used to extract strings from the non-Qt parts. This script makes use of `gettext`, so make sure that utility is installed (ie, `apt-get install gettext` on Ubuntu/Debian). Once this has been updated, `lupdate` (included in the Qt SDK) is used to update `fixedcoin_en.ts`.
 
-To automatically regenerate the `bitcoin_en.ts` file, run the following commands:
+To automatically regenerate the `fixedcoin_en.ts` file, run the following commands:
 ```sh
-cmake --preset dev-mode -DWITH_USDT=OFF -DWITH_MULTIPROCESS=OFF
-cmake --build build_dev_mode --target translate
+cd src/
+make translate
 ```
 
 **Example Qt translation**
@@ -34,26 +34,40 @@ When an updated source file is merged into the GitHub repo, Transifex will autom
 
 To create the pull-request, use the following commands:
 ```
-git add src/qt/bitcoinstrings.cpp src/qt/locale/bitcoin_en.ts
+git add src/qt/fixedcoinstrings.cpp src/qt/locale/fixedcoin_en.ts
 git commit
 ```
 
 ### Creating a Transifex account
 Visit the [Transifex Signup](https://www.transifex.com/signup/) page to create an account. Take note of your username and password, as they will be required to configure the command-line tool.
 
-You can find the Bitcoin translation project at [https://www.transifex.com/bitcoin/bitcoin/](https://www.transifex.com/bitcoin/bitcoin/).
+You can find the FixedCoin translation project at [https://www.transifex.com/fixedcoin/fixedcoin/](https://www.transifex.com/fixedcoin/fixedcoin/).
 
 ### Installing the Transifex client command-line tool
-The client is used to fetch updated translations. Please check installation instructions and any other details at https://developers.transifex.com/docs/cli.
+The client is used to fetch updated translations. If you are having problems, or need more details, see [https://docs.transifex.com/client/installing-the-client](https://docs.transifex.com/client/installing-the-client)
 
-The Transifex Bitcoin project config file is included as part of the repo. It can be found at `.tx/config`, however you shouldn’t need to change anything.
+`pip install transifex-client`
+
+Setup your Transifex client config as follows. Please *ignore the token field*.
+
+```ini
+nano ~/.transifexrc
+
+[https://www.transifex.com]
+hostname = https://www.transifex.com
+password = PASSWORD
+token =
+username = USERNAME
+```
+
+The Transifex FixedCoin project config file is included as part of the repo. It can be found at `.tx/config`, however you shouldn’t need to change anything.
 
 ### Synchronising translations
 
-To assist in updating translations, a helper script is available in the [maintainer-tools repo](https://github.com/bitcoin-core/bitcoin-maintainer-tools). To use it and commit the result, simply do:
+To assist in updating translations, a helper script is available in the [maintainer-tools repo](https://github.com/fixedcoin-core/fixedcoin-maintainer-tools). To use it and commit the result, simply do:
 
 ```
-python3 ../bitcoin-maintainer-tools/update-translations.py
+python3 ../fixedcoin-maintainer-tools/update-translations.py
 git commit -a
 ```
 
@@ -62,7 +76,7 @@ git commit -a
 ### Handling Plurals (in source files)
 When new plurals are added to the source file, it's important to do the following steps:
 
-1. Open `bitcoin_en.ts` in Qt Linguist (included in the Qt SDK)
+1. Open `fixedcoin_en.ts` in Qt Linguist (included in the Qt SDK)
 2. Search for `%n`, which will take you to the parts in the translation that use plurals
 3. Look for empty `English Translation (Singular)` and `English Translation (Plural)` fields
 4. Add the appropriate strings for the singular and plural form of the base string
@@ -71,11 +85,11 @@ When new plurals are added to the source file, it's important to do the followin
 7. Save the source file
 
 ### Translating a new language
-To create a new language template, you will need to edit the languages manifest file `src/qt/bitcoin_locale.qrc` and add a new entry. Below is an example of the English language entry.
+To create a new language template, you will need to edit the languages manifest file `src/qt/fixedcoin_locale.qrc` and add a new entry. Below is an example of the English language entry.
 
 ```xml
 <qresource prefix="/translations">
-    <file alias="en">locale/bitcoin_en.qm</file>
+    <file alias="en">locale/fixedcoin_en.qm</file>
     ...
 </qresource>
 ```
@@ -84,4 +98,4 @@ To create a new language template, you will need to edit the languages manifest 
 
 ### Questions and general assistance
 
-If you are a translator, you should also subscribe to the mailing list, https://groups.google.com/forum/#!forum/bitcoin-translators. Announcements will be posted during application pre-releases to notify translators to check for updates.
+If you are a translator, you should also subscribe to the mailing list, https://groups.google.com/forum/#!forum/fixedcoin-translators. Announcements will be posted during application pre-releases to notify translators to check for updates.

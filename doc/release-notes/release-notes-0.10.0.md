@@ -1,13 +1,13 @@
 Bitcoin Core version 0.10.0 is now available from:
 
-  https://bitcoin.org/bin/0.10.0/
+  https://fixedcoin.org/bin/0.10.0/
 
 This is a new major version release, bringing both new features and
 bug fixes.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/bitcoin/bitcoin/issues
+  https://github.com/Fixed-Blockchain/fixedcoin/issues
 
 Upgrading and downgrading
 =========================
@@ -230,7 +230,7 @@ bindings such as [python-bitcoinlib](https://pypi.python.org/pypi/python-bitcoin
 alternative node implementations.
 
 This library is called `libbitcoinconsensus.so` (or, `.dll` for Windows).
-Its interface is defined in the C header [bitcoinconsensus.h](https://github.com/bitcoin/bitcoin/blob/0.10/src/script/bitcoinconsensus.h).
+Its interface is defined in the C header [bitcoinconsensus.h](https://github.com/Fixed-Blockchain/fixedcoin/blob/0.10/src/script/bitcoinconsensus.h).
 
 In its initial version the API includes two functions:
 

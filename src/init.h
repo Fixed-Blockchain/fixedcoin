@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_INIT_H
-#define BITCOIN_INIT_H
+#ifndef FIXEDCOIN_INIT_H
+#define FIXEDCOIN_INIT_H
 
 #include <atomic>
 
@@ -37,7 +37,7 @@ void InitLogging(const ArgsManager& args);
 //!Parameter interaction: change current parameters depending on various rules
 void InitParameterInteraction(ArgsManager& args);
 
-/** Initialize bitcoin core: Basic context setup.
+/** Initialize fixedcoin core: Basic context setup.
  *  @note This can be done before daemonization. Do not call Shutdown() if this function fails.
  *  @pre Parameters should be parsed and config file should be read.
  */
@@ -55,7 +55,7 @@ bool AppInitParameterInteraction(const ArgsManager& args);
  */
 bool AppInitSanityChecks(const kernel::Context& kernel);
 /**
- * Lock bitcoin core critical directories.
+ * Lock fixedcoin core critical directories.
  * @note This should only be done after daemonization. Do not call Shutdown() if this function fails.
  * @pre Parameters should be parsed and config file should be read, AppInitSanityChecks should have been called.
  */
@@ -65,7 +65,7 @@ bool AppInitLockDirectories();
  */
 bool AppInitInterfaces(node::NodeContext& node);
 /**
- * Bitcoin core main initialization.
+ * FixedCoin core main initialization.
  * @note This should only be done after daemonization. Call Shutdown() if this function fails.
  * @pre Parameters should be parsed and config file should be read, AppInitLockDirectories should have been called.
  */
@@ -79,4 +79,4 @@ void SetupServerArgs(ArgsManager& argsman, bool can_listen_ipc=false);
 /** Validates requirements to run the indexes and spawns each index initial sync thread */
 bool StartIndexBackgroundSync(node::NodeContext& node);
 
-#endif // BITCOIN_INIT_H
+#endif // FIXEDCOIN_INIT_H

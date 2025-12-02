@@ -1,20 +1,20 @@
 Bitcoin Core version *0.15.0.1* is now available from:
 
-  <https://bitcoin.org/bin/bitcoin-core-0.15.0.1/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.15.0.1/>
 
 and
 
-  <https://bitcoincore.org/bin/bitcoin-core-0.15.0.1/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.15.0.1/>
 
 This is a minor bug fix for 0.15.0.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============

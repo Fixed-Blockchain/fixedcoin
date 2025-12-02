@@ -1,17 +1,17 @@
 Bitcoin Core version 0.19.0.1 is now available from:
 
-  <https://bitcoincore.org/bin/bitcoin-core-0.19.0.1/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.19.0.1/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
@@ -50,7 +50,7 @@ Notable changes
 New user documentation
 ----------------------
 
-- [Reduce memory](https://github.com/bitcoin/bitcoin/blob/master/doc/reduce-memory.md)
+- [Reduce memory](https://github.com/Fixed-Blockchain/fixedcoin/blob/master/doc/reduce-memory.md)
   suggests configuration tweaks for running Bitcoin Core on systems with
   limited memory. (#16339)
 

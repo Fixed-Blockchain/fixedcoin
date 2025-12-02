@@ -5,8 +5,8 @@ connections, inter-process communication, and shared-memory,
 providing various message-oriented semantics such as publish/subscribe,
 request/reply, and push/pull.
 
-The Bitcoin Core daemon can be configured to act as a trusted "border
-router", implementing the bitcoin wire protocol and relay, making
+The FixedCoin Core daemon can be configured to act as a trusted "border
+router", implementing the fixedcoin wire protocol and relay, making
 consensus decisions, maintaining the local blockchain database,
 broadcasting locally generated transactions into the network, and
 providing a queryable RPC interface to interact on a polled basis for
@@ -33,7 +33,7 @@ buffering or reassembly.
 
 ## Prerequisites
 
-The ZeroMQ feature in Bitcoin Core requires the ZeroMQ API >= 4.0.0
+The ZeroMQ feature in FixedCoin Core requires the ZeroMQ API >= 4.0.0
 [libzmq](https://github.com/zeromq/libzmq/releases).
 For version information, see [dependencies.md](dependencies.md).
 Typically, it is packaged by distributions as something like
@@ -46,10 +46,11 @@ operation.
 
 ## Enabling
 
-By default, the ZeroMQ feature is not automatically compiled.
-To enable, use `-DWITH_ZMQ=ON` when configuring the build system:
+By default, the ZeroMQ feature is automatically compiled in if the
+necessary prerequisites are found.  To disable, use --disable-zmq
+during the *configure* step of building fixedcoind:
 
-    $ cmake -B build -DWITH_ZMQ=ON
+    $ ./configure --disable-zmq (other options)
 
 To actually enable operation, one must set the appropriate options on
 the command line or in the configuration file.
@@ -81,16 +82,16 @@ The high water mark value must be an integer greater than or equal to 0.
 
 For instance:
 
-    $ bitcoind -zmqpubhashtx=tcp://127.0.0.1:28332 \
-               -zmqpubhashtx=tcp://192.168.1.2:28332 \
-               -zmqpubhashblock="tcp://[::1]:28333" \
-               -zmqpubrawtx=ipc:///tmp/bitcoind.tx.raw \
+    $ fixedcoind -zmqpubhashtx=tcp://127.0.0.1:224767 \
+               -zmqpubhashtx=tcp://192.168.1.2:224767 \
+               -zmqpubhashblock="tcp://[::1]:224768" \
+               -zmqpubrawtx=ipc:///tmp/fixedcoind.tx.raw \
                -zmqpubhashtxhwm=10000
 
 Each PUB notification has a topic and body, where the header
 corresponds to the notification type. For instance, for the
 notification `-zmqpubhashtx` the topic is `hashtx` (no null
-terminator). These options can also be provided in bitcoin.conf.
+terminator). These options can also be provided in fixedcoin.conf.
 
 The topics are:
 
@@ -112,11 +113,11 @@ Where the 8-byte uints correspond to the mempool sequence number.
     | hashtx | <32-byte transaction hash in Little Endian> | <uint32 sequence number in Little Endian>
 
 
-`rawblock`: Notifies when the chain tip is updated. When assumeutxo is in use, this notification will not be issued for historical blocks connected to the background validation chainstate. Messages are ZMQ multipart messages with three parts. The first part is the topic (`rawblock`), the second part is the serialized block, and the last part is a sequence number (representing the message count to detect lost messages).
+`rawblock`: Notifies when the chain tip is updated. Messages are ZMQ multipart messages with three parts. The first part is the topic (`rawblock`), the second part is the serialized block, and the last part is a sequence number (representing the message count to detect lost messages).
 
     | rawblock | <serialized block> | <uint32 sequence number in Little Endian>
 
-`hashblock`: Notifies when the chain tip is updated. When assumeutxo is in use, this notification will not be issued for historical blocks connected to the background validation chainstate. Messages are ZMQ multipart messages with three parts. The first part is the topic (`hashblock`), the second part is the 32-byte block hash, and the last part is a sequence number (representing the message count to detect lost messages).
+`hashblock`: Notifies when the chain tip is updated. Messages are ZMQ multipart messages with three parts. The first part is the topic (`hashblock`), the second part is the 32-byte block hash, and the last part is a sequence number (representing the message count to detect lost messages).
 
     | hashblock | <32-byte block hash in Little Endian> | <uint32 sequence number in Little Endian>
 
@@ -149,9 +150,9 @@ hosts as well. If needed, this option has to be set on the client side too.
 
 ## Remarks
 
-From the perspective of bitcoind, the ZeroMQ socket is write-only; PUB
+From the perspective of fixedcoind, the ZeroMQ socket is write-only; PUB
 sockets don't even have a read function. Thus, there is no state
-introduced into bitcoind directly. Furthermore, no information is
+introduced into fixedcoind directly. Furthermore, no information is
 broadcast that wasn't already received from the public P2P network.
 
 No authentication or authorization is done on connecting clients; it
@@ -162,13 +163,13 @@ Note that for `*block` topics, when the block chain tip changes,
 a reorganisation may occur and just the tip will be notified.
 It is up to the subscriber to retrieve the chain from the last known
 block to the new tip. Also note that no notification will occur if the tip
-was in the active chain, as would be the case after calling the `invalidateblock` RPC.
+was in the active chain--as would be the case after calling invalidateblock RPC.
 In contrast, the `sequence` topic publishes all block connections and
 disconnections.
 
 There are several possibilities that ZMQ notification can get lost
 during transmission depending on the communication type you are
-using. Bitcoind appends an up-counting sequence number to each
+using. FixedCoind appends an up-counting sequence number to each
 notification which allows listeners to detect lost notifications.
 
 The `sequence` topic refers specifically to the mempool sequence

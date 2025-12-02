@@ -1,9 +1,9 @@
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_FUZZ_UTIL_NET_H
-#define BITCOIN_TEST_FUZZ_UTIL_NET_H
+#ifndef FIXEDCOIN_TEST_FUZZ_UTIL_NET_H
+#define FIXEDCOIN_TEST_FUZZ_UTIL_NET_H
 
 #include <addrman.h>
 #include <addrman_impl.h>
@@ -268,4 +268,4 @@ inline std::unique_ptr<CNode> ConsumeNodeAsUniquePtr(FuzzedDataProvider& fdp, co
 
 void FillNode(FuzzedDataProvider& fuzzed_data_provider, ConnmanTestMsg& connman, CNode& node) noexcept EXCLUSIVE_LOCKS_REQUIRED(NetEventsInterface::g_msgproc_mutex);
 
-#endif // BITCOIN_TEST_FUZZ_UTIL_NET_H
+#endif // FIXEDCOIN_TEST_FUZZ_UTIL_NET_H

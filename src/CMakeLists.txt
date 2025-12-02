@@ -1,10 +1,10 @@
-# Copyright (c) 2023-present The Bitcoin Core developers
+# Copyright (c) 2023-present The FixedCoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
 include(AddWindowsResources)
 
-configure_file(${PROJECT_SOURCE_DIR}/cmake/bitcoin-build-config.h.in bitcoin-build-config.h USE_SOURCE_PERMISSIONS @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/cmake/fixedcoin-build-config.h.in fixedcoin-build-config.h USE_SOURCE_PERMISSIONS @ONLY)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 #=============================
@@ -80,19 +80,19 @@ if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 endif()
 
 add_custom_target(generate_build_info
-  BYPRODUCTS ${PROJECT_BINARY_DIR}/src/bitcoin-build-info.h
-  COMMAND ${CMAKE_COMMAND} -DBUILD_INFO_HEADER_PATH=${PROJECT_BINARY_DIR}/src/bitcoin-build-info.h -DSOURCE_DIR=${PROJECT_SOURCE_DIR} -P ${PROJECT_SOURCE_DIR}/cmake/script/GenerateBuildInfo.cmake
-  COMMENT "Generating bitcoin-build-info.h"
+  BYPRODUCTS ${PROJECT_BINARY_DIR}/src/fixedcoin-build-info.h
+  COMMAND ${CMAKE_COMMAND} -DBUILD_INFO_HEADER_PATH=${PROJECT_BINARY_DIR}/src/fixedcoin-build-info.h -DSOURCE_DIR=${PROJECT_SOURCE_DIR} -P ${PROJECT_SOURCE_DIR}/cmake/script/GenerateBuildInfo.cmake
+  COMMENT "Generating fixedcoin-build-info.h"
   VERBATIM
 )
-add_library(bitcoin_clientversion STATIC EXCLUDE_FROM_ALL
+add_library(fixedcoin_clientversion STATIC EXCLUDE_FROM_ALL
   clientversion.cpp
 )
-target_link_libraries(bitcoin_clientversion
+target_link_libraries(fixedcoin_clientversion
   PRIVATE
     core_interface
 )
-add_dependencies(bitcoin_clientversion generate_build_info)
+add_dependencies(fixedcoin_clientversion generate_build_info)
 
 add_subdirectory(crypto)
 add_subdirectory(util)
@@ -100,7 +100,7 @@ if(WITH_MULTIPROCESS)
   add_subdirectory(ipc)
 endif()
 
-add_library(bitcoin_consensus STATIC EXCLUDE_FROM_ALL
+add_library(fixedcoin_consensus STATIC EXCLUDE_FROM_ALL
   arith_uint256.cpp
   consensus/merkle.cpp
   consensus/tx_check.cpp
@@ -113,10 +113,10 @@ add_library(bitcoin_consensus STATIC EXCLUDE_FROM_ALL
   script/script_error.cpp
   uint256.cpp
 )
-target_link_libraries(bitcoin_consensus
+target_link_libraries(fixedcoin_consensus
   PRIVATE
     core_interface
-    bitcoin_crypto
+    fixedcoin_crypto
     secp256k1
 )
 
@@ -125,8 +125,8 @@ if(WITH_ZMQ)
 endif()
 
 # Home for common functionality shared by different executables and libraries.
-# Similar to `bitcoin_util` library, but higher-level.
-add_library(bitcoin_common STATIC EXCLUDE_FROM_ALL
+# Similar to `fixedcoin_util` library, but higher-level.
+add_library(fixedcoin_common STATIC EXCLUDE_FROM_ALL
   addresstype.cpp
   base58.cpp
   bech32.cpp
@@ -178,11 +178,11 @@ add_library(bitcoin_common STATIC EXCLUDE_FROM_ALL
   script/signingprovider.cpp
   script/solver.cpp
 )
-target_link_libraries(bitcoin_common
+target_link_libraries(fixedcoin_common
   PRIVATE
     core_interface
-    bitcoin_consensus
-    bitcoin_util
+    fixedcoin_consensus
+    fixedcoin_util
     univalue
     secp256k1
     Boost::headers
@@ -196,26 +196,26 @@ if(ENABLE_WALLET)
   add_subdirectory(wallet)
 
   if(BUILD_WALLET_TOOL)
-    add_executable(bitcoin-wallet
-      bitcoin-wallet.cpp
-      init/bitcoin-wallet.cpp
+    add_executable(fixedcoin-wallet
+      fixedcoin-wallet.cpp
+      init/fixedcoin-wallet.cpp
       wallet/wallettool.cpp
     )
-    add_windows_resources(bitcoin-wallet bitcoin-wallet-res.rc)
-    target_link_libraries(bitcoin-wallet
+    add_windows_resources(fixedcoin-wallet fixedcoin-wallet-res.rc)
+    target_link_libraries(fixedcoin-wallet
       core_interface
-      bitcoin_wallet
-      bitcoin_common
-      bitcoin_util
+      fixedcoin_wallet
+      fixedcoin_common
+      fixedcoin_util
       Boost::headers
     )
-    install_binary_component(bitcoin-wallet HAS_MANPAGE)
+    install_binary_component(fixedcoin-wallet HAS_MANPAGE)
   endif()
 endif()
 
 
-# P2P and RPC server functionality used by `bitcoind` and `bitcoin-qt` executables.
-add_library(bitcoin_node STATIC EXCLUDE_FROM_ALL
+# P2P and RPC server functionality used by `fixedcoind` and `fixedcoin-qt` executables.
+add_library(fixedcoin_node STATIC EXCLUDE_FROM_ALL
   addrdb.cpp
   addrman.cpp
   banman.cpp
@@ -307,15 +307,15 @@ add_library(bitcoin_node STATIC EXCLUDE_FROM_ALL
   validation.cpp
   validationinterface.cpp
   versionbits.cpp
-  $<$<TARGET_EXISTS:bitcoin_wallet>:wallet/init.cpp>
-  $<$<NOT:$<TARGET_EXISTS:bitcoin_wallet>>:dummywallet.cpp>
+  $<$<TARGET_EXISTS:fixedcoin_wallet>:wallet/init.cpp>
+  $<$<NOT:$<TARGET_EXISTS:fixedcoin_wallet>>:dummywallet.cpp>
 )
-target_link_libraries(bitcoin_node
+target_link_libraries(fixedcoin_node
   PRIVATE
     core_interface
-    bitcoin_common
-    bitcoin_util
-    $<TARGET_NAME_IF_EXISTS:bitcoin_zmq>
+    fixedcoin_common
+    fixedcoin_util
+    $<TARGET_NAME_IF_EXISTS:fixedcoin_zmq>
     leveldb
     minisketch
     univalue
@@ -327,100 +327,100 @@ target_link_libraries(bitcoin_node
 )
 
 
-# Bitcoin Core bitcoind.
+# FixedCoin Core fixedcoind.
 if(BUILD_DAEMON)
-  add_executable(bitcoind
-    bitcoind.cpp
-    init/bitcoind.cpp
+  add_executable(fixedcoind
+    fixedcoind.cpp
+    init/fixedcoind.cpp
   )
-  add_windows_resources(bitcoind bitcoind-res.rc)
-  target_link_libraries(bitcoind
+  add_windows_resources(fixedcoind fixedcoind-res.rc)
+  target_link_libraries(fixedcoind
     core_interface
-    bitcoin_node
-    $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
+    fixedcoin_node
+    $<TARGET_NAME_IF_EXISTS:fixedcoin_wallet>
   )
-  install_binary_component(bitcoind HAS_MANPAGE)
+  install_binary_component(fixedcoind HAS_MANPAGE)
 endif()
 if(WITH_MULTIPROCESS AND BUILD_DAEMON)
-  add_executable(bitcoin-node
-    bitcoind.cpp
-    init/bitcoin-node.cpp
+  add_executable(fixedcoin-node
+    fixedcoind.cpp
+    init/fixedcoin-node.cpp
   )
-  target_link_libraries(bitcoin-node
+  target_link_libraries(fixedcoin-node
     core_interface
-    bitcoin_node
-    bitcoin_ipc
-    $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
+    fixedcoin_node
+    fixedcoin_ipc
+    $<TARGET_NAME_IF_EXISTS:fixedcoin_wallet>
   )
-  install_binary_component(bitcoin-node)
+  install_binary_component(fixedcoin-node)
 endif()
 
 if(WITH_MULTIPROCESS AND BUILD_TESTS)
-    # bitcoin_ipc_test library target is defined here in src/CMakeLists.txt
+    # fixedcoin_ipc_test library target is defined here in src/CMakeLists.txt
     # instead of src/test/CMakeLists.txt so capnp files in src/test/ are able to
     # reference capnp files in src/ipc/capnp/ by relative path. The Cap'n Proto
     # compiler only allows importing by relative path when the importing and
     # imported files are underneath the same compilation source prefix, so the
     # source prefix must be src/, not src/test/
-    add_library(bitcoin_ipc_test STATIC EXCLUDE_FROM_ALL
+    add_library(fixedcoin_ipc_test STATIC EXCLUDE_FROM_ALL
       test/ipc_test.cpp
     )
-    target_capnp_sources(bitcoin_ipc_test ${PROJECT_SOURCE_DIR}
+    target_capnp_sources(fixedcoin_ipc_test ${PROJECT_SOURCE_DIR}
       test/ipc_test.capnp
     )
-    add_dependencies(bitcoin_ipc_test bitcoin_ipc_headers)
+    add_dependencies(fixedcoin_ipc_test fixedcoin_ipc_headers)
 endif()
 
 
-add_library(bitcoin_cli STATIC EXCLUDE_FROM_ALL
+add_library(fixedcoin_cli STATIC EXCLUDE_FROM_ALL
   compat/stdin.cpp
   rpc/client.cpp
 )
-target_link_libraries(bitcoin_cli
+target_link_libraries(fixedcoin_cli
   PUBLIC
     core_interface
     univalue
 )
 
 
-# Bitcoin Core RPC client
+# FixedCoin Core RPC client
 if(BUILD_CLI)
-  add_executable(bitcoin-cli bitcoin-cli.cpp)
-  add_windows_resources(bitcoin-cli bitcoin-cli-res.rc)
-  target_link_libraries(bitcoin-cli
+  add_executable(fixedcoin-cli fixedcoin-cli.cpp)
+  add_windows_resources(fixedcoin-cli fixedcoin-cli-res.rc)
+  target_link_libraries(fixedcoin-cli
     core_interface
-    bitcoin_cli
-    bitcoin_common
-    bitcoin_util
+    fixedcoin_cli
+    fixedcoin_common
+    fixedcoin_util
     libevent::core
     libevent::extra
   )
-  install_binary_component(bitcoin-cli HAS_MANPAGE)
+  install_binary_component(fixedcoin-cli HAS_MANPAGE)
 endif()
 
 
 if(BUILD_TX)
-  add_executable(bitcoin-tx bitcoin-tx.cpp)
-  add_windows_resources(bitcoin-tx bitcoin-tx-res.rc)
-  target_link_libraries(bitcoin-tx
+  add_executable(fixedcoin-tx fixedcoin-tx.cpp)
+  add_windows_resources(fixedcoin-tx fixedcoin-tx-res.rc)
+  target_link_libraries(fixedcoin-tx
     core_interface
-    bitcoin_common
-    bitcoin_util
+    fixedcoin_common
+    fixedcoin_util
     univalue
   )
-  install_binary_component(bitcoin-tx HAS_MANPAGE)
+  install_binary_component(fixedcoin-tx HAS_MANPAGE)
 endif()
 
 
 if(BUILD_UTIL)
-  add_executable(bitcoin-util bitcoin-util.cpp)
-  add_windows_resources(bitcoin-util bitcoin-util-res.rc)
-  target_link_libraries(bitcoin-util
+  add_executable(fixedcoin-util fixedcoin-util.cpp)
+  add_windows_resources(fixedcoin-util fixedcoin-util-res.rc)
+  target_link_libraries(fixedcoin-util
     core_interface
-    bitcoin_common
-    bitcoin_util
+    fixedcoin_common
+    fixedcoin_util
   )
-  install_binary_component(bitcoin-util HAS_MANPAGE)
+  install_binary_component(fixedcoin-util HAS_MANPAGE)
 endif()
 
 
@@ -434,22 +434,22 @@ if(BUILD_KERNEL_LIB)
 endif()
 
 if(BUILD_UTIL_CHAINSTATE)
-  add_executable(bitcoin-chainstate
-    bitcoin-chainstate.cpp
+  add_executable(fixedcoin-chainstate
+    fixedcoin-chainstate.cpp
   )
   # TODO: The `SKIP_BUILD_RPATH` property setting can be deleted
   #       in the future after reordering Guix script commands to
   #       perform binary checks after the installation step.
   # Relevant discussions:
-  # - https://github.com/hebasto/bitcoin/pull/236#issuecomment-2183120953
-  # - https://github.com/bitcoin/bitcoin/pull/30312#issuecomment-2191235833
-  set_target_properties(bitcoin-chainstate PROPERTIES
+  # - https://github.com/hebasto/fixedcoin/pull/236#issuecomment-2183120953
+  # - https://github.com/fixedcoin/fixedcoin/pull/30312#issuecomment-2191235833
+  set_target_properties(fixedcoin-chainstate PROPERTIES
     SKIP_BUILD_RPATH OFF
   )
-  target_link_libraries(bitcoin-chainstate
+  target_link_libraries(fixedcoin-chainstate
     PRIVATE
       core_interface
-      bitcoinkernel
+      fixedcoinkernel
   )
 endif()
 

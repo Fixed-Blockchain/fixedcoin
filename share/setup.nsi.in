@@ -15,7 +15,7 @@ Unicode true
 !define URL @CLIENT_URL@
 
 # MUI Symbol Definitions
-!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/bitcoin.ico"
+!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/fixedcoin.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
@@ -26,7 +26,7 @@ Unicode true
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "@CLIENT_NAME@"
 !define MUI_FINISHPAGE_RUN "$WINDIR\explorer.exe"
-!define MUI_FINISHPAGE_RUN_PARAMETERS $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
+!define MUI_FINISHPAGE_RUN_PARAMETERS $INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -52,7 +52,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-InstallDir $PROGRAMFILES64\Bitcoin
+InstallDir $PROGRAMFILES64\FixedCoin
 CRCCheck force
 XPStyle on
 BrandingText " "
@@ -72,18 +72,18 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File @abs_top_builddir@/release/@BITCOIN_GUI_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@FIXEDCOIN_GUI_NAME@@EXEEXT@
     File /oname=COPYING.txt @abs_top_srcdir@/COPYING
     File /oname=readme.txt @abs_top_srcdir@/doc/README_windows.txt
-    File @abs_top_srcdir@/share/examples/bitcoin.conf
+    File @abs_top_srcdir@/share/examples/fixedcoin.conf
     SetOutPath $INSTDIR\share\rpcauth
     File @abs_top_srcdir@/share/rpcauth/*.*
     SetOutPath $INSTDIR\daemon
-    File @abs_top_builddir@/release/@BITCOIN_DAEMON_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_CLI_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_TX_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_WALLET_TOOL_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_TEST_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@FIXEDCOIN_DAEMON_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@FIXEDCOIN_CLI_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@FIXEDCOIN_TX_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@FIXEDCOIN_WALLET_TOOL_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@FIXEDCOIN_TEST_NAME@@EXEEXT@
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd
@@ -94,24 +94,24 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (testnet).lnk" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" "-testnet" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" 1
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (test signet).lnk" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" "-signet" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" 2
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (testnet4).lnk" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" "-testnet4" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" 3
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (testnet).lnk" "$INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@" "-testnet" "$INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@" 1
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (test signet).lnk" "$INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@" "-signet" "$INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@" 2
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (testnet4).lnk" "$INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@" "-testnet4" "$INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@" 3
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "@CLIENT_VERSION_STRING@"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" URLInfoAbout "${URL}"
-    WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\bitcoin-qt.exe
+    WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\fixedcoin-qt.exe
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
     WriteRegStr HKCR "@CLIENT_TARNAME@" "URL Protocol" ""
-    WriteRegStr HKCR "@CLIENT_TARNAME@" "" "URL:Bitcoin"
-    WriteRegStr HKCR "@CLIENT_TARNAME@\DefaultIcon" "" $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
-    WriteRegStr HKCR "@CLIENT_TARNAME@\shell\open\command" "" '"$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" "%1"'
+    WriteRegStr HKCR "@CLIENT_TARNAME@" "" "URL:FixedCoin"
+    WriteRegStr HKCR "@CLIENT_TARNAME@\DefaultIcon" "" $INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@
+    WriteRegStr HKCR "@CLIENT_TARNAME@\shell\open\command" "" '"$INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@" "%1"'
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -129,10 +129,10 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
+    Delete /REBOOTOK $INSTDIR\@FIXEDCOIN_GUI_NAME@@EXEEXT@
     Delete /REBOOTOK $INSTDIR\COPYING.txt
     Delete /REBOOTOK $INSTDIR\readme.txt
-    Delete /REBOOTOK $INSTDIR\bitcoin.conf
+    Delete /REBOOTOK $INSTDIR\fixedcoin.conf
     RMDir /r /REBOOTOK $INSTDIR\share
     RMDir /r /REBOOTOK $INSTDIR\daemon
     DeleteRegValue HKCU "${REGKEY}\Components" Main
@@ -145,7 +145,7 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (testnet).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (testnet4).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\@CLIENT_NAME@ (test signet).lnk"
-    Delete /REBOOTOK "$SMSTARTUP\Bitcoin.lnk"
+    Delete /REBOOTOK "$SMSTARTUP\FixedCoin.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     Delete /REBOOTOK $INSTDIR\debug.log
     Delete /REBOOTOK $INSTDIR\db.log

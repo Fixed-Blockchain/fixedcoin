@@ -22,7 +22,7 @@ EXPECTED_CIRCULAR_DEPENDENCIES = (
     "wallet/wallet -> wallet/walletdb -> wallet/wallet",
     "kernel/coinstats -> validation -> kernel/coinstats",
 
-    # Temporary, removed in followup https://github.com/bitcoin/bitcoin/pull/24230
+    # Temporary, removed in followup https://github.com/Fixed-Blockchain/fixedcoin/pull/24230
     "index/base -> node/context -> net_processing -> index/blockfilterindex -> index/base",
 )
 

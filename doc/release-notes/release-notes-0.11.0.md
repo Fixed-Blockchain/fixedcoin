@@ -1,13 +1,13 @@
 Bitcoin Core version 0.11.0 is now available from:
 
-  <https://bitcoin.org/bin/bitcoin-core-0.11.0/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.11.0/>
 
 This is a new major version release, bringing both new features and
 bug fixes.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 Upgrading and downgrading
 =========================

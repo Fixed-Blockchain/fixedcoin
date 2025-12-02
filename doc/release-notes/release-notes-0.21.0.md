@@ -3,18 +3,18 @@
 
 Bitcoin Core version 0.21.0 is now available from:
 
-  <https://bitcoincore.org/bin/bitcoin-core-0.21.0/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.21.0/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
@@ -340,7 +340,7 @@ create` commands, or the `createwallet` RPC. (#15454, #20186)
 
 Please note that Descriptor Wallets are still experimental and not all expected functionality
 is available. Additionally there may be some bugs and current functions may change in the future.
-Bugs and missing functionality can be reported to the [issue tracker](https://github.com/bitcoin/bitcoin/issues).
+Bugs and missing functionality can be reported to the [issue tracker](https://github.com/Fixed-Blockchain/fixedcoin/issues).
 
 0.21 introduces a new type of wallet - Descriptor Wallets. Descriptor Wallets store
 scriptPubKey information using output descriptors. This is in contrast to the Legacy Wallet

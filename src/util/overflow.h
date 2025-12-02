@@ -1,9 +1,9 @@
-// Copyright (c) 2021-2022 The Bitcoin Core developers
+// Copyright (c) 2021-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_OVERFLOW_H
-#define BITCOIN_UTIL_OVERFLOW_H
+#ifndef FIXEDCOIN_UTIL_OVERFLOW_H
+#define FIXEDCOIN_UTIL_OVERFLOW_H
 
 #include <climits>
 #include <concepts>
@@ -83,4 +83,4 @@ constexpr T SaturatingLeftShift(T input, unsigned shift) noexcept
     return input < 0 ? std::numeric_limits<T>::min() : std::numeric_limits<T>::max();
 }
 
-#endif // BITCOIN_UTIL_OVERFLOW_H
+#endif // FIXEDCOIN_UTIL_OVERFLOW_H

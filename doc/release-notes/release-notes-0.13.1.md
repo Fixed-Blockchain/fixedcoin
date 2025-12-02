@@ -1,6 +1,6 @@
 Bitcoin Core version 0.13.1 is now available from:
 
-  <https://bitcoin.org/bin/bitcoin-core-0.13.1/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.13.1/>
 
 This is a new minor version release, including activation parameters for the
 segwit softfork, various bugfixes and performance improvements, as well as
@@ -8,11 +8,11 @@ updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 Compatibility
 ==============
@@ -23,7 +23,7 @@ updates will be released anymore. Without security updates, using a bitcoin
 wallet on a XP machine is irresponsible at least.
 
 In addition to that, with 0.12.x there have been varied reports of Bitcoin Core
-randomly crashing on Windows XP. It is [not clear](https://github.com/bitcoin/bitcoin/issues/7681#issuecomment-217439891)
+randomly crashing on Windows XP. It is [not clear](https://github.com/Fixed-Blockchain/fixedcoin/issues/7681#issuecomment-217439891)
 what the source of these crashes is, but it is likely that upstream
 libraries such as Qt are no longer being tested on XP.
 
@@ -159,13 +159,13 @@ For more information about segwit, please see the [segwit FAQ][], the
 operator, please see the [versionbits FAQ][] for information about
 signaling support for a soft fork.
 
-[Segwit FAQ]: https://bitcoincore.org/en/2016/01/26/segwit-benefits/
-[segwit wallet developers guide]: https://bitcoincore.org/en/segwit_wallet_dev/
+[Segwit FAQ]: https://fixedcoin.org/en/2016/01/26/segwit-benefits/
+[segwit wallet developers guide]: https://fixedcoin.org/en/segwit_wallet_dev/
 [BIP141]: https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki
 [BIP143]: https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki
 [BIP144]: https://github.com/bitcoin/bips/blob/master/bip-0144.mediawiki
 [BIP145]: https://github.com/bitcoin/bips/blob/master/bip-0145.mediawiki
-[versionbits FAQ]: https://bitcoincore.org/en/2016/06/08/version-bits-miners-faq/
+[versionbits FAQ]: https://fixedcoin.org/en/2016/06/08/version-bits-miners-faq/
 
 
 Null dummy soft fork

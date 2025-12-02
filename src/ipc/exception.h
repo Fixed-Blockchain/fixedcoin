@@ -1,9 +1,9 @@
-// Copyright (c) 2021 The Bitcoin Core developers
+// Copyright (c) 2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_IPC_EXCEPTION_H
-#define BITCOIN_IPC_EXCEPTION_H
+#ifndef FIXEDCOIN_IPC_EXCEPTION_H
+#define FIXEDCOIN_IPC_EXCEPTION_H
 
 #include <stdexcept>
 
@@ -17,4 +17,4 @@ public:
 };
 } // namespace ipc
 
-#endif // BITCOIN_IPC_EXCEPTION_H
+#endif // FIXEDCOIN_IPC_EXCEPTION_H

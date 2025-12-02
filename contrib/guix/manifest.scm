@@ -154,7 +154,7 @@ chain for " target " development."))
 ;; While LIEF is packaged in Guix, we maintain our own package,
 ;; to simplify building, and more easily apply updates.
 ;; Moreover, the Guix's package uses cmake, which caused build
-;; failure; see https://github.com/bitcoin/bitcoin/pull/27296.
+;; failure; see https://github.com/Fixed-Blockchain/fixedcoin/pull/27296.
 (define-public python-lief
   (package
     (name "python-lief")

@@ -1,9 +1,9 @@
-// Copyright (c) 2021-2022 The Bitcoin Core developers
+// Copyright (c) 2021-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_CHAINSTATE_H
-#define BITCOIN_NODE_CHAINSTATE_H
+#ifndef FIXEDCOIN_NODE_CHAINSTATE_H
+#define FIXEDCOIN_NODE_CHAINSTATE_H
 
 #include <util/translation.h>
 #include <validation.h>
@@ -71,4 +71,4 @@ ChainstateLoadResult LoadChainstate(ChainstateManager& chainman, const kernel::C
 ChainstateLoadResult VerifyLoadedChainstate(ChainstateManager& chainman, const ChainstateLoadOptions& options);
 } // namespace node
 
-#endif // BITCOIN_NODE_CHAINSTATE_H
+#endif // FIXEDCOIN_NODE_CHAINSTATE_H

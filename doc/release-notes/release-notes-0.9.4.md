@@ -1,13 +1,13 @@
 Bitcoin Core version 0.9.4 is now available from:
 
-  https://bitcoin.org/bin/0.9.4/
+  https://fixedcoin.org/bin/0.9.4/
 
 This is a new minor version release, bringing only bug fixes and updated
 translations. Upgrading to this release is recommended.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/bitcoin/bitcoin/issues
+  https://github.com/Fixed-Blockchain/fixedcoin/issues
 
 How to Upgrade
 ===============
@@ -25,7 +25,7 @@ various operating system maintainers. Review by Gregory Maxwell determined that
 this update is incompatible with the Bitcoin system and could lead to consensus
 forks.
 
-Bitcoin Core released binaries from https://bitcoin.org are unaffected,
+Bitcoin Core released binaries from https://fixedcoin.org are unaffected,
 as are any built with the gitian deterministic build system.
 
 However, if you are running either

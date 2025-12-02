@@ -1,8 +1,8 @@
 # FreeBSD Build Guide
 
-**Updated for FreeBSD [14.0](https://www.freebsd.org/releases/14.0R/announce/)**
+**Updated for FreeBSD [12.3](https://www.freebsd.org/releases/12.3R/announce/)**
 
-This guide describes how to build bitcoind, command-line utilities, and GUI on FreeBSD.
+This guide describes how to build fixedcoind, command-line utilities, and GUI on FreeBSD.
 
 ## Preparation
 
@@ -10,27 +10,28 @@ This guide describes how to build bitcoind, command-line utilities, and GUI on F
 Run the following as root to install the base dependencies for building.
 
 ```bash
-pkg install boost-libs cmake git libevent pkgconf
+pkg install autoconf automake boost-libs git gmake libevent libtool pkgconf
+
 ```
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
-### 2. Clone Bitcoin Repo
-Now that `git` and all the required dependencies are installed, let's clone the Bitcoin Core repository to a directory. All build scripts and commands will run from this directory.
-```bash
-git clone https://github.com/bitcoin/bitcoin.git
+### 2. Clone FixedCoin Repo
+Now that `git` and all the required dependencies are installed, let's clone the FixedCoin Core repository to a directory. All build scripts and commands will run from this directory.
+``` bash
+git clone https://github.com/fixedcoin/fixedcoin.git
 ```
 
 ### 3. Install Optional Dependencies
 
 #### Wallet Dependencies
-It is not necessary to build wallet functionality to run either `bitcoind` or `bitcoin-qt`.
+It is not necessary to build wallet functionality to run either `fixedcoind` or `fixedcoin-qt`.
 
 ###### Descriptor Wallet Support
 
 `sqlite3` is required to support [descriptor wallets](descriptors.md).
 Skip if you don't intend to use descriptor wallets.
-```bash
+``` bash
 pkg install sqlite3
 ```
 
@@ -40,15 +41,14 @@ BerkeleyDB is only required if legacy wallet support is required.
 It is required to use Berkeley DB 4.8. You **cannot** use the BerkeleyDB library
 from ports. However, you can build DB 4.8 yourself [using depends](/depends).
 
-```bash
-pkg install gmake
-gmake -C depends NO_BOOST=1 NO_LIBEVENT=1 NO_QT=1 NO_SQLITE=1 NO_ZMQ=1 NO_USDT=1
+```
+gmake -C depends NO_BOOST=1 NO_LIBEVENT=1 NO_QT=1 NO_SQLITE=1 NO_NATPMP=1 NO_UPNP=1 NO_ZMQ=1 NO_USDT=1
 ```
 
 When the build is complete, the Berkeley DB installation location will be displayed:
 
 ```
-to: /path/to/bitcoin/depends/x86_64-unknown-freebsd[release-number]
+to: /path/to/fixedcoin/depends/x86_64-unknown-freebsd[release-number]
 ```
 
 Finally, set `BDB_PREFIX` to this path according to your shell:
@@ -64,29 +64,22 @@ sh/bash: export BDB_PREFIX=[path displayed above]
 #### GUI Dependencies
 ###### Qt5
 
-Bitcoin Core includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install
-the necessary parts of Qt, the libqrencode and pass `-DBUILD_GUI=ON`. Skip if you don't intend to use the GUI.
-
+FixedCoin Core includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install `qt5`. Skip if you don't intend to use the GUI.
 ```bash
-pkg install qt5-buildtools qt5-core qt5-gui qt5-linguisttools qt5-testlib qt5-widgets
+pkg install qt5
 ```
-
 ###### libqrencode
 
-The GUI will be able to encode addresses in QR codes unless this feature is explicitly disabled. To install libqrencode, run:
-
+The GUI can encode addresses in a QR Code. To build in QR support for the GUI, install `libqrencode`. Skip if not using the GUI or don't want QR code functionality.
 ```bash
 pkg install libqrencode
 ```
-
-Otherwise, if you don't need QR encoding support, use the `-DWITH_QRENCODE=OFF` option to disable this feature in order to compile the GUI.
-
 ---
 
 #### Notifications
 ###### ZeroMQ
 
-Bitcoin Core can provide notifications via ZeroMQ. If the package is installed, support will be compiled in.
+FixedCoin Core can provide notifications via ZeroMQ. If the package is installed, support will be compiled in.
 ```bash
 pkg install libzmq4
 ```
@@ -96,39 +89,44 @@ There is an included test suite that is useful for testing code changes when dev
 To run the test suite (recommended), you will need to have Python 3 installed:
 
 ```bash
-pkg install python3 databases/py-sqlite3 net/py-pyzmq
+pkg install python3 databases/py-sqlite3
 ```
 ---
 
-## Building Bitcoin Core
+## Building FixedCoin Core
 
 ### 1. Configuration
 
-There are many ways to configure Bitcoin Core, here are a few common examples:
+There are many ways to configure FixedCoin Core, here are a few common examples:
 
 ##### Descriptor Wallet and GUI:
-This disables legacy wallet support and enables the GUI, assuming `sqlite` and `qt` are installed.
+This explicitly enables the GUI and disables legacy wallet support, assuming `sqlite` and `qt` are installed.
 ```bash
-cmake -B build -DWITH_BDB=OFF -DBUILD_GUI=ON
+./autogen.sh
+./configure --without-bdb --with-gui=yes MAKE=gmake
 ```
 
-Run `cmake -B build -LH` to see the full list of available options.
-
 ##### Descriptor & Legacy Wallet. No GUI:
-This enables support for both wallet types, assuming
+This enables support for both wallet types and disables the GUI, assuming
 `sqlite3` and `db4` are both installed.
 ```bash
-cmake -B build -DBerkeleyDB_INCLUDE_DIR:PATH="${BDB_PREFIX}/include" -DWITH_BDB=ON
+./autogen.sh
+./configure --with-gui=no \
+    BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
+    BDB_CFLAGS="-I${BDB_PREFIX}/include" \
+    MAKE=gmake
 ```
 
 ##### No Wallet or GUI
-```bash
-cmake -B build -DENABLE_WALLET=OFF
+``` bash
+./autogen.sh
+./configure --without-wallet --with-gui=no MAKE=gmake
 ```
 
 ### 2. Compile
+**Important**: Use `gmake` (the non-GNU `make` will exit with an error).
 
 ```bash
-cmake --build build     # Use "-j N" for N parallel jobs.
-ctest --test-dir build  # Use "-j N" for N parallel tests. Some tests are disabled if Python 3 is not available.
+gmake # use "-j N" for N parallel jobs
+gmake check # Run tests if Python 3 is available
 ```

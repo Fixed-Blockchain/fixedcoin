@@ -1,9 +1,9 @@
-// Copyright (c) 2018-2022 The Bitcoin Core developers
+// Copyright (c) 2018-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_INTERFACES_WALLET_H
-#define BITCOIN_INTERFACES_WALLET_H
+#ifndef FIXEDCOIN_INTERFACES_WALLET_H
+#define FIXEDCOIN_INTERFACES_WALLET_H
 
 #include <addresstype.h>
 #include <common/signmessage.h>
@@ -456,4 +456,4 @@ std::unique_ptr<WalletLoader> MakeWalletLoader(Chain& chain, ArgsManager& args);
 
 } // namespace interfaces
 
-#endif // BITCOIN_INTERFACES_WALLET_H
+#endif // FIXEDCOIN_INTERFACES_WALLET_H

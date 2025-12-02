@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2020 The Bitcoin Core developers
+// Copyright (c) 2011-2020 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_PSBTOPERATIONSDIALOG_H
-#define BITCOIN_QT_PSBTOPERATIONSDIALOG_H
+#ifndef FIXEDCOIN_QT_PSBTOPERATIONSDIALOG_H
+#define FIXEDCOIN_QT_PSBTOPERATIONSDIALOG_H
 
 #include <QDialog>
 #include <QString>
@@ -52,4 +52,4 @@ private:
     void showTransactionStatus(const PartiallySignedTransaction &psbtx);
 };
 
-#endif // BITCOIN_QT_PSBTOPERATIONSDIALOG_H
+#endif // FIXEDCOIN_QT_PSBTOPERATIONSDIALOG_H

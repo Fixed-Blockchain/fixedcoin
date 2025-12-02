@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CONSENSUS_PARAMS_H
-#define BITCOIN_CONSENSUS_PARAMS_H
+#ifndef FIXEDCOIN_CONSENSUS_PARAMS_H
+#define FIXEDCOIN_CONSENSUS_PARAMS_H
 
 #include <uint256.h>
 
@@ -116,6 +116,8 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
+    int nASERTActivationHeight;
+    int64_t nASERTHalflife;
     std::chrono::seconds PowTargetSpacing() const
     {
         return std::chrono::seconds{nPowTargetSpacing};
@@ -127,7 +129,7 @@ struct Params {
     uint256 defaultAssumeValid;
 
     /**
-     * If true, witness commitments contain a payload equal to a Bitcoin Script solution
+     * If true, witness commitments contain a payload equal to a FixedCoin Script solution
      * to the signet challenge. See BIP325.
      */
     bool signet_blocks{false};
@@ -153,4 +155,4 @@ struct Params {
 
 } // namespace Consensus
 
-#endif // BITCOIN_CONSENSUS_PARAMS_H
+#endif // FIXEDCOIN_CONSENSUS_PARAMS_H

@@ -1,9 +1,9 @@
-// Copyright (c) 2012-2022 The Bitcoin Core developers
+// Copyright (c) 2012-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CHECKQUEUE_H
-#define BITCOIN_CHECKQUEUE_H
+#ifndef FIXEDCOIN_CHECKQUEUE_H
+#define FIXEDCOIN_CHECKQUEUE_H
 
 #include <logging.h>
 #include <sync.h>
@@ -248,4 +248,4 @@ public:
     }
 };
 
-#endif // BITCOIN_CHECKQUEUE_H
+#endif // FIXEDCOIN_CHECKQUEUE_H

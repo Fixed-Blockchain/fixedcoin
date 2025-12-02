@@ -1,9 +1,9 @@
-// Copyright (c) 2023 The Bitcoin Core developers
+// Copyright (c) 2023 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_COINS_H
-#define BITCOIN_TEST_UTIL_COINS_H
+#ifndef FIXEDCOIN_TEST_UTIL_COINS_H
+#define FIXEDCOIN_TEST_UTIL_COINS_H
 
 #include <primitives/transaction.h>
 
@@ -17,4 +17,4 @@ class FastRandomContext;
  */
 COutPoint AddTestCoin(FastRandomContext& rng, CCoinsViewCache& coins_view);
 
-#endif // BITCOIN_TEST_UTIL_COINS_H
+#endif // FIXEDCOIN_TEST_UTIL_COINS_H

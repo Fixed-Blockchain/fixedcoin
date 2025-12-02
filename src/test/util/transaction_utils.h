@@ -1,9 +1,9 @@
-// Copyright (c) 2019-2020 The Bitcoin Core developers
+// Copyright (c) 2019-2020 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_TRANSACTION_UTILS_H
-#define BITCOIN_TEST_UTIL_TRANSACTION_UTILS_H
+#ifndef FIXEDCOIN_TEST_UTIL_TRANSACTION_UTILS_H
+#define FIXEDCOIN_TEST_UTIL_TRANSACTION_UTILS_H
 
 #include <primitives/transaction.h>
 #include <script/sign.h>
@@ -50,4 +50,4 @@ bool SignSignature(const SigningProvider &provider, const CScript& fromPubKey, C
 bool SignSignature(const SigningProvider &provider, const CTransaction& txFrom, CMutableTransaction& txTo,
                    unsigned int nIn, int nHashType, SignatureData& sig_data);
 
-#endif // BITCOIN_TEST_UTIL_TRANSACTION_UTILS_H
+#endif // FIXEDCOIN_TEST_UTIL_TRANSACTION_UTILS_H

@@ -1,9 +1,9 @@
-// Copyright (c) 2016-2022 The Bitcoin Core developers
+// Copyright (c) 2016-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_MODALOVERLAY_H
-#define BITCOIN_QT_MODALOVERLAY_H
+#ifndef FIXEDCOIN_QT_MODALOVERLAY_H
+#define FIXEDCOIN_QT_MODALOVERLAY_H
 
 #include <QDateTime>
 #include <QPropertyAnimation>
@@ -55,4 +55,4 @@ private:
     void UpdateHeaderPresyncLabel(int height, const QDateTime& blockDate);
 };
 
-#endif // BITCOIN_QT_MODALOVERLAY_H
+#endif // FIXEDCOIN_QT_MODALOVERLAY_H

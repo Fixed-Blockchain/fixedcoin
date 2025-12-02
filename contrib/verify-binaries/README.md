@@ -23,7 +23,7 @@ You can obtain these keys by
 #### Usage
 
 This script attempts to download the checksum file (`SHA256SUMS`) and corresponding
-signature file `SHA256SUMS.asc` from https://bitcoincore.org and https://bitcoin.org.
+signature file `SHA256SUMS.asc` from https://fixedcoin.org and https://fixedcoin.org.
 
 It first checks if the checksum file is valid based upon a plurality of signatures, and
 then downloads the release files specified in the checksum file, and checks if the

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 The Bitcoin Core developers
+// Copyright (c) 2023 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -125,7 +125,7 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
         LOCK(cs_args);
         m_settings.ro_config.clear();
         m_config_sections.clear();
-        m_config_path = AbsPathForConfigVal(*this, GetPathArg("-conf", BITCOIN_CONF_FILENAME), /*net_specific=*/false);
+        m_config_path = AbsPathForConfigVal(*this, GetPathArg("-conf", FIXEDCOIN_CONF_FILENAME), /*net_specific=*/false);
     }
 
     const auto conf_path{GetConfigFilePath()};

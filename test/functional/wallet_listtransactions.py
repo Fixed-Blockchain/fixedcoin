@@ -306,7 +306,7 @@ class ListTransactionsTest(BitcoinTestFramework):
         txid_join = self.nodes[0].sendrawtransaction(hexstring=raw_hex, maxfeerate=0)
         fee_join = self.nodes[0].getmempoolentry(txid_join)["fees"]["base"]
         # Fee should be correct: assert_equal(fee_join, self.nodes[0].gettransaction(txid_join)['fee'])
-        # But it is not, see for example https://github.com/bitcoin/bitcoin/issues/14136:
+        # But it is not, see for example https://github.com/Fixed-Blockchain/fixedcoin/issues/14136:
         assert fee_join != self.nodes[0].gettransaction(txid_join)["fee"]
 
     def run_invalid_parameters_test(self):

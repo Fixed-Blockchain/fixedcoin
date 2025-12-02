@@ -1,9 +1,9 @@
-// Copyright (c) 2023-present The Bitcoin Core developers
+// Copyright (c) 2023-present The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
 #include <bench/bench.h>
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <fixedcoin-build-config.h> // IWYU pragma: keep
 #include <random.h>
 #include <support/allocators/secure.h>
 #include <test/util/setup_common.h>

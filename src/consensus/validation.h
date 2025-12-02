@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CONSENSUS_VALIDATION_H
-#define BITCOIN_CONSENSUS_VALIDATION_H
+#ifndef FIXEDCOIN_CONSENSUS_VALIDATION_H
+#define FIXEDCOIN_CONSENSUS_VALIDATION_H
 
 #include <string>
 #include <consensus/consensus.h>
@@ -165,4 +165,4 @@ inline int GetWitnessCommitmentIndex(const CBlock& block)
     return commitpos;
 }
 
-#endif // BITCOIN_CONSENSUS_VALIDATION_H
+#endif // FIXEDCOIN_CONSENSUS_VALIDATION_H

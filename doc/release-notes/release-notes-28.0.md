@@ -1,17 +1,17 @@
 Bitcoin Core version 28.0 is now available from:
 
-  <https://bitcoincore.org/bin/bitcoin-core-28.0/>
+  <https://fixedcoin.org/bin/bitcoin-core-28.0/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
@@ -68,7 +68,7 @@ JSON-RPC 2.0 Support
 
 The JSON-RPC server now recognizes JSON-RPC 2.0 requests and responds with
 strict adherence to the [specification](https://www.jsonrpc.org/specification).
-See [JSON-RPC-interface.md](https://github.com/bitcoin/bitcoin/blob/master/doc/JSON-RPC-interface.md#json-rpc-11-vs-20) for details. (#27101)
+See [JSON-RPC-interface.md](https://github.com/Fixed-Blockchain/fixedcoin/blob/master/doc/JSON-RPC-interface.md#json-rpc-11-vs-20) for details. (#27101)
 
 JSON-RPC clients may need to be updated to be compatible with the JSON-RPC server.
 Please open an issue on GitHub if any compatibility issues are found.

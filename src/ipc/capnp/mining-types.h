@@ -1,9 +1,9 @@
-// Copyright (c) 2024 The Bitcoin Core developers
+// Copyright (c) 2024 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_IPC_CAPNP_MINING_TYPES_H
-#define BITCOIN_IPC_CAPNP_MINING_TYPES_H
+#ifndef FIXEDCOIN_IPC_CAPNP_MINING_TYPES_H
+#define FIXEDCOIN_IPC_CAPNP_MINING_TYPES_H
 
 #include <interfaces/mining.h>
 #include <ipc/capnp/common.capnp.proxy-types.h>
@@ -23,4 +23,4 @@ void CustomReadMessage(InvokeContext& invoke_context,
                        BlockValidationState& dest);
 } // namespace mp
 
-#endif // BITCOIN_IPC_CAPNP_MINING_TYPES_H
+#endif // FIXEDCOIN_IPC_CAPNP_MINING_TYPES_H

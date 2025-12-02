@@ -1,9 +1,9 @@
-// Copyright (c) 2019-present The Bitcoin Core developers
+// Copyright (c) 2019-present The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_STRING_H
-#define BITCOIN_UTIL_STRING_H
+#ifndef FIXEDCOIN_UTIL_STRING_H
+#define FIXEDCOIN_UTIL_STRING_H
 
 #include <span.h>
 
@@ -250,4 +250,4 @@ template <typename T1, size_t PREFIX_LEN>
 }
 } // namespace util
 
-#endif // BITCOIN_UTIL_STRING_H
+#endif // FIXEDCOIN_UTIL_STRING_H

@@ -1,9 +1,9 @@
-// Copyright (c) The Bitcoin Core developers
+// Copyright (c) The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CLUSTER_LINEARIZE_H
-#define BITCOIN_CLUSTER_LINEARIZE_H
+#ifndef FIXEDCOIN_CLUSTER_LINEARIZE_H
+#define FIXEDCOIN_CLUSTER_LINEARIZE_H
 
 #include <algorithm>
 #include <numeric>
@@ -487,7 +487,7 @@ public:
      * a feerate not below GetChunk(0)'s, then moving IntersectPrefixes(subset) to the front of
      * (what remains of) the linearization is guaranteed not to make it worse at any point.
      *
-     * See https://delvingbitcoin.org/t/introduction-to-cluster-linearization/1032 for background.
+     * See https://delvingfixedcoin.org/t/introduction-to-cluster-linearization/1032 for background.
      */
     SetInfo<SetType> IntersectPrefixes(const SetInfo<SetType>& subset) const noexcept
     {
@@ -821,7 +821,7 @@ public:
                 // contradiction with the assumption that B is best. Thus, (T - B) must be empty,
                 // or T must be a subset of B.
                 //
-                // See https://delvingbitcoin.org/t/how-to-linearize-your-cluster/303 section 2.4.
+                // See https://delvingfixedcoin.org/t/how-to-linearize-your-cluster/303 section 2.4.
                 const auto init_inc = inc.transactions;
                 for (auto pos : pot.transactions - inc.transactions) {
                     // If the transaction's ancestors are a subset of pot, we can add it together
@@ -1338,4 +1338,4 @@ std::vector<ClusterIndex> MergeLinearizations(const DepGraph<SetType>& depgraph,
 
 } // namespace cluster_linearize
 
-#endif // BITCOIN_CLUSTER_LINEARIZE_H
+#endif // FIXEDCOIN_CLUSTER_LINEARIZE_H

@@ -1,17 +1,17 @@
 Bitcoin Core version 0.13.0 is now available from:
 
-  <https://bitcoin.org/bin/bitcoin-core-0.13.0/>
+  <https://fixedcoin.org/bin/bitcoin-core-0.13.0/>
 
 This is a new major version release, including new features, various bugfixes
 and performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/bitcoin/bitcoin/issues>
+  <https://github.com/Fixed-Blockchain/fixedcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 Compatibility
 ==============
@@ -22,7 +22,7 @@ updates will be released anymore. Without security updates, using a bitcoin
 wallet on a XP machine is irresponsible at least.
 
 In addition to that, with 0.12.x there have been varied reports of Bitcoin Core
-randomly crashing on Windows XP. It is [not clear](https://github.com/bitcoin/bitcoin/issues/7681#issuecomment-217439891)
+randomly crashing on Windows XP. It is [not clear](https://github.com/Fixed-Blockchain/fixedcoin/issues/7681#issuecomment-217439891)
 what the source of these crashes is, but it is likely that upstream
 libraries such as Qt are no longer being tested on XP.
 
@@ -158,7 +158,7 @@ There is no distinction between internal (change) and external keys.
 
 HD wallets are incompatible with older versions of Bitcoin Core.
 
-[Pull request](https://github.com/bitcoin/bitcoin/pull/8035/files), [BIP 32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)
+[Pull request](https://github.com/Fixed-Blockchain/fixedcoin/pull/8035/files), [BIP 32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)
 
 
 Segregated Witness
@@ -358,7 +358,7 @@ Low-level ZMQ changes
   listeners to detect lost notifications.
   The sequence number is always the last element in a multi-part ZMQ notification and
   therefore backward compatible. Each message type has its own counter.
-  PR [#7762](https://github.com/bitcoin/bitcoin/pull/7762).
+  PR [#7762](https://github.com/Fixed-Blockchain/fixedcoin/pull/7762).
 
 
 0.13.0 Change log
