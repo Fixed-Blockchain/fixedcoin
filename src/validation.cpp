@@ -4210,6 +4210,39 @@ arith_uint256 CalculateClaimedHeadersWork(std::span<const CBlockHeader> headers)
  *  in ConnectBlock().
  *  Note that -reindex-chainstate skips the validation that happens here!
  */
+
+/** Check that block version bits only signal configured deployments */
+static bool CheckVersionBitsValid(const CBlockHeader& block, 
+                                   BlockValidationState& state,
+                                   const Consensus::Params& consensusParams)
+{
+    // Only check BIP9-compliant blocks
+    if ((block.nVersion & VERSIONBITS_TOP_MASK) != VERSIONBITS_TOP_BITS) {
+        return true;  // Old-style versioning, skip check
+    }
+    
+    // Build mask of all configured deployment bits
+    uint32_t allowedBitsMask = 0;
+    for (int i = 0; i < static_cast<int>(Consensus::MAX_VERSION_BITS_DEPLOYMENTS); i++) {
+        Consensus::DeploymentPos pos = static_cast<Consensus::DeploymentPos>(i);
+        int bit = consensusParams.vDeployments[pos].bit;
+        allowedBitsMask |= (1U << bit);
+    }
+    
+    // Extract signaled bits (mask out top 3 bits)
+    uint32_t signaledBits = block.nVersion & 0x1FFFFFFF;  // Bits 0-28
+    
+    // Check if any disallowed bits are signaled
+    uint32_t disallowedBits = signaledBits & ~allowedBitsMask;
+    if (disallowedBits != 0) {
+        return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, 
+                            "bad-version-bits",
+                            strprintf("block signals unconfigured version bit(s): 0x%08x", disallowedBits));
+    }
+    
+    return true;
+}
+
 static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, BlockManager& blockman, const ChainstateManager& chainman, const CBlockIndex* pindexPrev) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
     AssertLockHeld(::cs_main);
@@ -4219,17 +4252,8 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
 
     // Fixedcoin: Block unused version bits after block 1000
     if (nHeight >= 1000) {
-        int32_t nVersion = block.nVersion;
-        // BIP9: Top 3 bits must be 001 (0x20000000)
-        if ((nVersion & 0xE0000000) != 0x20000000) {
-             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "bad-version-top-bits");
-        }
-        // Block unused bits (Everything except Bit 2 and Bit 28)
-        // Mask of defined bits: (1<<2) | (1<<28) = 0x10000004
-        // Mask of all version bits: 0x1FFFFFFF
-        // Unused mask: 0x1FFFFFFF & ~0x10000004 = 0x0FFFFFFB
-        if ((nVersion & 0x0FFFFFFB) != 0) {
-             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "bad-version-unused-bits");
+        if (!CheckVersionBitsValid(block, state, consensusParams)) {
+            return false;
         }
     }
 
