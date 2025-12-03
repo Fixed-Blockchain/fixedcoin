@@ -115,8 +115,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; 
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000002ac2fe15a1acb1e471f"};
-        consensus.defaultAssumeValid = uint256{"00000000000000004be7d5f75ac5e4fa7dd1f484dcd7787a59b0e1c0b747ab1d"}; 
+        consensus.nMinimumChainWork = uint256{"00000000000000000000000000000000000000000000c590abaf503466e7293"};
+        consensus.defaultAssumeValid = uint256{"0000000000000000018c2807d70584ee59b802566be062f21eed3737ec99f13d"}; // 931
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -165,6 +165,7 @@ public:
                 { 109, uint256{"0000000000000001defdc027d01fd3875f46766c716545494e42ec567da31657"}},
                 { 572, uint256{"00000000000000004be7d5f75ac5e4fa7dd1f484dcd7787a59b0e1c0b747ab1d"}},
                 { 609, uint256{"0000000000000000145f2d8bd8a74c547eb4a1079c972f39fac1eb6395db2971"}},
+                { 931, uint256{"0000000000000000018c2807d70584ee59b802566be062f21eed3737ec99f13d"}},
 
             }
         };
