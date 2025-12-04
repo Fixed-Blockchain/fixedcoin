@@ -1,30 +1,29 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include <config/fixedcoin-config.h>
-#endif
+#include <fixedcoin-build-config.h> // IWYU pragma: keep
 
 #include <chainparams.h>
 #include <clientversion.h>
+#include <common/args.h>
 #include <common/init.h>
-#include <common/url.h>
+#include <common/system.h>
 #include <compat/compat.h>
 #include <init.h>
 #include <interfaces/chain.h>
 #include <interfaces/init.h>
+#include <kernel/context.h>
 #include <node/context.h>
 #include <node/interface_ui.h>
+#include <node/warnings.h>
 #include <noui.h>
-#include <shutdown.h>
 #include <util/check.h>
 #include <util/exception.h>
+#include <util/signalinterrupt.h>
 #include <util/strencodings.h>
-#include <util/syscall_sandbox.h>
 #include <util/syserror.h>
-#include <util/system.h>
 #include <util/threadnames.h>
 #include <util/tokenpipe.h>
 #include <util/translation.h>
@@ -35,8 +34,7 @@
 
 using node::NodeContext;
 
-const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
-UrlDecodeFn* const URL_DECODE = urlDecode;
+const TranslateFn G_TRANSLATION_FUN{nullptr};
 
 #if HAVE_DECL_FORK
 
@@ -111,28 +109,45 @@ int fork_daemon(bool nochdir, bool noclose, TokenPipeEnd& endpoint)
 
 #endif
 
-static bool AppInit(NodeContext& node, int argc, char* argv[])
+static bool ParseArgs(NodeContext& node, int argc, char* argv[])
 {
-    bool fRet = false;
-
-    util::ThreadSetInternalName("init");
-
+    ArgsManager& args{*Assert(node.args)};
     // If Qt is used, parameters/fixedcoin.conf are parsed in qt/fixedcoin.cpp's main()
-    ArgsManager& args = *Assert(node.args);
-    SetupServerArgs(args);
+    SetupServerArgs(args, node.init->canListenIpc());
     std::string error;
     if (!args.ParseParameters(argc, argv, error)) {
         return InitError(Untranslated(strprintf("Error parsing command line arguments: %s", error)));
     }
 
-    // Process help and version before taking care about datadir
-    if (HelpRequested(args) || args.IsArgSet("-version")) {
-        std::string strUsage = PACKAGE_NAME " version " + FormatFullVersion() + "\n";
+    if (auto error = common::InitConfig(args)) {
+        return InitError(error->message, error->details);
+    }
 
-        if (args.IsArgSet("-version")) {
+    // Error out when loose non-argument tokens are encountered on command line
+    for (int i = 1; i < argc; i++) {
+        if (!IsSwitchChar(argv[i][0])) {
+            return InitError(Untranslated(strprintf("Command line contains unexpected token '%s', see fixedcoind -h for a list of options.", argv[i])));
+        }
+    }
+    return true;
+}
+
+static bool ProcessInitCommands(ArgsManager& args)
+{
+    // Process help and version before taking care about datadir
+    if (HelpRequested(args) || args.GetBoolArg("-version", false)) {
+        std::string strUsage = CLIENT_NAME " daemon version " + FormatFullVersion() + "\n";
+
+        if (args.GetBoolArg("-version", false)) {
             strUsage += FormatParagraph(LicenseInfo());
         } else {
-            strUsage += "\nUsage:  fixedcoind [options]                     Start " PACKAGE_NAME "\n"
+            strUsage += "\n"
+                "The " CLIENT_NAME " daemon (fixedcoind) is a headless program that connects to the FixedCoin network to validate and relay transactions and blocks, as well as relaying addresses.\n\n"
+                "It provides the backbone of the FixedCoin network and its RPC, REST and ZMQ services can provide various transaction, block and address-related services.\n\n"
+                "There is an optional wallet component which provides transaction services.\n\n"
+                "It can be used in a headless environment or as part of a server setup.\n"
+                "\n"
+                "Usage: fixedcoind [options]\n"
                 "\n";
             strUsage += args.GetHelpMessage();
         }
@@ -140,6 +155,14 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
         tfm::format(std::cout, "%s", strUsage);
         return true;
     }
+
+    return false;
+}
+
+static bool AppInit(NodeContext& node)
+{
+    bool fRet = false;
+    ArgsManager& args = *Assert(node.args);
 
 #if HAVE_DECL_FORK
     // Communication with parent after daemonizing. This is used for signalling in the following ways:
@@ -152,23 +175,12 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
     std::any context{&node};
     try
     {
-        if (auto error = common::InitConfig(args)) {
-            return InitError(error->message, error->details);
-        }
-
-        // Error out when loose non-argument tokens are encountered on command line
-        for (int i = 1; i < argc; i++) {
-            if (!IsSwitchChar(argv[i][0])) {
-                return InitError(Untranslated(strprintf("Command line contains unexpected token '%s', see fixedcoind -h for a list of options.", argv[i])));
-            }
-        }
-
         // -server defaults to true for fixedcoind but not for the GUI so do this here
         args.SoftSetBoolArg("-server", true);
         // Set this early so that parameter interactions go to console
         InitLogging(args);
         InitParameterInteraction(args);
-        if (!AppInitBasicSetup(args)) {
+        if (!AppInitBasicSetup(args, node.exit_status)) {
             // InitError will have been called with detailed error, which ends up on console
             return false;
         }
@@ -177,7 +189,10 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
             return false;
         }
 
+        node.warnings = std::make_unique<node::Warnings>();
+
         node.kernel = std::make_unique<kernel::Context>();
+        node.ecc_context = std::make_unique<ECC_Context>();
         if (!AppInitSanityChecks(*node.kernel))
         {
             // InitError will have been called with detailed error, which ends up on console
@@ -186,7 +201,7 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
 
         if (args.GetBoolArg("-daemon", DEFAULT_DAEMON) || args.GetBoolArg("-daemonwait", DEFAULT_DAEMONWAIT)) {
 #if HAVE_DECL_FORK
-            tfm::format(std::cout, PACKAGE_NAME " starting\n");
+            tfm::format(std::cout, CLIENT_NAME " starting\n");
 
             // Daemonize
             switch (fork_daemon(1, 0, daemon_ep)) { // don't chdir (1), do close FDs (0)
@@ -213,10 +228,10 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
             return InitError(Untranslated("-daemon is not supported on this operating system"));
 #endif // HAVE_DECL_FORK
         }
-        // Lock data directory after daemonization
-        if (!AppInitLockDataDirectory())
+        // Lock critical directories after daemonization
+        if (!AppInitLockDirectories())
         {
-            // If locking the data directory failed, exit immediately
+            // If locking a directory failed, exit immediately
             return false;
         }
         fRet = AppInitInterfaces(node) && AppInitMain(node);
@@ -234,20 +249,13 @@ static bool AppInit(NodeContext& node, int argc, char* argv[])
         daemon_ep.Close();
     }
 #endif
-    SetSyscallSandboxPolicy(SyscallSandboxPolicy::SHUTOFF);
-    if (fRet) {
-        WaitForShutdown();
-    }
-    Interrupt(node);
-    Shutdown(node);
-
     return fRet;
 }
 
 MAIN_FUNCTION
 {
 #ifdef WIN32
-    util::WinCmdLineArgs winArgs;
+    common::WinCmdLineArgs winArgs;
     std::tie(argc, argv) = winArgs.get();
 #endif
 
@@ -263,5 +271,20 @@ MAIN_FUNCTION
     // Connect fixedcoind signal handlers
     noui_connect();
 
-    return (AppInit(node, argc, argv) ? EXIT_SUCCESS : EXIT_FAILURE);
+    util::ThreadSetInternalName("init");
+
+    // Interpret command line arguments
+    ArgsManager& args = *Assert(node.args);
+    if (!ParseArgs(node, argc, argv)) return EXIT_FAILURE;
+    // Process early info return commands such as -help or -version
+    if (ProcessInitCommands(args)) return EXIT_SUCCESS;
+
+    // Start application
+    if (!AppInit(node) || !Assert(node.shutdown_signal)->wait()) {
+        node.exit_status = EXIT_FAILURE;
+    }
+    Interrupt(node);
+    Shutdown(node);
+
+    return node.exit_status;
 }

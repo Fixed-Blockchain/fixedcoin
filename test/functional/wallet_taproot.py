@@ -10,7 +10,7 @@ import uuid
 from decimal import Decimal
 from test_framework.address import output_key_to_p2tr
 from test_framework.key import H_POINT
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 from test_framework.descriptors import descsum_create
 from test_framework.script import (
@@ -184,7 +184,7 @@ def compute_taproot_address(pubkey, scripts):
 def compute_raw_taproot_address(pubkey):
     return encode_segwit_address("bcrt", 1, pubkey)
 
-class WalletTaprootTest(FixedCoinTestFramework):
+class WalletTaprootTest(BitcoinTestFramework):
     """Test generation and spending of P2TR address outputs."""
 
     def add_options(self, parser):
@@ -378,7 +378,7 @@ class WalletTaprootTest(FixedCoinTestFramework):
             assert psbt_online.gettransaction(txid)['confirmations'] > 0
 
         # Cleanup
-        psbt = psbt_online.sendall(recipients=[self.boring.getnewaddress()], options={"psbt": True})["psbt"]
+        psbt = psbt_online.sendall(recipients=[self.boring.getnewaddress()], psbt=True)["psbt"]
         res = psbt_offline.walletprocesspsbt(psbt=psbt, finalize=False)
         rawtx = self.nodes[0].finalizepsbt(res['psbt'])['hex']
         txid = self.nodes[0].sendrawtransaction(rawtx)
@@ -507,4 +507,4 @@ class WalletTaprootTest(FixedCoinTestFramework):
         )
 
 if __name__ == '__main__':
-    WalletTaprootTest().main()
+    WalletTaprootTest(__file__).main()

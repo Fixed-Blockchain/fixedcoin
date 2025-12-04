@@ -10,7 +10,7 @@ from test_framework.messages import (
     msg_getdata,
 )
 from test_framework.p2p import P2PInterface
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 
 class P2PStoreBlock(P2PInterface):
@@ -23,7 +23,7 @@ class P2PStoreBlock(P2PInterface):
         self.blocks[message.block.sha256] += 1
 
 
-class GetdataTest(FixedCoinTestFramework):
+class GetdataTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 
@@ -46,4 +46,4 @@ class GetdataTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    GetdataTest().main()
+    GetdataTest(__file__).main()

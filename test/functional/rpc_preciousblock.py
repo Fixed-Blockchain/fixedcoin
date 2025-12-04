@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the preciousblock RPC."""
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
 )
@@ -31,7 +31,7 @@ def node_sync_via_rpc(nodes):
                 continue
             unidirectional_node_sync_via_rpc(node_src, node_dest)
 
-class PreciousTest(FixedCoinTestFramework):
+class PreciousTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3
@@ -109,4 +109,4 @@ class PreciousTest(FixedCoinTestFramework):
         assert_equal(self.nodes[2].getbestblockhash(), hashH)
 
 if __name__ == '__main__':
-    PreciousTest().main()
+    PreciousTest(__file__).main()

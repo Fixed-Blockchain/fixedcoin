@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -34,7 +34,7 @@ QString FixedCoinUnits::longName(Unit unit)
     case Unit::FIX: return QString("FIX");
     case Unit::mFIX: return QString("mFIX");
     case Unit::uFIX: return QString::fromUtf8("µFIX (bits)");
-    case Unit::SAT: return QString("Fixoshi");
+    case Unit::SAT: return QString("Satoshi (sat)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -56,7 +56,7 @@ QString FixedCoinUnits::description(Unit unit)
     case Unit::FIX: return QString("FixedCoins");
     case Unit::mFIX: return QString("Milli-FixedCoins (1 / 1" THIN_SP_UTF8 "000)");
     case Unit::uFIX: return QString("Micro-FixedCoins (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case Unit::SAT: return QString("Fixoshi (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::SAT: return QString("Satoshi (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -166,7 +166,7 @@ bool FixedCoinUnits::parse(Unit unit, const QString& value, CAmount* val_out)
     {
         return false; // More than one dot
     }
-    QString whole = parts[0];
+    const QString& whole = parts[0];
     QString decimals;
 
     if(parts.size() > 1)

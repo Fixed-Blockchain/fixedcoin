@@ -1,13 +1,13 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: FixedCoin
+Upstream-Name: Bitcoin
 Upstream-Contact: Satoshi Nakamoto <satoshin@gmx.com>
- irc://#fixedcoin-core-dev@libera.chat
-Source: https://github.com/fixedcoin/fixedcoin
+ irc://#bitcoin-core-dev@libera.chat
+Source: https://github.com/Fixed-Blockchain/fixedcoin
 
 Files: *
-Copyright: 2009-2023, Bitcoin Core Developers
+Copyright: 2009-2025, Bitcoin Core Developers
 License: Expat
-Comment: The FixedCoin Core Developers encompasses all contributors to the
+Comment: The Bitcoin Core Developers encompasses all contributors to the
          project, listed in the release notes or the git log.
 
 Files: debian/*
@@ -67,12 +67,12 @@ Copyright: Stephen Hutchings, Jonas Schnelli
 License: Expat
 Comment: Modifications of Stephen Hutchings' Typicons
 
-Files: src/qt/res/icons/fixedcoin.*
-       share/pixmaps/fixedcoin*
-       src/qt/res/src/fixedcoin.svg
+Files: src/qt/res/icons/bitcoin.*
+       share/pixmaps/bitcoin*
+       src/qt/res/src/bitcoin.svg
 Copyright: Bitboy, Jonas Schnelli
 License: public-domain
-Comment: Site: https://fixedcointalk.org/?topic=1756.0
+Comment: Site: https://bitcointalk.org/?topic=1756.0
 
 Files: src/qt/res/icons/proxy.png
        src/qt/res/src/proxy.svg

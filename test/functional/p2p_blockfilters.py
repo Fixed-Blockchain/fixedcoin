@@ -19,7 +19,7 @@ from test_framework.messages import (
     uint256_from_str,
 )
 from test_framework.p2p import P2PInterface
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
 )
@@ -40,7 +40,7 @@ class FiltersClient(P2PInterface):
         self.cfilters.append(message)
 
 
-class CompactFiltersTest(FixedCoinTestFramework):
+class CompactFiltersTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.rpc_timeout = 480
@@ -211,38 +211,56 @@ class CompactFiltersTest(FixedCoinTestFramework):
         ]
         for request in requests:
             peer_1 = self.nodes[1].add_p2p_connection(P2PInterface())
-            peer_1.send_message(request)
-            peer_1.wait_for_disconnect()
+            with self.nodes[1].assert_debug_log(expected_msgs=["requested unsupported block filter type"]):
+                peer_1.send_message(request)
+                peer_1.wait_for_disconnect()
 
         self.log.info("Check that invalid requests result in disconnection.")
         requests = [
             # Requesting too many filters results in disconnection.
-            msg_getcfilters(
-                filter_type=FILTER_TYPE_BASIC,
-                start_height=0,
-                stop_hash=int(main_block_hash, 16),
+            (
+                msg_getcfilters(
+                    filter_type=FILTER_TYPE_BASIC,
+                    start_height=0,
+                    stop_hash=int(main_block_hash, 16),
+                ), "requested too many cfilters/cfheaders"
             ),
             # Requesting too many filter headers results in disconnection.
-            msg_getcfheaders(
-                filter_type=FILTER_TYPE_BASIC,
-                start_height=0,
-                stop_hash=int(tip_hash, 16),
+            (
+                msg_getcfheaders(
+                    filter_type=FILTER_TYPE_BASIC,
+                    start_height=0,
+                    stop_hash=int(tip_hash, 16),
+                ), "requested too many cfilters/cfheaders"
             ),
             # Requesting unknown filter type results in disconnection.
-            msg_getcfcheckpt(
-                filter_type=255,
-                stop_hash=int(main_block_hash, 16),
+            (
+                msg_getcfcheckpt(
+                    filter_type=255,
+                    stop_hash=int(main_block_hash, 16),
+                ), "requested unsupported block filter type"
             ),
             # Requesting unknown hash results in disconnection.
-            msg_getcfcheckpt(
-                filter_type=FILTER_TYPE_BASIC,
-                stop_hash=123456789,
+            (
+                msg_getcfcheckpt(
+                    filter_type=FILTER_TYPE_BASIC,
+                    stop_hash=123456789,
+                ), "requested invalid block hash"
+            ),
+            (
+                # Request with (start block height > stop block height) results in disconnection.
+                msg_getcfheaders(
+                    filter_type=FILTER_TYPE_BASIC,
+                    start_height=1000,
+                    stop_hash=int(self.nodes[0].getblockhash(999), 16),
+                ), "sent invalid getcfilters/getcfheaders with start height 1000 and stop height 999"
             ),
         ]
-        for request in requests:
+        for request, expected_log_msg in requests:
             peer_0 = self.nodes[0].add_p2p_connection(P2PInterface())
-            peer_0.send_message(request)
-            peer_0.wait_for_disconnect()
+            with self.nodes[0].assert_debug_log(expected_msgs=[expected_log_msg]):
+                peer_0.send_message(request)
+                peer_0.wait_for_disconnect()
 
         self.log.info("Test -peerblockfilters without -blockfilterindex raises an error")
         self.stop_node(0)
@@ -255,13 +273,6 @@ class CompactFiltersTest(FixedCoinTestFramework):
         msg = "Error: Unknown -blockfilterindex value abc."
         self.nodes[0].assert_start_raises_init_error(expected_msg=msg)
 
-        self.log.info("Test -blockfilterindex with -reindex-chainstate raises an error")
-        self.nodes[0].assert_start_raises_init_error(
-            expected_msg='Error: -reindex-chainstate option is not compatible with -blockfilterindex. '
-            'Please temporarily disable blockfilterindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes.',
-            extra_args=['-blockfilterindex', '-reindex-chainstate'],
-        )
-
 def compute_last_header(prev_header, hashes):
     """Compute the last filter header from a starting header and a sequence of filter hashes."""
     header = ser_uint256(prev_header)
@@ -271,4 +282,4 @@ def compute_last_header(prev_header, hashes):
 
 
 if __name__ == '__main__':
-    CompactFiltersTest().main()
+    CompactFiltersTest(__file__).main()

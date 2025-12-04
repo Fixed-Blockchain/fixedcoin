@@ -17,7 +17,7 @@ import os.path
 
 settings = {}
 
-class FixedCoinRPC:
+class BitcoinRPC:
     def __init__(self, host, port, username, password):
         authpair = "%s:%s" % (username, password)
         authpair = authpair.encode('utf-8')
@@ -59,7 +59,7 @@ class FixedCoinRPC:
         return 'error' in resp_obj and resp_obj['error'] is not None
 
 def get_block_hashes(settings, max_blocks_per_call=10000):
-    rpc = FixedCoinRPC(settings['host'], settings['port'],
+    rpc = BitcoinRPC(settings['host'], settings['port'],
              settings['rpcuser'], settings['rpcpassword'])
 
     height = settings['min_height']
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     if 'host' not in settings:
         settings['host'] = '127.0.0.1'
     if 'port' not in settings:
-        settings['port'] = 24767
+        settings['port'] = 8332
     if 'min_height' not in settings:
         settings['min_height'] = 0
     if 'max_height' not in settings:

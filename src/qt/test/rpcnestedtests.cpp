@@ -1,15 +1,15 @@
-// Copyright (c) 2016-2021 The Bitcoin Core developers
+// Copyright (c) 2016-2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <qt/test/rpcnestedtests.h>
 
+#include <common/system.h>
 #include <interfaces/node.h>
-#include <rpc/server.h>
 #include <qt/rpcconsole.h>
+#include <rpc/server.h>
 #include <test/util/setup_common.h>
 #include <univalue.h>
-#include <util/system.h>
 
 #include <QTest>
 
@@ -127,6 +127,11 @@ void RPCNestedTests::rpcNestedTests()
     RPCConsole::RPCExecuteCommandLine(m_node, result, "rpcNestedTest(   abc   ,   cba )");
     QVERIFY(result == "[\"abc\",\"cba\"]");
 
+// Handle deprecated macro, can be removed once minimum Qt is at least 6.3.0.
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
+#undef QVERIFY_EXCEPTION_THROWN
+#define QVERIFY_EXCEPTION_THROWN(expression, exceptiontype) QVERIFY_THROWS_EXCEPTION(exceptiontype, expression)
+#endif
     QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo() .\n"), std::runtime_error); //invalid syntax
     QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo() getblockchaininfo()"), std::runtime_error); //invalid syntax
     RPCConsole::RPCExecuteCommandLine(m_node, result, "getblockchaininfo("); //tolerate non closing brackets if we have no arguments

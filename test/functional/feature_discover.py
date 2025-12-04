@@ -6,7 +6,7 @@
 
 import socket
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
 
@@ -26,7 +26,7 @@ def is_valid_ipv6_address(address):
     return True
 
 
-class DiscoverTest(FixedCoinTestFramework):
+class DiscoverTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.bind_to_localhost_only = False
@@ -72,4 +72,4 @@ class DiscoverTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    DiscoverTest().main()
+    DiscoverTest(__file__).main()

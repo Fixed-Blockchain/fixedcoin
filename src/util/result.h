@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
@@ -31,18 +31,33 @@ struct Error {
 //! `std::optional<T>` can be updated to return `util::Result<T>` and return
 //! error strings usually just replacing `return std::nullopt;` with `return
 //! util::Error{error_string};`.
-template <class T>
+template <class M>
 class Result
 {
 private:
+    using T = std::conditional_t<std::is_same_v<M, void>, std::monostate, M>;
+
     std::variant<bilingual_str, T> m_variant;
+
+    //! Disallow copy constructor, require Result to be moved for efficiency.
+    Result(const Result&) = delete;
+
+    //! Disallow operator= to avoid confusion in the future when the Result
+    //! class gains support for richer error reporting, and callers should have
+    //! ability to set a new result value without clearing existing error
+    //! messages.
+    Result& operator=(const Result&) = delete;
+    Result& operator=(Result&&) = delete;
 
     template <typename FT>
     friend bilingual_str ErrorString(const Result<FT>& result);
 
 public:
+    Result() : m_variant{std::in_place_index_t<1>{}, std::monostate{}} {}  // constructor for void
     Result(T obj) : m_variant{std::in_place_index_t<1>{}, std::move(obj)} {}
     Result(Error error) : m_variant{std::in_place_index_t<0>{}, std::move(error.message)} {}
+    Result(Result&&) = default;
+    ~Result() = default;
 
     //! std::optional methods, so functions returning optional<T> can change to
     //! return Result<T> with minimal changes to existing code, and vice versa.

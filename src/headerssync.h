@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -100,7 +100,7 @@ struct CompressedHeader {
 
 class HeadersSyncState {
 public:
-    ~HeadersSyncState() {}
+    ~HeadersSyncState() = default;
 
     enum class State {
         /** PRESYNC means the peer has not yet demonstrated their chain has

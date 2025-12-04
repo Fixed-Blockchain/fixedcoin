@@ -14,8 +14,8 @@ where output type is one of the following:
 This test verifies that mixing different output types is avoided unless
 absolutely necessary. Both wallets start with zero funds. Alice mines
 enough blocks to have spendable coinbase outputs. Alice sends three
-random value payments which sum to 10FIX for each output type to Bob,
-for a total of 40FIX in Bob's wallet.
+random value payments which sum to 10BTC for each output type to Bob,
+for a total of 40BTC in Bob's wallet.
 
 Bob then sends random valued payments back to Alice, some of which need
 unconfirmed change, and we verify that none of these payments contain mixed
@@ -28,7 +28,7 @@ but still know when to expect mixing due to the wallet being close to empty.
 """
 
 import random
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.blocktools import COINBASE_MATURITY
 
 ADDRESS_TYPES = [
@@ -105,22 +105,22 @@ def generate_payment_values(n, m):
     return [a - b for a, b in zip(dividers + [m], [0] + dividers)]
 
 
-class AddressInputTypeGrouping(FixedCoinTestFramework):
+class AddressInputTypeGrouping(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser, legacy=False)
 
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2
+        # whitelist peers to speed up tx relay / mempool sync
+        self.noban_tx_relay = True
         self.extra_args = [
             [
                 "-addresstype=bech32",
-                "-whitelist=noban@127.0.0.1",
                 "-txindex",
             ],
             [
                 "-addresstype=p2sh-segwit",
-                "-whitelist=noban@127.0.0.1",
                 "-txindex",
             ],
         ]
@@ -131,7 +131,7 @@ class AddressInputTypeGrouping(FixedCoinTestFramework):
 
     def make_payment(self, A, B, v, addr_type):
         fee_rate = random.randint(1, 20)
-        self.log.debug(f"Making payment of {v} FIX at fee_rate {fee_rate}")
+        self.log.debug(f"Making payment of {v} BTC at fee_rate {fee_rate}")
         tx = B.sendtoaddress(
             address=A.getnewaddress(address_type=addr_type),
             amount=v,
@@ -147,19 +147,19 @@ class AddressInputTypeGrouping(FixedCoinTestFramework):
 
         self.log.info("Creating mixed UTXOs in B's wallet")
         for v in generate_payment_values(3, 10):
-            self.log.debug(f"Making payment of {v} FIX to legacy")
+            self.log.debug(f"Making payment of {v} BTC to legacy")
             A.sendtoaddress(B.getnewaddress(address_type="legacy"), v)
 
         for v in generate_payment_values(3, 10):
-            self.log.debug(f"Making payment of {v} FIX to p2sh")
+            self.log.debug(f"Making payment of {v} BTC to p2sh")
             A.sendtoaddress(B.getnewaddress(address_type="p2sh-segwit"), v)
 
         for v in generate_payment_values(3, 10):
-            self.log.debug(f"Making payment of {v} FIX to bech32")
+            self.log.debug(f"Making payment of {v} BTC to bech32")
             A.sendtoaddress(B.getnewaddress(address_type="bech32"), v)
 
         for v in generate_payment_values(3, 10):
-            self.log.debug(f"Making payment of {v} FIX to bech32m")
+            self.log.debug(f"Making payment of {v} BTC to bech32m")
             A.sendtoaddress(B.getnewaddress(address_type="bech32m"), v)
 
         self.generate(A, 1)
@@ -177,4 +177,4 @@ class AddressInputTypeGrouping(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    AddressInputTypeGrouping().main()
+    AddressInputTypeGrouping(__file__).main()

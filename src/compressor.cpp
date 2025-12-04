@@ -1,13 +1,12 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
-// Copyright (c) 2025 The FixedCoin Core developers
+// Copyright (c) 2009-2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <compressor.h>
 
 #include <pubkey.h>
-#include <script/standard.h>
+#include <script/script.h>
 
 /*
  * These check for scripts for which a special case with a shorter encoding is defined.

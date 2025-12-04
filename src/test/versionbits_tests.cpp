@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2022 The Bitcoin Core developers
+// Copyright (c) 2014-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,6 +7,7 @@
 #include <consensus/params.h>
 #include <test/util/random.h>
 #include <test/util/setup_common.h>
+#include <util/chaintype.h>
 #include <versionbits.h>
 
 #include <boost/test/unit_test.hpp>
@@ -66,6 +67,7 @@ public:
 
 class VersionBitsTester
 {
+    FastRandomContext& m_rng;
     // A fake blockchain
     std::vector<CBlockIndex*> vpblock;
 
@@ -84,6 +86,8 @@ class VersionBitsTester
     int num{1000};
 
 public:
+    VersionBitsTester(FastRandomContext& rng) : m_rng{rng} {}
+
     VersionBitsTester& Reset() {
         // Have each group of tests be counted by the 1000s part, starting at 1000
         num = num - (num % 1000) + 1000;
@@ -127,7 +131,7 @@ public:
     {
         const CBlockIndex* tip = Tip();
         for (int i = 0; i < CHECKERS; i++) {
-            if (InsecureRandBits(i) == 0) {
+            if (m_rng.randbits(i) == 0) {
                 BOOST_CHECK_MESSAGE(checker[i].GetStateSinceHeightFor(tip) == height, strprintf("Test %i for StateSinceHeight", num));
                 BOOST_CHECK_MESSAGE(checker_delayed[i].GetStateSinceHeightFor(tip) == height_delayed, strprintf("Test %i for StateSinceHeight (delayed)", num));
                 BOOST_CHECK_MESSAGE(checker_always[i].GetStateSinceHeightFor(tip) == 0, strprintf("Test %i for StateSinceHeight (always active)", num));
@@ -153,7 +157,7 @@ public:
 
         const CBlockIndex* pindex = Tip();
         for (int i = 0; i < CHECKERS; i++) {
-            if (InsecureRandBits(i) == 0) {
+            if (m_rng.randbits(i) == 0) {
                 ThresholdState got = checker[i].GetStateFor(pindex);
                 ThresholdState got_delayed = checker_delayed[i].GetStateFor(pindex);
                 ThresholdState got_always = checker_always[i].GetStateFor(pindex);
@@ -189,7 +193,7 @@ BOOST_AUTO_TEST_CASE(versionbits_test)
 {
     for (int i = 0; i < 64; i++) {
         // DEFINED -> STARTED after timeout reached -> FAILED
-        VersionBitsTester().TestDefined().TestStateSinceHeight(0)
+        VersionBitsTester(m_rng).TestDefined().TestStateSinceHeight(0)
                            .Mine(1, TestTime(1), 0x100).TestDefined().TestStateSinceHeight(0)
                            .Mine(11, TestTime(11), 0x100).TestDefined().TestStateSinceHeight(0)
                            .Mine(989, TestTime(989), 0x100).TestDefined().TestStateSinceHeight(0)
@@ -255,8 +259,9 @@ BOOST_AUTO_TEST_CASE(versionbits_test)
     }
 }
 
+struct BlockVersionTest : BasicTestingSetup {
 /** Check that ComputeBlockVersion will set the appropriate bit correctly */
-static void check_computeblockversion(VersionBitsCache& versionbitscache, const Consensus::Params& params, Consensus::DeploymentPos dep)
+void check_computeblockversion(VersionBitsCache& versionbitscache, const Consensus::Params& params, Consensus::DeploymentPos dep)
 {
     // Clear the cache every time
     versionbitscache.Clear();
@@ -294,7 +299,7 @@ static void check_computeblockversion(VersionBitsCache& versionbitscache, const 
     // In the first chain, test that the bit is set by CBV until it has failed.
     // In the second chain, test the bit is set by CBV while STARTED and
     // LOCKED-IN, and then no longer set while ACTIVE.
-    VersionBitsTester firstChain, secondChain;
+    VersionBitsTester firstChain{m_rng}, secondChain{m_rng};
 
     int64_t nTime = nStartTime;
 
@@ -411,19 +416,20 @@ static void check_computeblockversion(VersionBitsCache& versionbitscache, const 
     // Check that we don't signal after activation
     BOOST_CHECK_EQUAL(versionbitscache.ComputeBlockVersion(lastBlock, params) & (1 << bit), 0);
 }
+}; // struct BlockVersionTest
 
-BOOST_AUTO_TEST_CASE(versionbits_computeblockversion)
+BOOST_FIXTURE_TEST_CASE(versionbits_computeblockversion, BlockVersionTest)
 {
     VersionBitsCache vbcache;
 
     // check that any deployment on any chain can conceivably reach both
     // ACTIVE and FAILED states in roughly the way we expect
-    for (const auto& chain_name : {CBaseChainParams::MAIN, CBaseChainParams::TESTNET, CBaseChainParams::SIGNET, CBaseChainParams::REGTEST}) {
-        const auto chainParams = CreateChainParams(*m_node.args, chain_name);
+    for (const auto& chain_type: {ChainType::MAIN, ChainType::TESTNET, ChainType::TESTNET4, ChainType::SIGNET, ChainType::REGTEST}) {
+        const auto chainParams = CreateChainParams(*m_node.args, chain_type);
         uint32_t chain_all_vbits{0};
         for (int i = 0; i < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; ++i) {
             const auto dep = static_cast<Consensus::DeploymentPos>(i);
-            // Check that no bits are re-used (within the same chain). This is
+            // Check that no bits are reused (within the same chain). This is
             // disallowed because the transition to FAILED (on timeout) does
             // not take precedence over STARTED/LOCKED_IN. So all softforks on
             // the same bit might overlap, even when non-overlapping start-end
@@ -440,7 +446,7 @@ BOOST_AUTO_TEST_CASE(versionbits_computeblockversion)
         // deployment that's not always/never active
         ArgsManager args;
         args.ForceSetArg("-vbparams", "testdummy:1199145601:1230767999"); // January 1, 2008 - December 31, 2008
-        const auto chainParams = CreateChainParams(args, CBaseChainParams::REGTEST);
+        const auto chainParams = CreateChainParams(args, ChainType::REGTEST);
         check_computeblockversion(vbcache, chainParams->GetConsensus(), Consensus::DEPLOYMENT_TESTDUMMY);
     }
 
@@ -450,7 +456,7 @@ BOOST_AUTO_TEST_CASE(versionbits_computeblockversion)
         // live deployment
         ArgsManager args;
         args.ForceSetArg("-vbparams", "testdummy:1199145601:1230767999:403200"); // January 1, 2008 - December 31, 2008, min act height 403200
-        const auto chainParams = CreateChainParams(args, CBaseChainParams::REGTEST);
+        const auto chainParams = CreateChainParams(args, ChainType::REGTEST);
         check_computeblockversion(vbcache, chainParams->GetConsensus(), Consensus::DEPLOYMENT_TESTDUMMY);
     }
 }

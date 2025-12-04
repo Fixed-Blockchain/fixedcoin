@@ -1,13 +1,11 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef FIXEDCOIN_QT_FIXEDCOIN_H
 #define FIXEDCOIN_QT_FIXEDCOIN_H
 
-#if defined(HAVE_CONFIG_H)
-#include <config/fixedcoin-config.h>
-#endif
+#include <fixedcoin-build-config.h> // IWYU pragma: keep
 
 #include <interfaces/node.h>
 #include <qt/initexecutor.h>
@@ -62,9 +60,6 @@ public:
     /// Request core initialization
     void requestInitialize();
 
-    /// Get process return value
-    int getReturnValue() const { return returnValue; }
-
     /// Get window identifier of QMainWindow (FixedCoinGUI)
     WId getMainWinId() const;
 
@@ -104,7 +99,6 @@ private:
     PaymentServer* paymentServer{nullptr};
     WalletController* m_wallet_controller{nullptr};
 #endif
-    int returnValue{0};
     const PlatformStyle* platformStyle{nullptr};
     std::unique_ptr<QWidget> shutdownWindow;
     SplashScreen* m_splash = nullptr;

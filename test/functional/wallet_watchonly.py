@@ -6,14 +6,14 @@
 """
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error
 )
 
 
-class CreateWalletWatchonlyTest(FixedCoinTestFramework):
+class CreateWalletWatchonlyTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -39,10 +39,10 @@ class CreateWalletWatchonlyTest(FixedCoinTestFramework):
         wo_wallet.importpubkey(pubkey=def_wallet.getaddressinfo(wo_addr)['pubkey'])
         wo_wallet.importpubkey(pubkey=def_wallet.getaddressinfo(wo_change)['pubkey'])
 
-        # generate some fix for testing
+        # generate some btc for testing
         self.generatetoaddress(node, COINBASE_MATURITY + 1, a1)
 
-        # send 1 fix to our watch-only address
+        # send 1 btc to our watch-only address
         txid = def_wallet.sendtoaddress(wo_addr, 1)
         self.generate(self.nodes[0], 1)
 
@@ -98,17 +98,17 @@ class CreateWalletWatchonlyTest(FixedCoinTestFramework):
         options = {'changeAddress': wo_change}
         no_wo_options = {'changeAddress': wo_change, 'includeWatching': False}
 
-        result = wo_wallet.walletcreatefundedpsbt(inputs=inputs, outputs=outputs, options=options)
+        result = wo_wallet.walletcreatefundedpsbt(inputs=inputs, outputs=outputs, **options)
         assert_equal("psbt" in result, True)
         assert_raises_rpc_error(-4, "Insufficient funds", wo_wallet.walletcreatefundedpsbt, inputs, outputs, 0, no_wo_options)
 
         self.log.info('Testing fundrawtransaction watch-only defaults')
         rawtx = wo_wallet.createrawtransaction(inputs=inputs, outputs=outputs)
-        result = wo_wallet.fundrawtransaction(hexstring=rawtx, options=options)
+        result = wo_wallet.fundrawtransaction(hexstring=rawtx, **options)
         assert_equal("hex" in result, True)
         assert_raises_rpc_error(-4, "Insufficient funds", wo_wallet.fundrawtransaction, rawtx, no_wo_options)
 
 
 
 if __name__ == '__main__':
-    CreateWalletWatchonlyTest().main()
+    CreateWalletWatchonlyTest(__file__).main()

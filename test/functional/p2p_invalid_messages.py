@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test node responses to invalid network messages."""
 
-import struct
+import random
 import time
 
 from test_framework.messages import (
@@ -26,7 +26,7 @@ from test_framework.p2p import (
     P2PDataStore,
     P2PInterface,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
 )
@@ -54,7 +54,7 @@ class SenderOfAddrV2(P2PInterface):
         self.wait_until(lambda: 'sendaddrv2' in self.last_message)
 
 
-class InvalidMessagesTest(FixedCoinTestFramework):
+class InvalidMessagesTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
@@ -75,6 +75,7 @@ class InvalidMessagesTest(FixedCoinTestFramework):
         self.test_oversized_getdata_msg()
         self.test_oversized_headers_msg()
         self.test_invalid_pow_headers_msg()
+        self.test_noncontinuous_headers_msg()
         self.test_resource_exhaustion()
 
     def test_buffer(self):
@@ -107,6 +108,9 @@ class InvalidMessagesTest(FixedCoinTestFramework):
         self.nodes[0].disconnect_p2ps()
 
     def test_magic_bytes(self):
+        # Skip with v2, magic bytes are v1-specific
+        if self.options.v2transport:
+            return
         self.log.info("Test message with invalid magic bytes disconnects peer")
         conn = self.nodes[0].add_p2p_connection(P2PDataStore())
         with self.nodes[0].assert_debug_log(['Header error: Wrong MessageStart ffffffff received']):
@@ -118,6 +122,9 @@ class InvalidMessagesTest(FixedCoinTestFramework):
         self.nodes[0].disconnect_p2ps()
 
     def test_checksum(self):
+        # Skip with v2, the checksum is v1-specific
+        if self.options.v2transport:
+            return
         self.log.info("Test message with invalid checksum logs an error")
         conn = self.nodes[0].add_p2p_connection(P2PDataStore())
         with self.nodes[0].assert_debug_log(['Header error: Wrong checksum (badmsg, 2 bytes), expected 78df0a04 was ffffffff']):
@@ -135,7 +142,11 @@ class InvalidMessagesTest(FixedCoinTestFramework):
     def test_size(self):
         self.log.info("Test message with oversized payload disconnects peer")
         conn = self.nodes[0].add_p2p_connection(P2PDataStore())
-        with self.nodes[0].assert_debug_log(['Header error: Size too large (badmsg, 4000001 bytes)']):
+        error_msg = (
+            ['V2 transport error: packet too large (4000014 bytes)'] if self.options.v2transport
+            else ['Header error: Size too large (badmsg, 4000001 bytes)']
+        )
+        with self.nodes[0].assert_debug_log(error_msg):
             msg = msg_unrecognized(str_data="d" * (VALID_DATA_LIMIT + 1))
             msg = conn.build_message(msg)
             conn.send_raw_message(msg)
@@ -145,22 +156,33 @@ class InvalidMessagesTest(FixedCoinTestFramework):
     def test_msgtype(self):
         self.log.info("Test message with invalid message type logs an error")
         conn = self.nodes[0].add_p2p_connection(P2PDataStore())
-        with self.nodes[0].assert_debug_log(['Header error: Invalid message type']):
+        if self.options.v2transport:
+            msgtype = 99 # not defined
             msg = msg_unrecognized(str_data="d")
-            msg = conn.build_message(msg)
-            # Modify msgtype
-            msg = msg[:7] + b'\x00' + msg[7 + 1:]
-            conn.send_raw_message(msg)
-            conn.sync_with_ping(timeout=1)
-        # Check that traffic is accounted for (24 bytes header + 2 bytes payload)
-        assert_equal(self.nodes[0].getpeerinfo()[0]['bytesrecv_per_msg']['*other*'], 26)
+            contents = msgtype.to_bytes(1, 'big') + msg.serialize()
+            tmsg = conn.v2_state.v2_enc_packet(contents, ignore=False)
+            with self.nodes[0].assert_debug_log(['V2 transport error: invalid message type']):
+                conn.send_raw_message(tmsg)
+                conn.sync_with_ping(timeout=1)
+            # Check that traffic is accounted for (20 bytes plus 3 bytes contents)
+            assert_equal(self.nodes[0].getpeerinfo()[0]['bytesrecv_per_msg']['*other*'], 23)
+        else:
+            with self.nodes[0].assert_debug_log(['Header error: Invalid message type']):
+                msg = msg_unrecognized(str_data="d")
+                msg = conn.build_message(msg)
+                # Modify msgtype
+                msg = msg[:7] + b'\x00' + msg[7 + 1:]
+                conn.send_raw_message(msg)
+                conn.sync_with_ping(timeout=1)
+                # Check that traffic is accounted for (24 bytes header + 2 bytes payload)
+                assert_equal(self.nodes[0].getpeerinfo()[0]['bytesrecv_per_msg']['*other*'], 26)
         self.nodes[0].disconnect_p2ps()
 
     def test_addrv2(self, label, required_log_messages, raw_addrv2):
         node = self.nodes[0]
         conn = node.add_p2p_connection(SenderOfAddrV2())
 
-        # Make sure fixedcoind signals support for ADDRv2, otherwise this test
+        # Make sure bitcoind signals support for ADDRv2, otherwise this test
         # will bombard an old node with messages it does not recognize which
         # will produce unexpected results.
         conn.wait_for_sendaddrv2()
@@ -210,11 +232,11 @@ class InvalidMessagesTest(FixedCoinTestFramework):
                 '208d'))     # port
 
     def test_addrv2_unrecognized_network(self):
-        now_hex = struct.pack('<I', int(time.time())).hex()
+        now_hex = int(time.time()).to_bytes(4, "little").hex()
         self.test_addrv2('unrecognized network',
             [
                 'received: addrv2 (25 bytes)',
-                '9.9.9.9:24768 mapped',
+                '9.9.9.9:8333',
                 'Added 1 addresses',
             ],
             bytes.fromhex(
@@ -238,7 +260,9 @@ class InvalidMessagesTest(FixedCoinTestFramework):
         msg_type = msg.msgtype.decode('ascii')
         self.log.info("Test {} message of size {} is logged as misbehaving".format(msg_type, size))
         with self.nodes[0].assert_debug_log(['Misbehaving', '{} message size = {}'.format(msg_type, size)]):
-            self.nodes[0].add_p2p_connection(P2PInterface()).send_and_ping(msg)
+            conn = self.nodes[0].add_p2p_connection(P2PInterface())
+            conn.send_message(msg)
+            conn.wait_for_disconnect()
         self.nodes[0].disconnect_p2ps()
 
     def test_oversized_inv_msg(self):
@@ -283,10 +307,32 @@ class InvalidMessagesTest(FixedCoinTestFramework):
             peer.send_message(msg_headers([blockheader]))
             peer.wait_for_disconnect()
 
+    def test_noncontinuous_headers_msg(self):
+        self.log.info("Test headers message with non-continuous headers sequence is logged as misbehaving")
+        block_hashes = self.generate(self.nodes[0], 10)
+        block_headers = []
+        for block_hash in block_hashes:
+            block_headers.append(from_hex(CBlockHeader(), self.nodes[0].getblockheader(block_hash, False)))
+
+        # continuous headers sequence should be fine
+        MISBEHAVING_NONCONTINUOUS_HEADERS_MSGS = ['Misbehaving', 'non-continuous headers sequence']
+        peer = self.nodes[0].add_p2p_connection(P2PInterface())
+        with self.nodes[0].assert_debug_log([], unexpected_msgs=MISBEHAVING_NONCONTINUOUS_HEADERS_MSGS):
+            peer.send_and_ping(msg_headers(block_headers))
+
+        # delete arbitrary block header somewhere in the middle to break link
+        del block_headers[random.randrange(1, len(block_headers)-1)]
+        with self.nodes[0].assert_debug_log(expected_msgs=MISBEHAVING_NONCONTINUOUS_HEADERS_MSGS):
+            peer.send_message(msg_headers(block_headers))
+            peer.wait_for_disconnect()
+        self.nodes[0].disconnect_p2ps()
+
     def test_resource_exhaustion(self):
         self.log.info("Test node stays up despite many large junk messages")
-        conn = self.nodes[0].add_p2p_connection(P2PDataStore())
-        conn2 = self.nodes[0].add_p2p_connection(P2PDataStore())
+        # Don't use v2 here - the non-optimised encryption would take too long to encrypt
+        # the large messages
+        conn = self.nodes[0].add_p2p_connection(P2PDataStore(), supports_v2_p2p=False)
+        conn2 = self.nodes[0].add_p2p_connection(P2PDataStore(), supports_v2_p2p=False)
         msg_at_size = msg_unrecognized(str_data="b" * VALID_DATA_LIMIT)
         assert len(msg_at_size.serialize()) == MAX_PROTOCOL_MESSAGE_LENGTH
 
@@ -310,4 +356,4 @@ class InvalidMessagesTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    InvalidMessagesTest().main()
+    InvalidMessagesTest(__file__).main()

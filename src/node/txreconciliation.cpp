@@ -1,11 +1,12 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <node/txreconciliation.h>
 
+#include <common/system.h>
+#include <logging.h>
 #include <util/check.h>
-#include <util/system.h>
 
 #include <unordered_map>
 #include <variant>
@@ -84,7 +85,7 @@ public:
         LOCK(m_txreconciliation_mutex);
 
         LogPrintLevel(BCLog::TXRECONCILIATION, BCLog::Level::Debug, "Pre-register peer=%d\n", peer_id);
-        const uint64_t local_salt{GetRand(UINT64_MAX)};
+        const uint64_t local_salt{FastRandomContext().rand64()};
 
         // We do this exactly once per peer (which are unique by NodeId, see GetNewNodeId) so it's
         // safe to assume we don't have this record yet.

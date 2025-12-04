@@ -10,14 +10,14 @@ their best known block header time is more than -maxtipage in the past.
 
 import time
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
 
 DEFAULT_MAX_TIP_AGE = 24 * 60 * 60
 
 
-class MaxTipAgeTest(FixedCoinTestFramework):
+class MaxTipAgeTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2
@@ -43,6 +43,10 @@ class MaxTipAgeTest(FixedCoinTestFramework):
         self.generate(node_miner, 1)
         assert_equal(node_ibd.getblockchaininfo()['initialblockdownload'], False)
 
+        # reset time to system time so we don't have a time offset with the ibd node the next
+        # time we connect to it, ensuring TimeOffsets::WarnIfOutOfSync() doesn't output to stderr
+        node_miner.setmocktime(0)
+
     def run_test(self):
         self.log.info("Test IBD with maximum tip age of 24 hours (default).")
         self.test_maxtipage(DEFAULT_MAX_TIP_AGE, set_parameter=False)
@@ -58,4 +62,4 @@ class MaxTipAgeTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    MaxTipAgeTest().main()
+    MaxTipAgeTest(__file__).main()

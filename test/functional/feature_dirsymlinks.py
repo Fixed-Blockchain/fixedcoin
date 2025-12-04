@@ -7,7 +7,7 @@
 
 import os
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 
 def rename_and_link(*, from_name, to_name):
@@ -16,7 +16,7 @@ def rename_and_link(*, from_name, to_name):
     assert os.path.islink(from_name) and os.path.isdir(from_name)
 
 
-class SymlinkTest(FixedCoinTestFramework):
+class SymlinkTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 
@@ -26,7 +26,7 @@ class SymlinkTest(FixedCoinTestFramework):
         self.stop_node(0)
 
         rename_and_link(
-            from_name=self.nodes[0].chain_path / "blocks",
+            from_name=self.nodes[0].blocks_path,
             to_name=dir_new_blocks,
         )
         rename_and_link(
@@ -38,4 +38,4 @@ class SymlinkTest(FixedCoinTestFramework):
 
 
 if __name__ == "__main__":
-    SymlinkTest().main()
+    SymlinkTest(__file__).main()

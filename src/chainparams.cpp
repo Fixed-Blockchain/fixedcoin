@@ -1,37 +1,50 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <chainparams.h>
 
-#include <chainparamsseeds.h>
-#include <consensus/merkle.h>
+#include <chainparamsbase.h>
+#include <common/args.h>
+#include <consensus/params.h>
 #include <deploymentinfo.h>
-#include <hash.h> // for signet block challenge hash
-#include <script/interpreter.h>
+#include <logging.h>
+#include <tinyformat.h>
+#include <util/chaintype.h>
+#include <util/strencodings.h>
 #include <util/string.h>
-#include <util/system.h>
 
-#include <assert.h>
+#include <cassert>
+#include <cstdint>
+#include <limits>
+#include <stdexcept>
+#include <vector>
+
+using util::SplitString;
 
 void ReadSigNetArgs(const ArgsManager& args, CChainParams::SigNetOptions& options)
 {
-    if (args.IsArgSet("-signetseednode")) {
+    if (!args.GetArgs("-signetseednode").empty()) {
         options.seeds.emplace(args.GetArgs("-signetseednode"));
     }
-    if (args.IsArgSet("-signetchallenge")) {
+    if (!args.GetArgs("-signetchallenge").empty()) {
         const auto signet_challenge = args.GetArgs("-signetchallenge");
         if (signet_challenge.size() != 1) {
-            throw std::runtime_error(strprintf("%s: -signetchallenge cannot be multiple values.", __func__));
+            throw std::runtime_error("-signetchallenge cannot be multiple values.");
         }
-        options.challenge.emplace(ParseHex(signet_challenge[0]));
+        const auto val{TryParseHex<uint8_t>(signet_challenge[0])};
+        if (!val) {
+            throw std::runtime_error(strprintf("-signetchallenge must be hex, not '%s'.", signet_challenge[0]));
+        }
+        options.challenge.emplace(*val);
     }
 }
 
 void ReadRegTestArgs(const ArgsManager& args, CChainParams::RegTestOptions& options)
 {
     if (auto value = args.GetBoolArg("-fastprune")) options.fastprune = *value;
+    if (HasTestOption(args, "bip94")) options.enforce_bip94 = true;
 
     for (const std::string& arg : args.GetArgs("-testactivationheight")) {
         const auto found{arg.find('@')};
@@ -52,8 +65,6 @@ void ReadRegTestArgs(const ArgsManager& args, CChainParams::RegTestOptions& opti
             throw std::runtime_error(strprintf("Invalid name (%s) for -testactivationheight=name@height.", arg));
         }
     }
-
-    if (!args.IsArgSet("-vbparams")) return;
 
     for (const std::string& strDeployment : args.GetArgs("-vbparams")) {
         std::vector<std::string> vDeploymentParams = SplitString(strDeployment, ':');
@@ -96,26 +107,31 @@ const CChainParams &Params() {
     return *globalChainParams;
 }
 
-std::unique_ptr<const CChainParams> CreateChainParams(const ArgsManager& args, const std::string& chain)
+std::unique_ptr<const CChainParams> CreateChainParams(const ArgsManager& args, const ChainType chain)
 {
-    if (chain == CBaseChainParams::MAIN) {
+    switch (chain) {
+    case ChainType::MAIN:
         return CChainParams::Main();
-    } else if (chain == CBaseChainParams::TESTNET) {
+    case ChainType::TESTNET:
         return CChainParams::TestNet();
-    } else if (chain == CBaseChainParams::SIGNET) {
+    case ChainType::TESTNET4:
+        return CChainParams::TestNet4();
+    case ChainType::SIGNET: {
         auto opts = CChainParams::SigNetOptions{};
         ReadSigNetArgs(args, opts);
         return CChainParams::SigNet(opts);
-    } else if (chain == CBaseChainParams::REGTEST) {
+    }
+    case ChainType::REGTEST: {
         auto opts = CChainParams::RegTestOptions{};
         ReadRegTestArgs(args, opts);
         return CChainParams::RegTest(opts);
     }
-    throw std::runtime_error(strprintf("%s: Unknown chain %s.", __func__, chain));
+    }
+    assert(false);
 }
 
-void SelectParams(const std::string& network)
+void SelectParams(const ChainType chain)
 {
-    SelectBaseParams(network);
-    globalChainParams = CreateChainParams(gArgs, network);
+    SelectBaseParams(chain);
+    globalChainParams = CreateChainParams(gArgs, chain);
 }

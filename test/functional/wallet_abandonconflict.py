@@ -13,14 +13,14 @@
 from decimal import Decimal
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
 
 
-class AbandonConflictTest(FixedCoinTestFramework):
+class AbandonConflictTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -28,8 +28,7 @@ class AbandonConflictTest(FixedCoinTestFramework):
         self.num_nodes = 2
         self.extra_args = [["-minrelaytxfee=0.00001"], []]
         # whitelist peers to speed up tx relay / mempool sync
-        for args in self.extra_args:
-            args.append("-whitelist=noban@127.0.0.1")
+        self.noban_tx_relay = True
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
@@ -46,6 +45,10 @@ class AbandonConflictTest(FixedCoinTestFramework):
         txB = alice.sendtoaddress(alice.getnewaddress(), Decimal("10"))
         txC = alice.sendtoaddress(alice.getnewaddress(), Decimal("10"))
         self.sync_mempools()
+
+        # Can not abandon transaction in mempool
+        assert_raises_rpc_error(-5, 'Transaction not eligible for abandonment', lambda: alice.abandontransaction(txid=txA))
+
         self.generate(self.nodes[1], 1)
 
         # Can not abandon non-wallet transaction
@@ -60,13 +63,13 @@ class AbandonConflictTest(FixedCoinTestFramework):
         # Disconnect nodes so node0's transactions don't get into node1's mempool
         self.disconnect_nodes(0, 1)
 
-        # Identify the 10fix outputs
+        # Identify the 10btc outputs
         nA = next(tx_out["vout"] for tx_out in alice.gettransaction(txA)["details"] if tx_out["amount"] == Decimal("10"))
         nB = next(tx_out["vout"] for tx_out in alice.gettransaction(txB)["details"] if tx_out["amount"] == Decimal("10"))
         nC = next(tx_out["vout"] for tx_out in alice.gettransaction(txC)["details"] if tx_out["amount"] == Decimal("10"))
 
         inputs = []
-        # spend 10fix outputs from txA and txB
+        # spend 10btc outputs from txA and txB
         inputs.append({"txid": txA, "vout": nA})
         inputs.append({"txid": txB, "vout": nB})
         outputs = {}
@@ -76,7 +79,7 @@ class AbandonConflictTest(FixedCoinTestFramework):
         signed = alice.signrawtransactionwithwallet(alice.createrawtransaction(inputs, outputs))
         txAB1 = self.nodes[0].sendrawtransaction(signed["hex"])
 
-        # Identify the 14.99998fix output
+        # Identify the 14.99998btc output
         nAB = next(tx_out["vout"] for tx_out in alice.gettransaction(txAB1)["details"] if tx_out["amount"] == Decimal("14.99998"))
 
         #Create a child tx spending AB1 and C
@@ -225,21 +228,21 @@ class AbandonConflictTest(FixedCoinTestFramework):
         assert_equal(double_spend_txid, double_spend['txid'])
         assert_equal(double_spend["walletconflicts"], [txAB1])
 
-        # Verify that B and C's 10 FIX outputs are available for spending again because AB1 is now conflicted
+        # Verify that B and C's 10 BTC outputs are available for spending again because AB1 is now conflicted
+        assert_equal(alice.gettransaction(txAB1)["confirmations"], -1)
         newbalance = alice.getbalance()
         assert_equal(newbalance, balance + Decimal("20"))
         balance = newbalance
 
-        # There is currently a minor bug around this and so this test doesn't work.  See Issue #7315
-        # Invalidate the block with the double spend and B's 10 FIX output should no longer be available
-        # Don't think C's should either
-        self.nodes[0].invalidateblock(self.nodes[0].getbestblockhash())
+        # Invalidate the block with the double spend. B & C's 10 BTC outputs should no longer be available
+        blk = self.nodes[0].getbestblockhash()
+        # mine 10 blocks so that when the blk is invalidated, the transactions are not
+        # returned to the mempool
+        self.generate(self.nodes[1], 10)
+        self.nodes[0].invalidateblock(blk)
+        assert_equal(alice.gettransaction(txAB1)["confirmations"], 0)
         newbalance = alice.getbalance()
-        #assert_equal(newbalance, balance - Decimal("10"))
-        self.log.info("If balance has not declined after invalidateblock then out of mempool wallet tx which is no longer")
-        self.log.info("conflicted has not resumed causing its inputs to be seen as spent.  See Issue #7315")
-        assert_equal(balance, newbalance)
-
+        assert_equal(newbalance, balance - Decimal("20"))
 
 if __name__ == '__main__':
-    AbandonConflictTest().main()
+    AbandonConflictTest(__file__).main()

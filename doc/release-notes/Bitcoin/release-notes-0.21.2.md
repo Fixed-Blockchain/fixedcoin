@@ -3,7 +3,7 @@
 
 FixedCoin Core version 0.21.2 is now available from:
 
-  <https://bitcoincore.org/bin/fixedcoin-core-0.21.2/>
+  <https://fixedcoin.org/bin/fixedcoin-core-0.21.2/>
 
 This minor release includes various bug fixes and performance
 improvements, as well as updated translations.
@@ -14,7 +14,7 @@ Please report bugs using the issue tracker at GitHub:
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============

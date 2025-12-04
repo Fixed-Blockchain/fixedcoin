@@ -12,12 +12,12 @@ in the next block are accepted into the memory pool,
 but less mature coinbase spends are NOT.
 """
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error
 from test_framework.wallet import MiniWallet
 
 
-class MempoolSpendCoinbaseTest(FixedCoinTestFramework):
+class MempoolSpendCoinbaseTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 
@@ -57,4 +57,4 @@ class MempoolSpendCoinbaseTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    MempoolSpendCoinbaseTest().main()
+    MempoolSpendCoinbaseTest(__file__).main()

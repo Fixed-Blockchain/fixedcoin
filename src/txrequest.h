@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Bitcoin Core developers
+// Copyright (c) 2020 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -194,6 +194,10 @@ public:
 
     /** Count how many announcements are being tracked in total across all peers and transaction hashes. */
     size_t Size() const;
+
+    /** For some txhash (txid or wtxid), finds all peers with non-COMPLETED announcements and appends them to
+     * result_peers. Does not try to ensure that result_peers contains no duplicates. */
+    void GetCandidatePeers(const uint256& txhash, std::vector<NodeId>& result_peers) const;
 
     /** Access to the internal priority computation (testing only) */
     uint64_t ComputePriority(const uint256& txhash, NodeId peer, bool preferred) const;

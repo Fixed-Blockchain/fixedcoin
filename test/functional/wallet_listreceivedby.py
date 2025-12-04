@@ -6,7 +6,7 @@
 from decimal import Decimal
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_array_result,
     assert_equal,
@@ -15,14 +15,14 @@ from test_framework.util import (
 from test_framework.wallet_util import test_address
 
 
-class ReceivedByTest(FixedCoinTestFramework):
+class ReceivedByTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
     def set_test_params(self):
         self.num_nodes = 2
         # whitelist peers to speed up tx relay / mempool sync
-        self.extra_args = [["-whitelist=noban@127.0.0.1"]] * self.num_nodes
+        self.noban_tx_relay = True
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
@@ -263,4 +263,4 @@ class ReceivedByTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    ReceivedByTest().main()
+    ReceivedByTest(__file__).main()

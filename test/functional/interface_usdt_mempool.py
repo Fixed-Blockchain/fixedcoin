@@ -4,9 +4,10 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 """  Tests the mempool:* tracepoint API interface.
-     See https://github.com/fixedcoin/fixedcoin/blob/master/doc/tracing.md#context-mempool
+     See https://github.com/Fixed-Blockchain/fixedcoin/blob/master/doc/tracing.md#context-mempool
 """
 
+import ctypes
 from decimal import Decimal
 
 # Test will be skipped if we don't have bcc installed
@@ -18,7 +19,7 @@ except ImportError:
 from test_framework.blocktools import COINBASE_MATURITY
 from test_framework.messages import COIN, DEFAULT_MEMPOOL_EXPIRY_HOURS
 from test_framework.p2p import P2PDataStore
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 from test_framework.wallet import MiniWallet
 
@@ -35,7 +36,7 @@ MEMPOOL_TRACEPOINTS_PROGRAM = """
 struct added_event
 {
   u8    hash[HASH_LENGTH];
-  u64   vsize;
+  s32   vsize;
   s64   fee;
 };
 
@@ -43,7 +44,7 @@ struct removed_event
 {
   u8    hash[HASH_LENGTH];
   char  reason[MAX_REMOVAL_REASON_LENGTH];
-  u64   vsize;
+  s32   vsize;
   s64   fee;
   u64   entry_time;
 };
@@ -57,12 +58,13 @@ struct rejected_event
 struct replaced_event
 {
   u8    replaced_hash[HASH_LENGTH];
-  u64   replaced_vsize;
+  s32   replaced_vsize;
   s64   replaced_fee;
   u64   replaced_entry_time;
   u8    replacement_hash[HASH_LENGTH];
-  u64   replacement_vsize;
+  s32   replacement_vsize;
   s64   replacement_fee;
+  bool  replaced_by_transaction;
 };
 
 // BPF perf buffer to push the data to user space.
@@ -73,8 +75,9 @@ BPF_PERF_OUTPUT(replaced_events);
 
 int trace_added(struct pt_regs *ctx) {
   struct added_event added = {};
-
-  bpf_usdt_readarg_p(1, ctx, &added.hash, HASH_LENGTH);
+  void *phash = NULL;
+  bpf_usdt_readarg(1, ctx, &phash);
+  bpf_probe_read_user(&added.hash, sizeof(added.hash), phash);
   bpf_usdt_readarg(2, ctx, &added.vsize);
   bpf_usdt_readarg(3, ctx, &added.fee);
 
@@ -84,9 +87,11 @@ int trace_added(struct pt_regs *ctx) {
 
 int trace_removed(struct pt_regs *ctx) {
   struct removed_event removed = {};
-
-  bpf_usdt_readarg_p(1, ctx, &removed.hash, HASH_LENGTH);
-  bpf_usdt_readarg_p(2, ctx, &removed.reason, MAX_REMOVAL_REASON_LENGTH);
+  void *phash = NULL, *preason = NULL;
+  bpf_usdt_readarg(1, ctx, &phash);
+  bpf_probe_read_user(&removed.hash, sizeof(removed.hash), phash);
+  bpf_usdt_readarg(2, ctx, &preason);
+  bpf_probe_read_user_str(&removed.reason, sizeof(removed.reason), preason);
   bpf_usdt_readarg(3, ctx, &removed.vsize);
   bpf_usdt_readarg(4, ctx, &removed.fee);
   bpf_usdt_readarg(5, ctx, &removed.entry_time);
@@ -97,39 +102,57 @@ int trace_removed(struct pt_regs *ctx) {
 
 int trace_rejected(struct pt_regs *ctx) {
   struct rejected_event rejected = {};
-
-  bpf_usdt_readarg_p(1, ctx, &rejected.hash, HASH_LENGTH);
-  bpf_usdt_readarg_p(2, ctx, &rejected.reason, MAX_REJECT_REASON_LENGTH);
-
+  void *phash = NULL, *preason = NULL;
+  bpf_usdt_readarg(1, ctx, &phash);
+  bpf_probe_read_user(&rejected.hash, sizeof(rejected.hash), phash);
+  bpf_usdt_readarg(2, ctx, &preason);
+  bpf_probe_read_user_str(&rejected.reason, sizeof(rejected.reason), preason);
   rejected_events.perf_submit(ctx, &rejected, sizeof(rejected));
   return 0;
 }
 
 int trace_replaced(struct pt_regs *ctx) {
   struct replaced_event replaced = {};
-
-  bpf_usdt_readarg_p(1, ctx, &replaced.replaced_hash, HASH_LENGTH);
+  void *preplaced_hash = NULL, *preplacement_hash = NULL;
+  bpf_usdt_readarg(1, ctx, &preplaced_hash);
+  bpf_probe_read_user(&replaced.replaced_hash, sizeof(replaced.replaced_hash), preplaced_hash);
   bpf_usdt_readarg(2, ctx, &replaced.replaced_vsize);
   bpf_usdt_readarg(3, ctx, &replaced.replaced_fee);
   bpf_usdt_readarg(4, ctx, &replaced.replaced_entry_time);
-  bpf_usdt_readarg_p(5, ctx, &replaced.replacement_hash, HASH_LENGTH);
+  bpf_usdt_readarg(5, ctx, &preplacement_hash);
+  bpf_probe_read_user(&replaced.replacement_hash, sizeof(replaced.replacement_hash), preplacement_hash);
   bpf_usdt_readarg(6, ctx, &replaced.replacement_vsize);
   bpf_usdt_readarg(7, ctx, &replaced.replacement_fee);
+  bpf_usdt_readarg(8, ctx, &replaced.replaced_by_transaction);
 
   replaced_events.perf_submit(ctx, &replaced, sizeof(replaced));
   return 0;
 }
+
 """
 
 
-class MempoolTracepointTest(FixedCoinTestFramework):
+class MempoolReplaced(ctypes.Structure):
+    _fields_ = [
+        ("replaced_hash", ctypes.c_ubyte * 32),
+        ("replaced_vsize", ctypes.c_int32),
+        ("replaced_fee", ctypes.c_int64),
+        ("replaced_entry_time", ctypes.c_uint64),
+        ("replacement_hash", ctypes.c_ubyte * 32),
+        ("replacement_vsize", ctypes.c_int32),
+        ("replacement_fee", ctypes.c_int64),
+        ("replaced_by_transaction", ctypes.c_bool),
+    ]
+
+
+class MempoolTracepointTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
 
     def skip_test_if_missing_module(self):
         self.skip_if_platform_not_linux()
-        self.skip_if_no_fixedcoind_tracepoints()
+        self.skip_if_no_bitcoind_tracepoints()
         self.skip_if_no_python_bcc()
         self.skip_if_no_bpf_permissions()
 
@@ -137,31 +160,22 @@ class MempoolTracepointTest(FixedCoinTestFramework):
         """Add a transaction to the mempool and make sure the tracepoint returns
         the expected txid, vsize, and fee."""
 
-        EXPECTED_ADDED_EVENTS = 1
-        handled_added_events = 0
+        events = []
 
         self.log.info("Hooking into mempool:added tracepoint...")
         node = self.nodes[0]
         ctx = USDT(pid=node.process.pid)
         ctx.enable_probe(probe="mempool:added", fn_name="trace_added")
-        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0)
+        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0, cflags=["-Wno-error=implicit-function-declaration"])
 
         def handle_added_event(_, data, __):
-            nonlocal handled_added_events
-            event = bpf["added_events"].event(data)
-            assert_equal(txid, bytes(event.hash)[::-1].hex())
-            assert_equal(vsize, event.vsize)
-            assert_equal(fee, event.fee)
-            handled_added_events += 1
+            events.append(bpf["added_events"].event(data))
 
         bpf["added_events"].open_perf_buffer(handle_added_event)
 
         self.log.info("Sending transaction...")
         fee = Decimal(31200)
         tx = self.wallet.send_self_transfer(from_node=node, fee=fee / COIN)
-        # expected data
-        txid = tx["txid"]
-        vsize = tx["tx"].get_vsize()
 
         self.log.info("Polling buffer...")
         bpf.perf_buffer_poll(timeout=200)
@@ -169,43 +183,37 @@ class MempoolTracepointTest(FixedCoinTestFramework):
         self.log.info("Cleaning up mempool...")
         self.generate(node, 1)
 
-        bpf.cleanup()
-
         self.log.info("Ensuring mempool:added event was handled successfully...")
-        assert_equal(EXPECTED_ADDED_EVENTS, handled_added_events)
+        assert_equal(1, len(events))
+        event = events[0]
+        assert_equal(bytes(event.hash)[::-1].hex(), tx["txid"])
+        assert_equal(event.vsize, tx["tx"].get_vsize())
+        assert_equal(event.fee, fee)
+
+        bpf.cleanup()
+        self.generate(self.wallet, 1)
 
     def removed_test(self):
         """Expire a transaction from the mempool and make sure the tracepoint returns
         the expected txid, expiry reason, vsize, and fee."""
 
-        EXPECTED_REMOVED_EVENTS = 1
-        handled_removed_events = 0
+        events = []
 
         self.log.info("Hooking into mempool:removed tracepoint...")
         node = self.nodes[0]
         ctx = USDT(pid=node.process.pid)
         ctx.enable_probe(probe="mempool:removed", fn_name="trace_removed")
-        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0)
+        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0, cflags=["-Wno-error=implicit-function-declaration"])
 
         def handle_removed_event(_, data, __):
-            nonlocal handled_removed_events
-            event = bpf["removed_events"].event(data)
-            assert_equal(txid, bytes(event.hash)[::-1].hex())
-            assert_equal(reason, event.reason.decode("UTF-8"))
-            assert_equal(vsize, event.vsize)
-            assert_equal(fee, event.fee)
-            assert_equal(entry_time, event.entry_time)
-            handled_removed_events += 1
+            events.append(bpf["removed_events"].event(data))
 
         bpf["removed_events"].open_perf_buffer(handle_removed_event)
 
         self.log.info("Sending transaction...")
         fee = Decimal(31200)
         tx = self.wallet.send_self_transfer(from_node=node, fee=fee / COIN)
-        # expected data
         txid = tx["txid"]
-        reason = "expiry"
-        vsize = tx["tx"].get_vsize()
 
         self.log.info("Fast-forwarding time to mempool expiry...")
         entry_time = node.getmempoolentry(txid)["time"]
@@ -219,35 +227,33 @@ class MempoolTracepointTest(FixedCoinTestFramework):
         self.log.info("Polling buffer...")
         bpf.perf_buffer_poll(timeout=200)
 
-        bpf.cleanup()
-
         self.log.info("Ensuring mempool:removed event was handled successfully...")
-        assert_equal(EXPECTED_REMOVED_EVENTS, handled_removed_events)
+        assert_equal(1, len(events))
+        event = events[0]
+        assert_equal(bytes(event.hash)[::-1].hex(), txid)
+        assert_equal(event.reason.decode("UTF-8"), "expiry")
+        assert_equal(event.vsize, tx["tx"].get_vsize())
+        assert_equal(event.fee, fee)
+        assert_equal(event.entry_time, entry_time)
+
+        bpf.cleanup()
+        self.generate(self.wallet, 1)
 
     def replaced_test(self):
         """Replace one and two transactions in the mempool and make sure the tracepoint
         returns the expected txids, vsizes, and fees."""
 
-        EXPECTED_REPLACED_EVENTS = 1
-        handled_replaced_events = 0
+        events = []
 
         self.log.info("Hooking into mempool:replaced tracepoint...")
         node = self.nodes[0]
         ctx = USDT(pid=node.process.pid)
         ctx.enable_probe(probe="mempool:replaced", fn_name="trace_replaced")
-        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0)
+        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0, cflags=["-Wno-error=implicit-function-declaration"])
 
         def handle_replaced_event(_, data, __):
-            nonlocal handled_replaced_events
-            event = bpf["replaced_events"].event(data)
-            assert_equal(replaced_txid, bytes(event.replaced_hash)[::-1].hex())
-            assert_equal(replaced_vsize, event.replaced_vsize)
-            assert_equal(replaced_fee, event.replaced_fee)
-            assert_equal(replaced_entry_time, event.replaced_entry_time)
-            assert_equal(replacement_txid, bytes(event.replacement_hash)[::-1].hex())
-            assert_equal(replacement_vsize, event.replacement_vsize)
-            assert_equal(replacement_fee, event.replacement_fee)
-            handled_replaced_events += 1
+            event = ctypes.cast(data, ctypes.POINTER(MempoolReplaced)).contents
+            events.append(event)
 
         bpf["replaced_events"].open_perf_buffer(handle_replaced_event)
 
@@ -265,28 +271,29 @@ class MempoolTracepointTest(FixedCoinTestFramework):
             from_node=node, utxo_to_spend=utxo, fee=replacement_fee / COIN
         )
 
-        # expected data
-        replaced_txid = original_tx["txid"]
-        replaced_vsize = original_tx["tx"].get_vsize()
-        replaced_fee = original_fee
-        replaced_entry_time = entry_time
-        replacement_txid = replacement_tx["txid"]
-        replacement_vsize = replacement_tx["tx"].get_vsize()
-
         self.log.info("Polling buffer...")
         bpf.perf_buffer_poll(timeout=200)
 
-        bpf.cleanup()
-
         self.log.info("Ensuring mempool:replaced event was handled successfully...")
-        assert_equal(EXPECTED_REPLACED_EVENTS, handled_replaced_events)
+        assert_equal(1, len(events))
+        event = events[0]
+        assert_equal(bytes(event.replaced_hash)[::-1].hex(), original_tx["txid"])
+        assert_equal(event.replaced_vsize, original_tx["tx"].get_vsize())
+        assert_equal(event.replaced_fee, original_fee)
+        assert_equal(event.replaced_entry_time, entry_time)
+        assert_equal(bytes(event.replacement_hash)[::-1].hex(), replacement_tx["txid"])
+        assert_equal(event.replacement_vsize, replacement_tx["tx"].get_vsize())
+        assert_equal(event.replacement_fee, replacement_fee)
+        assert_equal(event.replaced_by_transaction, True)
+
+        bpf.cleanup()
+        self.generate(self.wallet, 1)
 
     def rejected_test(self):
         """Create an invalid transaction and make sure the tracepoint returns
         the expected txid, rejection reason, peer id, and peer address."""
 
-        EXPECTED_REJECTED_EVENTS = 1
-        handled_rejected_events = 0
+        events = []
 
         self.log.info("Adding P2P connection...")
         node = self.nodes[0]
@@ -295,14 +302,10 @@ class MempoolTracepointTest(FixedCoinTestFramework):
         self.log.info("Hooking into mempool:rejected tracepoint...")
         ctx = USDT(pid=node.process.pid)
         ctx.enable_probe(probe="mempool:rejected", fn_name="trace_rejected")
-        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0)
+        bpf = BPF(text=MEMPOOL_TRACEPOINTS_PROGRAM, usdt_contexts=[ctx], debug=0, cflags=["-Wno-error=implicit-function-declaration"])
 
         def handle_rejected_event(_, data, __):
-            nonlocal handled_rejected_events
-            event = bpf["rejected_events"].event(data)
-            assert_equal(txid, bytes(event.hash)[::-1].hex())
-            assert_equal(reason, event.reason.decode("UTF-8"))
-            handled_rejected_events += 1
+            events.append(bpf["rejected_events"].event(data))
 
         bpf["rejected_events"].open_perf_buffer(handle_rejected_event)
 
@@ -310,17 +313,17 @@ class MempoolTracepointTest(FixedCoinTestFramework):
         tx = self.wallet.create_self_transfer(fee_rate=Decimal(0))
         node.p2ps[0].send_txs_and_test([tx["tx"]], node, success=False)
 
-        # expected data
-        txid = tx["tx"].hash
-        reason = "min relay fee not met"
-
         self.log.info("Polling buffer...")
         bpf.perf_buffer_poll(timeout=200)
 
-        bpf.cleanup()
-
         self.log.info("Ensuring mempool:rejected event was handled successfully...")
-        assert_equal(EXPECTED_REJECTED_EVENTS, handled_rejected_events)
+        assert_equal(1, len(events))
+        event = events[0]
+        assert_equal(bytes(event.hash)[::-1].hex(), tx["tx"].hash)
+        assert_equal(event.reason.decode("UTF-8"), "min relay fee not met")
+
+        bpf.cleanup()
+        self.generate(self.wallet, 1)
 
     def run_test(self):
         """Tests the mempool:added, mempool:removed, mempool:replaced,
@@ -340,4 +343,4 @@ class MempoolTracepointTest(FixedCoinTestFramework):
 
 
 if __name__ == "__main__":
-    MempoolTracepointTest().main()
+    MempoolTracepointTest(__file__).main()

@@ -10,7 +10,8 @@ that file and modify to fit your needs.
 
 #### Coverage
 
-Running `test/functional/test_runner.py` with the `--coverage` argument tracks which RPCs are
+Assuming the build directory is `build`,
+running `build/test/functional/test_runner.py` with the `--coverage` argument tracks which RPCs are
 called by the tests and prints a report of uncovered RPCs in the summary. This
 can be used (along with the `--extended` argument) to find out which RPCs we
 don't have test cases for.
@@ -23,7 +24,7 @@ don't have test cases for.
 - The oldest supported Python version is specified in [doc/dependencies.md](/doc/dependencies.md).
   Consider using [pyenv](https://github.com/pyenv/pyenv), which checks [.python-version](/.python-version),
   to prevent accidentally introducing modern syntax from an unsupported Python version.
-  The CI linter job also checks this, but [possibly not in all cases](https://github.com/fixedcoin/fixedcoin/pull/14884#discussion_r239585126).
+  The CI linter job also checks this, but [possibly not in all cases](https://github.com/Fixed-Blockchain/fixedcoin/pull/14884#discussion_r239585126).
 - See [the python lint script](/test/lint/lint-python.py) that checks for violations that
   could lead to bugs and issues in the test code.
 - Use [type hints](https://docs.python.org/3/library/typing.html) in your code to improve code readability
@@ -33,10 +34,14 @@ don't have test cases for.
   in order to reduce the possibility of potential merge conflicts.
 - Use a module-level docstring to describe what the test is testing, and how it
   is testing it.
-- When subclassing the FixedCoinTestFramework, place overrides for the
+- When subclassing the BitcoinTestFramework, place overrides for the
   `set_test_params()`, `add_options()` and `setup_xxxx()` methods at the top of
   the subclass, then locally-defined helper methods, then the `run_test()` method.
 - Use `f'{x}'` for string formatting in preference to `'{}'.format(x)` or `'%s' % x`.
+- Use `platform.system()` for detecting the running operating system and `os.name` to
+  check whether it's a POSIX system (see also the `skip_if_platform_not_{linux,posix}`
+  methods in the `BitcoinTestFramework` class, which can be used to skip a whole test
+  depending on the platform).
 
 #### Naming guidelines
 
@@ -70,7 +75,7 @@ don't have test cases for.
   load a premined blockchain from cache with the default value of `False`. The
   cached data directories contain a 200-block pre-mined blockchain with the
   spendable mining rewards being split between four nodes. Each node has 25
-  mature block subsidies (25x50=1250 FIX) in its wallet. Using them is much more
+  mature block subsidies (25x50=1250 BTC) in its wallet. Using them is much more
   efficient than mining blocks in your test.
 - When calling RPCs with lots of arguments, consider using named keyword
   arguments instead of positional arguments to make the intent of the call
@@ -99,12 +104,12 @@ over the network (`CBlock`, `CTransaction`, etc, along with the network-level
 wrappers for them, `msg_block`, `msg_tx`, etc).
 
 - P2P tests have two threads. One thread handles all network communication
-with the fixedcoind(s) being tested in a callback-based event loop; the other
+with the bitcoind(s) being tested in a callback-based event loop; the other
 implements the test logic.
 
-- `P2PConnection` is the class used to connect to a fixedcoind.  `P2PInterface`
+- `P2PConnection` is the class used to connect to a bitcoind.  `P2PInterface`
 contains the higher level logic for processing P2P payloads and connecting to
-the FixedCoin Core node application logic. For custom behaviour, subclass the
+the Bitcoin Core node application logic. For custom behaviour, subclass the
 P2PInterface object and override the callback methods.
 
 `P2PConnection`s can be used as such:
@@ -127,7 +132,7 @@ More examples can be found in [p2p_unrequested_blocks.py](p2p_unrequested_blocks
 
 #### Prototyping tests
 
-The [`TestShell`](test-shell.md) class exposes the FixedCoinTestFramework
+The [`TestShell`](test-shell.md) class exposes the BitcoinTestFramework
 functionality to interactive Python3 environments and can be used to prototype
 tests. This may be especially useful in a REPL environment with session logging
 utilities, such as
@@ -140,7 +145,7 @@ The following are useful modules for test developers. They are located in
 [test/functional/test_framework/](test_framework).
 
 #### [authproxy.py](test_framework/authproxy.py)
-Taken from the [python-fixedcoinrpc repository](https://github.com/jgarzik/python-fixedcoinrpc).
+Taken from the [python-bitcoinrpc repository](https://github.com/jgarzik/python-bitcoinrpc).
 
 #### [test_framework.py](test_framework/test_framework.py)
 Base class for functional tests.
@@ -149,10 +154,10 @@ Base class for functional tests.
 Generally useful functions.
 
 #### [p2p.py](test_framework/p2p.py)
-Test objects for interacting with a fixedcoind node over the p2p interface.
+Test objects for interacting with a bitcoind node over the p2p interface.
 
 #### [script.py](test_framework/script.py)
-Utilities for manipulating transaction scripts (originally from python-fixedcoinlib)
+Utilities for manipulating transaction scripts (originally from python-bitcoinlib)
 
 #### [key.py](test_framework/key.py)
 Test-only secp256k1 elliptic curve implementation

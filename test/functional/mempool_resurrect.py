@@ -4,12 +4,12 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test resurrection of mined transactions when the blockchain is re-organized."""
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 from test_framework.wallet import MiniWallet
 
 
-class MempoolCoinbaseTest(FixedCoinTestFramework):
+class MempoolCoinbaseTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 
@@ -55,4 +55,4 @@ class MempoolCoinbaseTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    MempoolCoinbaseTest().main()
+    MempoolCoinbaseTest(__file__).main()

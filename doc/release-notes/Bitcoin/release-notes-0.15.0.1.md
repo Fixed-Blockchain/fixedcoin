@@ -4,7 +4,7 @@ FixedCoin Core version *0.15.0.1* is now available from:
 
 and
 
-  <https://bitcoincore.org/bin/fixedcoin-core-0.15.0.1/>
+  <https://fixedcoin.org/bin/fixedcoin-core-0.15.0.1/>
 
 This is a minor bug fix for 0.15.0.
 
@@ -14,7 +14,7 @@ Please report bugs using the issue tracker at GitHub:
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============

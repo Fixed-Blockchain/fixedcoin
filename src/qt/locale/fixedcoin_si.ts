@@ -3,7 +3,7 @@
     <name>AddressBookPage</name>
     <message>
         <source>Right-click to edit address or label</source>
-        <translation type="unfinished">ලිපිනය හෝ නම්පත සංශෝධනයට දකුණු බොත්තම  ඔබන්න</translation>
+        <translation type="unfinished">ලිපිනය හෝ ලේබලය සංස්කරණය කිරීමට දකුණු-ක්ලික් කරන්න</translation>
     </message>
     <message>
         <source>Create a new address</source>
@@ -56,14 +56,6 @@
     <message>
         <source>C&amp;hoose</source>
         <translation type="unfinished">තෝ&amp;රන්න</translation>
-    </message>
-    <message>
-        <source>Sending addresses</source>
-        <translation type="unfinished">යවන ලිපින</translation>
-    </message>
-    <message>
-        <source>Receiving addresses</source>
-        <translation type="unfinished">ලැබෙන ලිපින</translation>
     </message>
     <message>
         <source>These are your FixedCoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
@@ -225,6 +217,10 @@
 <context>
     <name>FixedCoinApplication</name>
     <message>
+        <source>Settings file %1 might be corrupt or invalid.</source>
+        <translation type="unfinished">සැකසීම් ගොනුව %1 දූෂිත හෝ අවලංගු විය හැක.</translation>
+    </message>
+    <message>
         <source>Internal error</source>
         <translation type="unfinished">අභ්‍යන්තර දෝෂයකි</translation>
     </message>
@@ -298,7 +294,11 @@
             <numerusform>%n year(s)</numerusform>
         </translation>
     </message>
-    </context>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">පෙරනිමි පසුම්බිය</translation>
+    </message>
+</context>
 <context>
     <name>FixedCoinGUI</name>
     <message>
@@ -372,7 +372,7 @@
     </message>
     <message>
         <source>&amp;Backup Wallet…</source>
-        <translation type="unfinished">&amp;පසුම්බිය උපස්ථය…</translation>
+        <translation type="unfinished">&amp;පසුම්බිය උපස්ථකරන්න…</translation>
     </message>
     <message>
         <source>Close Wallet…</source>
@@ -400,7 +400,7 @@
     </message>
     <message>
         <source>Syncing Headers (%1%)…</source>
-        <translation type="unfinished">(%1%) ශ්‍රීර්ෂ සමමුහූර්ත වෙමින්…</translation>
+        <translation type="unfinished">(%1%) ශීර්ෂ සමමුහූර්ත වෙමින්…</translation>
     </message>
     <message>
         <source>Synchronizing with network…</source>
@@ -426,6 +426,10 @@
         <translation type="unfinished">තොරතුර</translation>
     </message>
     <message>
+        <source>Up to date</source>
+        <translation type="unfinished">යාවත්කාලීනයි</translation>
+    </message>
+    <message>
         <source>&amp;Sending addresses</source>
         <translation type="unfinished">&amp;යවන ලිපින</translation>
     </message>
@@ -435,11 +439,11 @@
     </message>
     <message>
         <source>Open Wallet</source>
-        <translation type="unfinished">පසුම්බිය බලන්න</translation>
+        <translation type="unfinished">පසුම්බිය විවෘත කරන්න</translation>
     </message>
     <message>
         <source>Open a wallet</source>
-        <translation type="unfinished">පසුම්බියක් බලන්න</translation>
+        <translation type="unfinished">පසුම්බියක් විවෘත කරන්න</translation>
     </message>
     <message>
         <source>Close wallet</source>
@@ -453,10 +457,6 @@
     <message>
         <source>Close all wallets</source>
         <translation type="unfinished">සියළු පසුම්බි වසන්න</translation>
-    </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">පෙරනිමි පසුම්බිය</translation>
     </message>
     <message>
         <source>Wallet Data</source>
@@ -616,14 +616,6 @@
         <translation type="unfinished">බයිට පිටපත් කරන්න</translation>
     </message>
     <message>
-        <source>yes</source>
-        <translation type="unfinished">ඔව්</translation>
-    </message>
-    <message>
-        <source>no</source>
-        <translation type="unfinished">නැත</translation>
-    </message>
-    <message>
         <source>(no label)</source>
         <translation type="unfinished">(නම්පතක් නැත)</translation>
     </message>
@@ -642,10 +634,6 @@
     </context>
 <context>
     <name>OpenWalletActivity</name>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">පෙරනිමි පසුම්බිය</translation>
-    </message>
     <message>
         <source>Open Wallet</source>
         <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
@@ -887,10 +875,6 @@
         <translation type="unfinished">අතරු මුහුණතේ &amp;භාෂාව:</translation>
     </message>
     <message>
-        <source>embedded "%1"</source>
-        <translation type="unfinished">එබ්බවූ "%1"</translation>
-    </message>
-    <message>
         <source>&amp;OK</source>
         <translation type="unfinished">&amp;හරි</translation>
     </message>
@@ -945,6 +929,11 @@
     </context>
 <context>
     <name>RPCConsole</name>
+    <message>
+        <source>The total number of addresses received from this peer that were processed (excludes addresses that were dropped due to rate-limiting).</source>
+        <extracomment>Tooltip text for the Addresses Processed field in the peer details area, which displays the total number of addresses received from this peer that were processed (excludes addresses that were dropped due to rate-limiting).</extracomment>
+        <translation type="unfinished">සකසන ලද මෙම සම වයසේ මිතුරාගෙන් ලැබුණු මුළු ලිපින ගණන (අනුපාත සීමා කිරීම හේතුවෙන් අතහැර දැමූ ලිපින හැර).</translation>
+    </message>
     <message>
         <source>&amp;Copy address</source>
         <extracomment>Context menu action to copy the address of a peer.</extracomment>
@@ -1242,11 +1231,7 @@
         <source>Send Coins</source>
         <translation type="unfinished">කාසි යවන්න</translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">පෙරනිමි පසුම්බිය</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>WalletView</name>
     <message>

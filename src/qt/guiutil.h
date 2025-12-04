@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -240,8 +240,8 @@ namespace GUIUtil
     /** Format a CNodeStats.m_last_ping_time into a user-readable string or display N/A, if 0 */
     QString formatPingTime(std::chrono::microseconds ping_time);
 
-    /** Format a CNodeCombinedStats.nTimeOffset into a user-readable string */
-    QString formatTimeOffset(int64_t nTimeOffset);
+    /** Format a CNodeStateStats.time_offset into a user-readable string */
+    QString formatTimeOffset(int64_t time_offset);
 
     QString formatNiceTimeOffset(qint64 secs);
 
@@ -435,6 +435,9 @@ namespace GUIUtil
 #endif // Q_OS_ANDROID
         return false;
     }
+
+    QString WalletDisplayName(const std::string& name);
+    QString WalletDisplayName(const QString& name);
 
 } // namespace GUIUtil
 

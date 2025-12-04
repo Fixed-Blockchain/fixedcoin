@@ -1,13 +1,13 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef FIXEDCOIN_OUTPUTTYPE_H
 #define FIXEDCOIN_OUTPUTTYPE_H
 
+#include <addresstype.h>
 #include <script/signingprovider.h>
-#include <script/standard.h>
 
 #include <array>
 #include <optional>
@@ -46,7 +46,7 @@ std::vector<CTxDestination> GetAllDestinationsForKey(const CPubKey& key);
  * This function will automatically add the script (and any other
  * necessary scripts) to the keystore.
  */
-CTxDestination AddAndGetDestinationForScript(FillableSigningProvider& keystore, const CScript& script, OutputType);
+CTxDestination AddAndGetDestinationForScript(FlatSigningProvider& keystore, const CScript& script, OutputType);
 
 /** Get the OutputType for a CTxDestination */
 std::optional<OutputType> OutputTypeFromDestination(const CTxDestination& dest);

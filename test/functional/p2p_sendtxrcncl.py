@@ -18,7 +18,7 @@ from test_framework.p2p import (
     P2P_SUBVERSION,
     P2P_VERSION,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
 class PeerNoVerack(P2PInterface):
@@ -29,6 +29,7 @@ class PeerNoVerack(P2PInterface):
         # Avoid sending verack in response to version.
         # When calling add_p2p_connection, wait_for_verack=False must be set (see
         # comment in add_p2p_connection).
+        self.send_version()
         if message.nVersion >= 70016 and self.wtxidrelay:
             self.send_message(msg_wtxidrelay())
 
@@ -43,7 +44,8 @@ class SendTxrcnclReceiver(P2PInterface):
 
 class P2PFeelerReceiver(SendTxrcnclReceiver):
     def on_version(self, message):
-        pass  # feeler connections can not send any message other than their own version
+        # feeler connections can not send any message other than their own version
+        self.send_version()
 
 
 class PeerTrackMsgOrder(P2PInterface):
@@ -61,7 +63,7 @@ def create_sendtxrcncl_msg():
     sendtxrcncl_msg.salt = 2
     return sendtxrcncl_msg
 
-class SendTxRcnclTest(FixedCoinTestFramework):
+class SendTxRcnclTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [['-txreconciliation']]
@@ -166,7 +168,7 @@ class SendTxRcnclTest(FixedCoinTestFramework):
         with self.nodes[0].assert_debug_log(["received: sendtxrcncl"]):
             peer.send_message(create_sendtxrcncl_msg())
         self.log.info('second SENDTXRCNCL triggers a disconnect')
-        with self.nodes[0].assert_debug_log(["(sendtxrcncl received from already registered peer); disconnecting"]):
+        with self.nodes[0].assert_debug_log(["(sendtxrcncl received from already registered peer), disconnecting peer=0"]):
             peer.send_message(create_sendtxrcncl_msg())
             peer.wait_for_disconnect()
 
@@ -224,10 +226,10 @@ class SendTxRcnclTest(FixedCoinTestFramework):
         self.log.info('SENDTXRCNCL if block-relay-only triggers a disconnect')
         peer = self.nodes[0].add_outbound_p2p_connection(
             PeerNoVerack(), wait_for_verack=False, p2p_idx=0, connection_type="block-relay-only")
-        with self.nodes[0].assert_debug_log(["we indicated no tx relay; disconnecting"]):
+        with self.nodes[0].assert_debug_log(["we indicated no tx relay, disconnecting peer=5"]):
             peer.send_message(create_sendtxrcncl_msg())
             peer.wait_for_disconnect()
 
 
 if __name__ == '__main__':
-    SendTxRcnclTest().main()
+    SendTxRcnclTest(__file__).main()

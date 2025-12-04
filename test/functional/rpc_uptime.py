@@ -9,11 +9,11 @@ Test corresponds to code in rpc/server.cpp.
 
 import time
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_raises_rpc_error
 
 
-class UptimeTest(FixedCoinTestFramework):
+class UptimeTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
@@ -23,7 +23,7 @@ class UptimeTest(FixedCoinTestFramework):
         self._test_uptime()
 
     def _test_negative_time(self):
-        assert_raises_rpc_error(-8, "Mocktime cannot be negative: -1.", self.nodes[0].setmocktime, -1)
+        assert_raises_rpc_error(-8, "Mocktime must be in the range [0, 9223372036], not -1.", self.nodes[0].setmocktime, -1)
 
     def _test_uptime(self):
         wait_time = 10
@@ -32,4 +32,4 @@ class UptimeTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    UptimeTest().main()
+    UptimeTest(__file__).main()

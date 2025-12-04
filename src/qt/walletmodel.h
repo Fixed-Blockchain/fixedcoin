@@ -1,16 +1,11 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef FIXEDCOIN_QT_WALLETMODEL_H
 #define FIXEDCOIN_QT_WALLETMODEL_H
 
-#if defined(HAVE_CONFIG_H)
-#include <config/fixedcoin-config.h>
-#endif
-
 #include <key.h>
-#include <script/standard.h>
 
 #include <qt/walletmodeltransaction.h>
 
@@ -135,7 +130,7 @@ public:
     UnlockContext requestUnlock();
 
     bool bumpFee(uint256 hash, uint256& new_hash);
-    bool displayAddress(std::string sAddress) const;
+    void displayAddress(std::string sAddress) const;
 
     static bool isWalletEnabled();
 

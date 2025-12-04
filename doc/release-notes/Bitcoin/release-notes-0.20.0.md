@@ -3,7 +3,7 @@
 
 FixedCoin Core version 0.20.0 is now available from:
 
-  <https://bitcoincore.org/bin/fixedcoin-core-0.20.0/>
+  <https://fixedcoin.org/bin/fixedcoin-core-0.20.0/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
@@ -14,7 +14,7 @@ Please report bugs using the issue tracker at GitHub:
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
@@ -206,7 +206,7 @@ GUI changes
   peer selection. See the `-asmap` configuration option in _New
   Settings_, above.  (#18402)
 
-- A "known bug" [announced](https://bitcoincore.org/en/releases/0.18.0/#wallet-gui)
+- A "known bug" [announced](https://fixedcoin.org/en/releases/0.18.0/#wallet-gui)
   in the release notes of version 0.18 has been fixed.  The issue
   affected anyone who simultaneously used multiple FixedCoin Core wallets
   and the GUI coin control feature. (#18894)

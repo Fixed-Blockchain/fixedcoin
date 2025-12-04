@@ -3,7 +3,7 @@
 <plist version="0.9">
 <dict>
   <key>LSMinimumSystemVersion</key>
-  <string>10.15.0</string>
+  <string>13</string>
 
   <key>LSArchitecturePriority</key>
   <array>
@@ -11,7 +11,7 @@
   </array>
 
   <key>CFBundleIconFile</key>
-  <string>fixedcoin.icns</string>
+  <string>bitcoin.icns</string>
 
   <key>CFBundlePackageType</key>
   <string>APPL</string>
@@ -34,16 +34,16 @@
   <string>????</string>
 
   <key>CFBundleExecutable</key>
-  <string>FixedCoin-Qt</string>
+  <string>Bitcoin-Qt</string>
 
   <key>CFBundleName</key>
-  <string>FixedCoin-Qt</string>
+  <string>Bitcoin-Qt</string>
 
   <key>LSHasLocalizedDisplayName</key>
   <true/>
 
   <key>CFBundleIdentifier</key>
-  <string>org.fixedcoinfoundation.FixedCoin-Qt</string>
+  <string>org.bitcoinfoundation.Bitcoin-Qt</string>
 
   <key>CFBundleURLTypes</key>
   <array>
@@ -51,10 +51,10 @@
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>org.fixedcoin.FixedCoinPayment</string>
+      <string>org.bitcoin.BitcoinPayment</string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>fixedcoin</string>
+        <string>bitcoin</string>
       </array>
     </dict>
   </array>

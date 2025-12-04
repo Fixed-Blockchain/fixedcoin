@@ -8,10 +8,10 @@
 import os
 import stat
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 
-class PosixFsPermissionsTest(FixedCoinTestFramework):
+class PosixFsPermissionsTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -31,13 +31,13 @@ class PosixFsPermissionsTest(FixedCoinTestFramework):
 
     def run_test(self):
         self.stop_node(0)
-        datadir = os.path.join(self.nodes[0].datadir, self.chain)
+        datadir = self.nodes[0].chain_path
         self.check_directory_permissions(datadir)
-        walletsdir = os.path.join(datadir, "wallets")
+        walletsdir = self.nodes[0].wallets_path
         self.check_directory_permissions(walletsdir)
-        debuglog = os.path.join(datadir, "debug.log")
+        debuglog = self.nodes[0].debug_log_path
         self.check_file_permissions(debuglog)
 
 
 if __name__ == '__main__':
-    PosixFsPermissionsTest().main()
+    PosixFsPermissionsTest(__file__).main()

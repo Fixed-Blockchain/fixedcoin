@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-# Copyright (c) 2020-2022 The Bitcoin Core developers
+# Copyright (c) 2020-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test generate* RPCs."""
 
-from test_framework.test_framework import FixedCoinTestFramework
+from concurrent.futures import ThreadPoolExecutor
+
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.wallet import MiniWallet
 from test_framework.util import (
     assert_equal,
@@ -12,7 +14,7 @@ from test_framework.util import (
 )
 
 
-class RPCGenerateTest(FixedCoinTestFramework):
+class RPCGenerateTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 
@@ -83,6 +85,13 @@ class RPCGenerateTest(FixedCoinTestFramework):
         txid = block['tx'][1]
         assert_equal(node.getrawtransaction(txid=txid, verbose=False, blockhash=hash), rawtx)
 
+        # Ensure that generateblock can be called concurrently by many threads.
+        self.log.info('Generate blocks in parallel')
+        generate_50_blocks = lambda n: [n.generateblock(output=address, transactions=[]) for _ in range(50)]
+        rpcs = [node.cli for _ in range(6)]
+        with ThreadPoolExecutor(max_workers=len(rpcs)) as threads:
+            list(threads.map(generate_50_blocks, rpcs))
+
         self.log.info('Fail to generate block with out of order txs')
         txid1 = miniwallet.send_self_transfer(from_node=node)['txid']
         utxo1 = miniwallet.get_utxo(txid=txid1)
@@ -126,4 +135,4 @@ class RPCGenerateTest(FixedCoinTestFramework):
 
 
 if __name__ == "__main__":
-    RPCGenerateTest().main()
+    RPCGenerateTest(__file__).main()

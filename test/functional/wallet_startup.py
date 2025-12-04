@@ -4,15 +4,15 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test wallet load on startup.
 
-Verify that a fixedcoind node can maintain list of wallets loading on startup
+Verify that a bitcoind node can maintain list of wallets loading on startup
 """
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
 )
 
 
-class WalletStartupTest(FixedCoinTestFramework):
+class WalletStartupTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -58,4 +58,4 @@ class WalletStartupTest(FixedCoinTestFramework):
         assert_equal(set(self.nodes[0].listwallets()), set(('w2', 'w3')))
 
 if __name__ == '__main__':
-    WalletStartupTest().main()
+    WalletStartupTest(__file__).main()

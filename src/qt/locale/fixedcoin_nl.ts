@@ -1,13 +1,295 @@
 <TS version="2.1" language="nl">
 <context>
+    <name>AddressBookPage</name>
+    <message>
+        <source>Right-click to edit address or label</source>
+        <translation type="unfinished">Rechtermuisklik om adres of label te wijzigen</translation>
+    </message>
+    <message>
+        <source>Create a new address</source>
+        <translation type="unfinished">Maak een nieuw adres aan</translation>
+    </message>
+    <message>
+        <source>&amp;New</source>
+        <translation type="unfinished">&amp;Nieuw</translation>
+    </message>
+    <message>
+        <source>Copy the currently selected address to the system clipboard</source>
+        <translation type="unfinished">Kopieer het momenteel geselecteerde adres naar het systeem klembord</translation>
+    </message>
+    <message>
+        <source>&amp;Copy</source>
+        <translation type="unfinished">&amp;Kopieer</translation>
+    </message>
+    <message>
+        <source>C&amp;lose</source>
+        <translation type="unfinished">S&amp;luiten</translation>
+    </message>
+    <message>
+        <source>Delete the currently selected address from the list</source>
+        <translation type="unfinished">Verwijder het geselecteerde adres van de lijst</translation>
+    </message>
+    <message>
+        <source>Enter address or label to search</source>
+        <translation type="unfinished">Vul adres of label in om te zoeken</translation>
+    </message>
+    <message>
+        <source>Export the data in the current tab to a file</source>
+        <translation type="unfinished">Exporteer de data in de huidige tab naar een bestand</translation>
+    </message>
+    <message>
+        <source>&amp;Export</source>
+        <translation type="unfinished">&amp;Exporteer</translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished">&amp;Verwijder</translation>
+    </message>
+    <message>
+        <source>Choose the address to send coins to</source>
+        <translation type="unfinished">Kies het adres om de munten te versturen</translation>
+    </message>
+    <message>
+        <source>Choose the address to receive coins with</source>
+        <translation type="unfinished">Kies het adres om munten te ontvangen</translation>
+    </message>
+    <message>
+        <source>C&amp;hoose</source>
+        <translation type="unfinished">K&amp;iezen</translation>
+    </message>
+    <message>
+        <source>These are your FixedCoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation type="unfinished">Dit zijn uw FixedCoin adressen om betalingen mee te verzenden. Controleer altijd het bedrag en het ontvangstadres voordat u uw fixedcoins verzendt.</translation>
+    </message>
+    <message>
+        <source>These are your FixedCoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.
+Signing is only possible with addresses of the type 'legacy'.</source>
+        <translation type="unfinished">Dit zijn uw FixedCoin adressen voor het ontvangen van betalingen. Gebruik de 'Nieuw ontvangstadres maken' knop in de ontvangst tab om nieuwe adressen te maken.
+Ondertekenen is alleen mogelijk met adressen van het type 'legacy'.</translation>
+    </message>
+    <message>
+        <source>&amp;Copy Address</source>
+        <translation type="unfinished">&amp;Kopiëer adres</translation>
+    </message>
+    <message>
+        <source>Copy &amp;Label</source>
+        <translation type="unfinished">Kopieer &amp;Label</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished">&amp;Bewerk</translation>
+    </message>
+    <message>
+        <source>Export Address List</source>
+        <translation type="unfinished">Exporteer adressenlijst</translation>
+    </message>
+    <message>
+        <source>Comma separated file</source>
+        <extracomment>Expanded name of the CSV file format. See: https://en.wikipedia.org/wiki/Comma-separated_values.</extracomment>
+        <translation type="unfinished">Kommagescheiden bestand</translation>
+    </message>
+    <message>
+        <source>There was an error trying to save the address list to %1. Please try again.</source>
+        <extracomment>An error message. %1 is a stand-in argument for the name of the file we attempted to save to.</extracomment>
+        <translation type="unfinished">Een fout is opgetreden tijdens het opslaan van deze adreslijst naar %1. Probeer nogmaals.</translation>
+    </message>
+    <message>
+        <source>Sending addresses - %1</source>
+        <translation type="unfinished">Verzendadressen - %1</translation>
+    </message>
+    <message>
+        <source>Receiving addresses - %1</source>
+        <translation type="unfinished">Ontvangstadressen - %1</translation>
+    </message>
+    <message>
+        <source>Exporting Failed</source>
+        <translation type="unfinished">Exporteren Mislukt</translation>
+    </message>
+</context>
+<context>
+    <name>AddressTableModel</name>
+    <message>
+        <source>Address</source>
+        <translation type="unfinished">Adres</translation>
+    </message>
+    <message>
+        <source>(no label)</source>
+        <translation type="unfinished">(geen label)</translation>
+    </message>
+</context>
+<context>
     <name>AskPassphraseDialog</name>
+    <message>
+        <source>Passphrase Dialog</source>
+        <translation type="unfinished">Wachtwoordzindialoog</translation>
+    </message>
+    <message>
+        <source>Enter passphrase</source>
+        <translation type="unfinished">Voer wachtwoordzin in</translation>
+    </message>
+    <message>
+        <source>New passphrase</source>
+        <translation type="unfinished">Nieuwe wachtwoordzin</translation>
+    </message>
+    <message>
+        <source>Repeat new passphrase</source>
+        <translation type="unfinished">Herhaal nieuwe wachtwoordzin</translation>
+    </message>
+    <message>
+        <source>Show passphrase</source>
+        <translation type="unfinished">Toon wachtwoordzin</translation>
+    </message>
+    <message>
+        <source>Encrypt wallet</source>
+        <translation type="unfinished">Versleutel portemonnee</translation>
+    </message>
+    <message>
+        <source>This operation needs your wallet passphrase to unlock the wallet.</source>
+        <translation type="unfinished">Deze bewerking heeft uw portemonnee wachtwoordzin nodig om de portemonnee te ontgrendelen.</translation>
+    </message>
+    <message>
+        <source>Unlock wallet</source>
+        <translation type="unfinished">Portemonnee ontgrendelen</translation>
+    </message>
+    <message>
+        <source>Change passphrase</source>
+        <translation type="unfinished">Wijzig wachtwoordzin</translation>
+    </message>
+    <message>
+        <source>Confirm wallet encryption</source>
+        <translation type="unfinished">Bevestig versleuteling van de portemonnee</translation>
+    </message>
+    <message>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR FIXEDCOINS&lt;/b&gt;!</source>
+        <translation type="unfinished">Waarschuwing: Als u uw portemonnee versleutelt en uw wachtwoord vergeet, zult u &lt;b&gt;AL UW FIXEDCOINS VERLIEZEN&lt;/b&gt;!</translation>
+    </message>
+    <message>
+        <source>Are you sure you wish to encrypt your wallet?</source>
+        <translation type="unfinished">Weet u zeker dat u uw portemonnee wilt versleutelen?</translation>
+    </message>
+    <message>
+        <source>Wallet encrypted</source>
+        <translation type="unfinished">Portemonnee versleuteld</translation>
+    </message>
+    <message>
+        <source>Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
+        <translation type="unfinished">Voer de nieuwe wachtwoordzin in voor de portemonnee.&lt;br/&gt;Gebruik a.u.b. een wachtwoordzin van &lt;b&gt;tien of meer willekeurige karakters&lt;/b&gt;, of &lt;b&gt;acht of meer woorden&lt;/b&gt;.</translation>
+    </message>
+    <message>
+        <source>Enter the old passphrase and new passphrase for the wallet.</source>
+        <translation type="unfinished">Voer de oude wachtwoordzin en de nieuwe wachtwoordzin in voor de portemonnee.</translation>
+    </message>
+    <message>
+        <source>Continue</source>
+        <translation type="unfinished">Doorgaan</translation>
+    </message>
+    <message>
+        <source>Remember that encrypting your wallet cannot fully protect your fixedcoins from being stolen by malware infecting your computer.</source>
+        <translation type="unfinished">Onthoud dat het versleutelen van uw portemonnee uw fixedcoins niet volledig kan beschermen tegen diefstal, bijvoorbeeld door malware die uw computer infecteert.</translation>
+    </message>
+    <message>
+        <source>Wallet to be encrypted</source>
+        <translation type="unfinished">Portemonnee om te versleutelen</translation>
+    </message>
+    <message>
+        <source>Your wallet is about to be encrypted. </source>
+        <translation type="unfinished">Uw portemonnee gaat nu versleuteld worden.</translation>
+    </message>
+    <message>
+        <source>Your wallet is now encrypted. </source>
+        <translation type="unfinished">Uw portemonnee is nu versleuteld.</translation>
+    </message>
+    <message>
+        <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
+        <translation type="unfinished">BELANGRIJK: Elke eerder gemaakte backup van uw portemonneebestand dient u te vervangen door het nieuw gegenereerde, versleutelde portemonneebestand. Om veiligheidsredenen zullen eerdere backups van het niet versleutelde portemonneebestand onbruikbaar worden zodra u uw nieuwe, versleutelde, portemonnee begint te gebruiken.</translation>
+    </message>
+    <message>
+        <source>Wallet encryption failed</source>
+        <translation type="unfinished">Portemonneeversleuteling mislukt</translation>
+    </message>
+    <message>
+        <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
+        <translation type="unfinished">Portemonneeversleuteling mislukt door een interne fout. Uw portemonnee is niet versleuteld.</translation>
+    </message>
+    <message>
+        <source>The supplied passphrases do not match.</source>
+        <translation type="unfinished">De opgegeven wachtwoorden komen niet overeen</translation>
+    </message>
+    <message>
+        <source>Wallet unlock failed</source>
+        <translation type="unfinished">Portemonnee openen mislukt</translation>
+    </message>
+    <message>
+        <source>The passphrase entered for the wallet decryption was incorrect.</source>
+        <translation type="unfinished">Het opgegeven wachtwoord voor de portemonnee ontsleuteling is niet correct.</translation>
+    </message>
+    <message>
+        <source>The passphrase entered for the wallet decryption is incorrect. It contains a null character (ie - a zero byte). If the passphrase was set with a version of this software prior to 25.0, please try again with only the characters up to — but not including — the first null character. If this is successful, please set a new passphrase to avoid this issue in the future.</source>
+        <translation type="unfinished">De ingevoerde wachtwoordzin voor de decodering van de portemonnee is onjuist. Het bevat een null-teken (dwz - een nulbyte). Als de wachtwoordzin is ingesteld met een versie van deze software ouder dan 25.0, probeer het dan opnieuw met alleen de tekens tot — maar niet inclusief —het eerste null-teken. Als dit lukt, stelt u een nieuwe wachtwoordzin in om dit probleem in de toekomst te voorkomen.</translation>
+    </message>
     <message>
         <source>Wallet passphrase was successfully changed.</source>
         <translation type="unfinished">Portemonneewachtwoord is met succes gewijzigd.</translation>
     </message>
-    </context>
+    <message>
+        <source>Passphrase change failed</source>
+        <translation type="unfinished">Wijzigen van wachtwoordzin mislukt</translation>
+    </message>
+    <message>
+        <source>The old passphrase entered for the wallet decryption is incorrect. It contains a null character (ie - a zero byte). If the passphrase was set with a version of this software prior to 25.0, please try again with only the characters up to — but not including — the first null character.</source>
+        <translation type="unfinished">De oude wachtwoordzin die is ingevoerd voor de decodering van de portemonnee is onjuist. Het bevat een null-teken (dwz - een nulbyte). Als de wachtwoordzin is ingesteld met een versie van deze software ouder dan 25.0, probeer het dan opnieuw met alleen de tekens tot — maar niet inclusief — het eerste null-teken.</translation>
+    </message>
+    <message>
+        <source>Warning: The Caps Lock key is on!</source>
+        <translation type="unfinished">Waarschuwing: De Caps-Lock toets staat aan!</translation>
+    </message>
+</context>
+<context>
+    <name>BanTableModel</name>
+    <message>
+        <source>IP/Netmask</source>
+        <translation type="unfinished">IP/Netmasker</translation>
+    </message>
+    <message>
+        <source>Banned Until</source>
+        <translation type="unfinished">Geband tot</translation>
+    </message>
+</context>
+<context>
+    <name>FixedCoinApplication</name>
+    <message>
+        <source>Settings file %1 might be corrupt or invalid.</source>
+        <translation type="unfinished">Instellingenbestand %1 is mogelijk beschadigd of ongeldig.</translation>
+    </message>
+    <message>
+        <source>Runaway exception</source>
+        <translation type="unfinished">Ongecontroleerde uitzondering</translation>
+    </message>
+    <message>
+        <source>A fatal error occurred. %1 can no longer continue safely and will quit.</source>
+        <translation type="unfinished">Er is een fatale fout opgetreden. %1 kan niet langer veilig doorgaan en wordt afgesloten.</translation>
+    </message>
+    <message>
+        <source>Internal error</source>
+        <translation type="unfinished">Interne fout</translation>
+    </message>
+    <message>
+        <source>An internal error occurred. %1 will attempt to continue safely. This is an unexpected bug which can be reported as described below.</source>
+        <translation type="unfinished">Een interne fout heeft plaatsgevonden. %1 zal proberen om veilig door te gaan. Dit is een onverwacht probleem wat vermeldt kan worden zoals hieronder beschreven staat.</translation>
+    </message>
+</context>
 <context>
     <name>QObject</name>
+    <message>
+        <source>Do you want to reset settings to default values, or to abort without making changes?</source>
+        <extracomment>Explanatory text shown on startup when the settings file cannot be read. Prompts user to make a choice between resetting or aborting.</extracomment>
+        <translation type="unfinished">Wilt u de instellingen terugzetten naar de standaardwaarden of afbreken zonder wijzigingen aan te brengen?</translation>
+    </message>
+    <message>
+        <source>A fatal error occurred. Check that settings file is writable, or try running with -nosettings.</source>
+        <extracomment>Explanatory text shown on startup when the settings file could not be written. Prompts user to check that we have the ability to write to the file. Explains that the user has the option of running without a settings file.</extracomment>
+        <translation type="unfinished">Er is een fatale fout opgetreden. Controleer of het instellingen bestand schrijfbaar is of probeer het uit te voeren met -nosettings.</translation>
+    </message>
     <message>
         <source>Error: %1</source>
         <translation type="unfinished">Fout: %1</translation>
@@ -19,6 +301,18 @@
     <message>
         <source>unknown</source>
         <translation type="unfinished">onbekend</translation>
+    </message>
+    <message>
+        <source>Embedded "%1"</source>
+        <translation type="unfinished">Ingebed "%1"</translation>
+    </message>
+    <message>
+        <source>Default system font "%1"</source>
+        <translation type="unfinished">Standaard systeemlettertype "%1"</translation>
+    </message>
+    <message>
+        <source>Custom…</source>
+        <translation type="unfinished">Aangepast...</translation>
     </message>
     <message>
         <source>Amount</source>
@@ -128,6 +422,10 @@
     <message>
         <source>%1 GB</source>
         <translation type="unfinished">%1 Gb</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standaard portemonnee</translation>
     </message>
 </context>
 <context>
@@ -409,8 +707,26 @@
         <translation type="unfinished">Portemonnee Sluiten</translation>
     </message>
     <message>
+        <source>Restore Wallet…</source>
+        <extracomment>Name of the menu item that restores wallet from a backup file.</extracomment>
+        <translation type="unfinished">Portemonnee Herstellen...</translation>
+    </message>
+    <message>
+        <source>Restore a wallet from a backup file</source>
+        <extracomment>Status tip for Restore Wallet menu item</extracomment>
+        <translation type="unfinished">Herstel een portemonnee vanuit een back-upbestand</translation>
+    </message>
+    <message>
         <source>Close all wallets</source>
         <translation type="unfinished">Sluit alle portemonnees</translation>
+    </message>
+    <message>
+        <source>Migrate Wallet</source>
+        <translation type="unfinished">Wallet migreren</translation>
+    </message>
+    <message>
+        <source>Migrate a wallet</source>
+        <translation type="unfinished">Een wallet migreren</translation>
     </message>
     <message>
         <source>Show the %1 help message to get a list with possible FixedCoin command-line options</source>
@@ -425,10 +741,6 @@
         <translation type="unfinished">Maskeer de waarden op het tabblad Overzicht</translation>
     </message>
     <message>
-        <source>default wallet</source>
-        <translation type="unfinished">standaard portemonnee</translation>
-    </message>
-    <message>
         <source>No wallets available</source>
         <translation type="unfinished">Geen portefeuilles beschikbaar</translation>
     </message>
@@ -436,6 +748,11 @@
         <source>Wallet Data</source>
         <extracomment>Name of the wallet data file format.</extracomment>
         <translation type="unfinished">Walletgegevens</translation>
+    </message>
+    <message>
+        <source>Load Wallet Backup</source>
+        <extracomment>The title for Restore Wallet File Windows</extracomment>
+        <translation type="unfinished">Laad back-up van portemonnee</translation>
     </message>
     <message>
         <source>Restore Wallet</source>
@@ -490,6 +807,18 @@
         <source>Enable network activity</source>
         <extracomment>A context menu item. The network activity was disabled previously.</extracomment>
         <translation type="unfinished">Netwerkactiviteit inschakelen</translation>
+    </message>
+    <message>
+        <source>Pre-syncing Headers (%1%)…</source>
+        <translation type="unfinished">Blokhoofden synchroniseren (%1%)...</translation>
+    </message>
+    <message>
+        <source>Error creating wallet</source>
+        <translation type="unfinished">Fout bij wallet maken</translation>
+    </message>
+    <message>
+        <source>Cannot create new wallet, the software was compiled without sqlite support (required for descriptor wallets)</source>
+        <translation type="unfinished">Kan geen nieuwe wallet maken, de software werd gecompileerd zonder sqlite-ondersteuning (nodig voor descriptor wallets)</translation>
     </message>
     <message>
         <source>Error: %1</source>
@@ -574,10 +903,6 @@
     <message>
         <source>Fee:</source>
         <translation type="unfinished">Vergoeding:</translation>
-    </message>
-    <message>
-        <source>Dust:</source>
-        <translation type="unfinished">Stof:</translation>
     </message>
     <message>
         <source>After Fee:</source>
@@ -668,28 +993,12 @@
         <translation type="unfinished">Kopieer bytes</translation>
     </message>
     <message>
-        <source>Copy dust</source>
-        <translation type="unfinished">Kopieër stof</translation>
-    </message>
-    <message>
         <source>Copy change</source>
         <translation type="unfinished">Kopieer wijziging</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 geblokkeerd)</translation>
-    </message>
-    <message>
-        <source>yes</source>
-        <translation type="unfinished">ja</translation>
-    </message>
-    <message>
-        <source>no</source>
-        <translation type="unfinished">nee</translation>
-    </message>
-    <message>
-        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
-        <translation type="unfinished">Dit label wordt rood, als een ontvanger een bedrag van minder dan de huidige dust drempel gekregen heeft.</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -732,7 +1041,11 @@
         <source>Can't list signers</source>
         <translation type="unfinished">Kan geen lijst maken van ondertekenaars</translation>
     </message>
-    </context>
+    <message>
+        <source>Too many external signers found</source>
+        <translation type="unfinished">Te veel externe ondertekenaars gevonden</translation>
+    </message>
+</context>
 <context>
     <name>LoadWalletsActivity</name>
     <message>
@@ -747,6 +1060,57 @@
     </message>
 </context>
 <context>
+    <name>MigrateWalletActivity</name>
+    <message>
+        <source>Migrate wallet</source>
+        <translation type="unfinished">Wallet migreren</translation>
+    </message>
+    <message>
+        <source>Are you sure you wish to migrate the wallet &lt;i&gt;%1&lt;/i&gt;?</source>
+        <translation type="unfinished">Weet je zeker dat je wil migreren van wallet &lt;i&gt;%1&lt;/i&gt;?</translation>
+    </message>
+    <message>
+        <source>Migrating the wallet will convert this wallet to one or more descriptor wallets. A new wallet backup will need to be made.
+If this wallet contains any watchonly scripts, a new wallet will be created which contains those watchonly scripts.
+If this wallet contains any solvable but not watched scripts, a different and new wallet will be created which contains those scripts.
+
+The migration process will create a backup of the wallet before migrating. This backup file will be named &lt;wallet name&gt;-&lt;timestamp&gt;.legacy.bak and can be found in the directory for this wallet. In the event of an incorrect migration, the backup can be restored with the "Restore Wallet" functionality.</source>
+        <translation type="unfinished">De wallet migreren converteert deze wallet naar één of meerdere descriptor wallets. Er moet een nieuwe wallet backup gemaakt worden.
+Indien deze wallet alleen lezen scripts bevat, wordt er een nieuwe wallet gemaakt die deze alleen lezen scripts bevat.
+Indien deze wallet oplosbare maar ongemonitorde scripts bevat, wordt er een andere en nieuwe wallet gemaakt die deze scripts bevat.
+
+Het migratieproces maakt voorafgaand aan het migreren een backup van de wallet. Dit backupbestand krijgt de naam &lt;wallet name&gt;-&lt;timestamp&gt;.legacy.bak en is te vinden in de map van deze wallet. In het geval van een onjuiste migratie, kan de backup hersteld worden met de "Wallet Herstellen" functie.</translation>
+    </message>
+    <message>
+        <source>Migrate Wallet</source>
+        <translation type="unfinished">Wallet migreren</translation>
+    </message>
+    <message>
+        <source>Migrating Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
+        <translation type="unfinished">Migreren wallet &lt;b&gt;%1&lt;/b&gt;…</translation>
+    </message>
+    <message>
+        <source>The wallet '%1' was migrated successfully.</source>
+        <translation type="unfinished">De wallet '%1' werd succesvol gemigreerd.</translation>
+    </message>
+    <message>
+        <source>Watchonly scripts have been migrated to a new wallet named '%1'.</source>
+        <translation type="unfinished">Alleen lezen scripts zijn gemigreerd naar een nieuwe wallet met de naam '%1'.</translation>
+    </message>
+    <message>
+        <source>Solvable but not watched scripts have been migrated to a new wallet named '%1'.</source>
+        <translation type="unfinished">Oplosbare maar ongemonitorde scripts zijn gemigreerd naar een nieuwe wallet met de naam '%1'.</translation>
+    </message>
+    <message>
+        <source>Migration failed</source>
+        <translation type="unfinished">Migreren mislukt</translation>
+    </message>
+    <message>
+        <source>Migration Successful</source>
+        <translation type="unfinished">Migreren succesvol</translation>
+    </message>
+</context>
+<context>
     <name>OpenWalletActivity</name>
     <message>
         <source>Open wallet failed</source>
@@ -757,13 +1121,9 @@
         <translation type="unfinished">Wallet openen waarschuwing</translation>
     </message>
     <message>
-        <source>default wallet</source>
-        <translation type="unfinished">standaard wallet</translation>
-    </message>
-    <message>
         <source>Open Wallet</source>
         <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
-        <translation type="unfinished">Wallet openen</translation>
+        <translation type="unfinished">Portemonnee Openen</translation>
     </message>
     <message>
         <source>Opening Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
@@ -803,7 +1163,7 @@
     <name>WalletController</name>
     <message>
         <source>Close wallet</source>
-        <translation type="unfinished">Wallet sluiten</translation>
+        <translation type="unfinished">Portemonnee Sluiten</translation>
     </message>
     <message>
         <source>Are you sure you wish to close the wallet &lt;i&gt;%1&lt;/i&gt;?</source>
@@ -815,7 +1175,7 @@
     </message>
     <message>
         <source>Close all wallets</source>
-        <translation type="unfinished">Alle wallets sluiten</translation>
+        <translation type="unfinished">Sluit alle portemonnees</translation>
     </message>
     <message>
         <source>Are you sure you wish to close all wallets?</source>
@@ -827,6 +1187,14 @@
     <message>
         <source>Create Wallet</source>
         <translation type="unfinished">Wallet aanmaken</translation>
+    </message>
+    <message>
+        <source>You are one step away from creating your new wallet!</source>
+        <translation type="unfinished">Je bent één stap verwijderd van het maken van je nieuwe wallet!</translation>
+    </message>
+    <message>
+        <source>Please provide a name and, if desired, enable any advanced options</source>
+        <translation type="unfinished">Voer aub een naam in en activeer, indien gewenst, geavanceerde opties</translation>
     </message>
     <message>
         <source>Wallet Name</source>
@@ -846,7 +1214,7 @@
     </message>
     <message>
         <source>Disable private keys for this wallet. Wallets with private keys disabled will have no private keys and cannot have an HD seed or imported private keys. This is ideal for watch-only wallets.</source>
-        <translation type="unfinished">Schakel geheime sleutels (private keys) uit voor deze wallet. Wallets met uitgeschakelde geheime sleutels hebben deze niet en kunnen geen HD seed of geimporteerde privésleutels bevatten. Dit is ideaal voor alleen-lezen wallets.</translation>
+        <translation type="unfinished">Schakel geheime sleutels uit voor deze wallet. Portomonnees met uitgeschakelde geheime sleutels hebben deze niet en kunnen geen HD seed of geimporteerde  geheime sleutels bevatten. Dit is ideaal voor alleen-bekijkbare portomonnees.</translation>
     </message>
     <message>
         <source>Disable Private Keys</source>
@@ -861,14 +1229,6 @@
         <translation type="unfinished">Lege wallet aanmaken</translation>
     </message>
     <message>
-        <source>Use descriptors for scriptPubKey management</source>
-        <translation type="unfinished">Gebruik descriptors voor scriptPubKey-beheer</translation>
-    </message>
-    <message>
-        <source>Descriptor Wallet</source>
-        <translation type="unfinished">Descriptorwallet</translation>
-    </message>
-    <message>
         <source>Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
         <translation type="unfinished">Gebruik een externe signing device zoals een hardware wallet. Configureer eerst het externe signer script in de wallet voorkeuren.</translation>
     </message>
@@ -879,10 +1239,6 @@
     <message>
         <source>Create</source>
         <translation type="unfinished">Creëer</translation>
-    </message>
-    <message>
-        <source>Compiled without sqlite support (required for descriptor wallets)</source>
-        <translation type="unfinished">Gecompileerd zonder sqlite-ondersteuning (nodig voor descriptor wallets)</translation>
     </message>
     <message>
         <source>Compiled without external signing support (required for external signing)</source>
@@ -969,8 +1325,8 @@
     <message numerus="yes">
         <source>%n GB of space available</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n GB beschikbare ruimte </numerusform>
+            <numerusform>%n GB beschikbare ruimte </numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -986,6 +1342,10 @@
             <numerusform>(%n GB nodig voor volledige keten)</numerusform>
             <numerusform>(%n GB nodig voor volledige keten)</numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Choose data directory</source>
+        <translation type="unfinished">Stel gegevensmap in</translation>
     </message>
     <message>
         <source>At least %1 GB of data will be stored in this directory, and it will grow over time.</source>
@@ -1046,6 +1406,10 @@
     <message>
         <source>This initial synchronisation is very demanding, and may expose hardware problems with your computer that had previously gone unnoticed. Each time you run %1, it will continue downloading where it left off.</source>
         <translation type="unfinished">Deze initiële synchronisatie is heel veeleisend, en kan hardware problemen met uw computer blootleggen die voorheen onopgemerkt bleven. Elke keer dat %1 gebruikt word, zal verdergegaan worden waar gebleven is.</translation>
+    </message>
+    <message>
+        <source>When you click OK, %1 will begin to download and process the full %4 block chain (%2 GB) starting with the earliest transactions in %3 when %4 initially launched.</source>
+        <translation type="unfinished">Als u op OK klikt, dan zal %1 beginnen met downloaden en verwerken van de volledige %4 blokketen (%2GB) startend met de eerste transacties in %3 toen %4 initeel werd gestart.</translation>
     </message>
     <message>
         <source>If you have chosen to limit block chain storage (pruning), the historical data must still be downloaded and processed, but will be deleted afterward to keep your disk usage low.</source>
@@ -1140,7 +1504,11 @@
         <source>Unknown. Syncing Headers (%1, %2%)…</source>
         <translation type="unfinished">Onbekend. Blockheaders synchroniseren (%1, %2%)...</translation>
     </message>
-    </context>
+    <message>
+        <source>Unknown. Pre-syncing Headers (%1, %2%)…</source>
+        <translation type="unfinished">Onbekend. Blockheaders synchroniseren (%1, %2%)...</translation>
+    </message>
+</context>
 <context>
     <name>OpenURIDialog</name>
     <message>
@@ -1184,6 +1552,10 @@
         <translation type="unfinished">Aantal threads voor &amp;scriptverificatie</translation>
     </message>
     <message>
+        <source>Full path to a %1 compatible script (e.g. C:\Downloads\hwi.exe or /Users/you/Downloads/hwi.py). Beware: malware can steal your coins!</source>
+        <translation type="unfinished">Volledig pad naar een %1 compatibel script (bijv. C:\Downloads\hwi.exe of /Gebruikers/gebruikersnaam/Downloads/hwi.py). Pas op: malware kan je munten stelen!</translation>
+    </message>
+    <message>
         <source>IP address of the proxy (e.g. IPv4: 127.0.0.1 / IPv6: ::1)</source>
         <translation type="unfinished">IP-adres van de proxy (bijv. IPv4: 127.0.0.1 / IPv6: ::1)</translation>
     </message>
@@ -1194,6 +1566,10 @@
     <message>
         <source>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Exit in the menu.</source>
         <translation type="unfinished">Minimaliseren in plaats van de applicatie af te sluiten wanneer het venster is afgesloten. Als deze optie is ingeschakeld, zal de toepassing pas worden afgesloten na het selecteren van Exit in het menu.</translation>
+    </message>
+    <message>
+        <source>Font in the Overview tab: </source>
+        <translation type="unfinished">Lettertype in het Overzicht tab:</translation>
     </message>
     <message>
         <source>Options set in this dialog are overridden by the command line:</source>
@@ -1403,18 +1779,6 @@ Ongebruikte mempool geheugen is gedeeld voor deze cache.</translation>
         <translation type="unfinished">Gebruik afzonderlijke SOCKS &amp; 5-proxy om peers te bereiken via Tor Onion-services:</translation>
     </message>
     <message>
-        <source>Monospaced font in the Overview tab:</source>
-        <translation type="unfinished">Monospaced lettertype in het Overzicht tab:</translation>
-    </message>
-    <message>
-        <source>embedded "%1"</source>
-        <translation type="unfinished">ingebed "%1"</translation>
-    </message>
-    <message>
-        <source>closest matching "%1"</source>
-        <translation type="unfinished">best overeenkomende "%1"</translation>
-    </message>
-    <message>
         <source>&amp;OK</source>
         <translation type="unfinished">&amp;Oké</translation>
     </message>
@@ -1565,7 +1929,7 @@ Ongebruikte mempool geheugen is gedeeld voor deze cache.</translation>
     </message>
     <message>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
-        <translation type="unfinished">Ontgonnen saldo dat nog niet tot wasdom is gekomen</translation>
+        <translation type="unfinished">Ontgonnen saldo in alleen-bekijkbare addressen dat nog niet tot wasdom is gekomen</translation>
     </message>
     <message>
         <source>Current total balance in watch-only addresses</source>
@@ -1578,6 +1942,10 @@ Ongebruikte mempool geheugen is gedeeld voor deze cache.</translation>
 </context>
 <context>
     <name>PSBTOperationsDialog</name>
+    <message>
+        <source>PSBT Operations</source>
+        <translation type="unfinished">PSBT Bewerkingen</translation>
+    </message>
     <message>
         <source>Sign Tx</source>
         <translation type="unfinished">Signeer Tx</translation>
@@ -1652,8 +2020,12 @@ Ongebruikte mempool geheugen is gedeeld voor deze cache.</translation>
         <translation type="unfinished">PSBT opgeslagen op de schijf</translation>
     </message>
     <message>
-        <source> * Sends %1 to %2</source>
-        <translation type="unfinished">Verstuur %1 naar %2</translation>
+        <source>Sends %1 to %2</source>
+        <translation type="unfinished">Verzenden %1 van %2</translation>
+    </message>
+    <message>
+        <source>own address</source>
+        <translation type="unfinished">eigen adres</translation>
     </message>
     <message>
         <source>Unable to calculate transaction fee or total transaction amount.</source>
@@ -1901,8 +2273,24 @@ Als je deze fout ziet zou je de aanbieder moeten verzoeken om een BIP21-compatib
         <translation type="unfinished">Selecteer een peer om gedetailleerde informatie te bekijken.</translation>
     </message>
     <message>
+        <source>The transport layer version: %1</source>
+        <translation type="unfinished">De transport layer versie: %1</translation>
+    </message>
+    <message>
+        <source>Session ID</source>
+        <translation type="unfinished">Sessie ID</translation>
+    </message>
+    <message>
         <source>Version</source>
         <translation type="unfinished">Versie</translation>
+    </message>
+    <message>
+        <source>Whether we relay transactions to this peer.</source>
+        <translation type="unfinished">Of we transacties doorgeven aan deze peer.</translation>
+    </message>
+    <message>
+        <source>Transaction Relay</source>
+        <translation type="unfinished">Transactie Doorgeven</translation>
     </message>
     <message>
         <source>Starting Block</source>
@@ -1989,6 +2377,10 @@ Als je deze fout ziet zou je de aanbieder moeten verzoeken om een BIP21-compatib
     <message>
         <source>Direction/Type</source>
         <translation type="unfinished">Richting/Type</translation>
+    </message>
+    <message>
+        <source>The BIP324 session ID string in hex.</source>
+        <translation type="unfinished">De BIP324 sessie ID string in hex.</translation>
     </message>
     <message>
         <source>The network protocol this peer is connected through: IPv4, IPv6, Onion, I2P, or CJDNS.</source>
@@ -2102,6 +2494,21 @@ Als je deze fout ziet zou je de aanbieder moeten verzoeken om een BIP21-compatib
         <translation type="unfinished">Uitgaand adres verkrijgen: Kort levend, voor opvragen van adressen</translation>
     </message>
     <message>
+        <source>detecting: peer could be v1 or v2</source>
+        <extracomment>Explanatory text for "detecting" transport type.</extracomment>
+        <translation type="unfinished">detecteren: Peer kan v1 of v2 zijn</translation>
+    </message>
+    <message>
+        <source>v1: unencrypted, plaintext transport protocol</source>
+        <extracomment>Explanatory text for v1 transport type.</extracomment>
+        <translation type="unfinished">v1: onversleuteld, platte tekst transportprotocol</translation>
+    </message>
+    <message>
+        <source>v2: BIP324 encrypted transport protocol</source>
+        <extracomment>Explanatory text for v2 transport type.</extracomment>
+        <translation type="unfinished">v2: BIP324 versleuteld transportprotocol</translation>
+    </message>
+    <message>
         <source>we selected the peer for high bandwidth relay</source>
         <translation type="unfinished">we selecteerden de peer voor relayen met hoge bandbreedte</translation>
     </message>
@@ -2148,8 +2555,16 @@ Als je deze fout ziet zou je de aanbieder moeten verzoeken om een BIP21-compatib
         <translation type="unfinished">Netwerkactiviteit uitgeschakeld</translation>
     </message>
     <message>
+        <source>None</source>
+        <translation type="unfinished">Geen</translation>
+    </message>
+    <message>
         <source>Executing command without any wallet</source>
         <translation type="unfinished">Uitvoeren van commando zonder gebruik van een wallet</translation>
+    </message>
+    <message>
+        <source>Node window - [%1]</source>
+        <translation type="unfinished">Nodevenster - [%1]</translation>
     </message>
     <message>
         <source>Executing command using "%1" wallet</source>
@@ -2291,6 +2706,22 @@ Voor meer informatie over het gebruik van deze console, type %6.
     <message>
         <source>Copy &amp;amount</source>
         <translation type="unfinished">Kopieer &amp;bedrag</translation>
+    </message>
+    <message>
+        <source>Not recommended due to higher fees and less protection against typos.</source>
+        <translation type="unfinished">Niet aanbevolen vanwege hogere kosten en minder bescherming tegen typefouten.</translation>
+    </message>
+    <message>
+        <source>Generates an address compatible with older wallets.</source>
+        <translation type="unfinished">Genereert een adres dat compatibel is met oudere portemonnees.</translation>
+    </message>
+    <message>
+        <source>Generates a native segwit address (BIP-173). Some old wallets don't support it.</source>
+        <translation type="unfinished">Genereert een natuurlijk Segwit-adres (BIP-173). Sommige oude wallets ondersteunen het niet.</translation>
+    </message>
+    <message>
+        <source>Bech32m (BIP-350) is an upgrade to Bech32, wallet support is still limited.</source>
+        <translation type="unfinished">Bech32m (BIP-350) is een upgrade van Bech32, portemonnee ondersteuning is nog steeds beperkt.</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -2462,10 +2893,6 @@ Voor meer informatie over het gebruik van deze console, type %6.
         <translation type="unfinished">Wis alle velden op het formulier.</translation>
     </message>
     <message>
-        <source>Dust:</source>
-        <translation type="unfinished">Stof:</translation>
-    </message>
-    <message>
         <source>Choose…</source>
         <translation type="unfinished">Kies...</translation>
     </message>
@@ -2542,10 +2969,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
         <translation type="unfinished">Kopieer bytes</translation>
     </message>
     <message>
-        <source>Copy dust</source>
-        <translation type="unfinished">Kopieër stof</translation>
-    </message>
-    <message>
         <source>Copy change</source>
         <translation type="unfinished">Kopieer wijziging</translation>
     </message>
@@ -2574,10 +2997,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
     <message>
         <source>Creates a Partially Signed FixedCoin Transaction (PSBT) for use with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.</source>
         <translation type="unfinished">Creëert een Gedeeltelijk Getekende FixedCoin Transactie (PSBT) om te gebruiken met b.v. een offline %1 wallet, of een PSBT-compatibele hardware wallet.</translation>
-    </message>
-    <message>
-        <source> from wallet '%1'</source>
-        <translation type="unfinished">van wallet '%1'</translation>
     </message>
     <message>
         <source>%1 to '%2'</source>
@@ -2637,6 +3056,10 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
         <translation type="unfinished">Controleer aub je transactievoorstel. Dit zal een Gedeeltelijk Getekende FixedCoin Transactie (PSBT) produceren die je kan opslaan of kopiëren en vervolgens ondertekenen met bijv. een offline %1 wallet, of een PSBT-combatibele hardware wallet.</translation>
     </message>
     <message>
+        <source>%1 from wallet '%2'</source>
+        <translation type="unfinished">%1 van wallet '%2'</translation>
+    </message>
+    <message>
         <source>Do you want to create this transaction?</source>
         <extracomment>Message displayed when attempting to create a transaction. Cautionary text to prompt the user to verify that the displayed transaction details represent the transaction the user intends to create.</extracomment>
         <translation type="unfinished">Wilt u deze transactie aanmaken?</translation>
@@ -2664,12 +3087,26 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
         <translation type="unfinished">Totaalbedrag</translation>
     </message>
     <message>
+        <source>Unsigned Transaction</source>
+        <comment>PSBT copied</comment>
+        <extracomment>Caption of "PSBT has been copied" messagebox</extracomment>
+        <translation type="unfinished">Niet-ondertekende transactie</translation>
+    </message>
+    <message>
+        <source>The PSBT has been copied to the clipboard. You can also save it.</source>
+        <translation type="unfinished">De PSBT is naar het klembord gekopieerd. Je kunt het ook opslaan.</translation>
+    </message>
+    <message>
+        <source>PSBT saved to disk</source>
+        <translation type="unfinished">PSBT opgeslagen op schijf</translation>
+    </message>
+    <message>
         <source>Confirm send coins</source>
         <translation type="unfinished">Bevestig versturen munten</translation>
     </message>
     <message>
         <source>Watch-only balance:</source>
-        <translation type="unfinished">Alleen-lezen balans:</translation>
+        <translation type="unfinished">Alleen-bekijkbaar balans:</translation>
     </message>
     <message>
         <source>The recipient address is not valid. Please recheck.</source>
@@ -2804,10 +3241,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
         <translation type="unfinished">&amp;Onderteken bericht</translation>
     </message>
     <message>
-        <source>You can sign messages/agreements with your addresses to prove you can receive fixedcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation type="unfinished">U kunt berichten/overeenkomsten ondertekenen met uw adres om te bewijzen dat u FixedCoins kunt versturen. Wees voorzichtig met het ondertekenen van iets vaags of willekeurigs, omdat phishingaanvallen u kunnen proberen te misleiden tot het ondertekenen van overeenkomsten om uw identiteit aan hen toe te vertrouwen. Onderteken alleen volledig gedetailleerde verklaringen voordat u akkoord gaat.</translation>
-    </message>
-    <message>
         <source>The FixedCoin address to sign the message with</source>
         <translation type="unfinished">Het FixedCoin adres om bericht mee te ondertekenen</translation>
     </message>
@@ -2890,10 +3323,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
     <message>
         <source>Please check the address and try again.</source>
         <translation type="unfinished">Controleer het adres en probeer het opnieuw.</translation>
-    </message>
-    <message>
-        <source>The entered address does not refer to a key.</source>
-        <translation type="unfinished">Het opgegeven adres verwijst niet naar een sleutel.</translation>
     </message>
     <message>
         <source>Wallet unlock was cancelled.</source>
@@ -3063,8 +3492,8 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
         <translation type="unfinished">Transactie virtuele grootte</translation>
     </message>
     <message>
-        <source> (Certificate was not verified)</source>
-        <translation type="unfinished">(Certificaat kon niet worden geverifieerd)</translation>
+        <source>%1 (Certificate was not verified)</source>
+        <translation type="unfinished">%1 (Certificaat kon niet worden geverifieerd)</translation>
     </message>
     <message>
         <source>Merchant</source>
@@ -3153,10 +3582,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
         <translation type="unfinished">Verzonden aan</translation>
     </message>
     <message>
-        <source>Payment to yourself</source>
-        <translation type="unfinished">Betaling aan uzelf</translation>
-    </message>
-    <message>
         <source>Mined</source>
         <translation type="unfinished">Gedolven</translation>
     </message>
@@ -3230,10 +3655,6 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
     <message>
         <source>Sent to</source>
         <translation type="unfinished">Verzonden aan</translation>
-    </message>
-    <message>
-        <source>To yourself</source>
-        <translation type="unfinished">Aan uzelf</translation>
     </message>
     <message>
         <source>Mined</source>
@@ -3327,7 +3748,7 @@ Notitie: Omdat de vergoeding per byte wordt gerekend, zal een vergoeding van "10
     </message>
     <message>
         <source>Exporting Failed</source>
-        <translation type="unfinished">Exporteren mislukt</translation>
+        <translation type="unfinished">Exporteren Mislukt</translation>
     </message>
     <message>
         <source>There was an error trying to save the transaction history to %1.</source>
@@ -3362,7 +3783,7 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
     </message>
     <message>
         <source>Create a new wallet</source>
-        <translation type="unfinished">Nieuwe wallet aanmaken</translation>
+        <translation type="unfinished">Nieuwe wallet creëren</translation>
     </message>
     <message>
         <source>Error</source>
@@ -3448,10 +3869,6 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <source>Can't display address</source>
         <translation type="unfinished">Adres kan niet weergegeven worden</translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">standaard wallet</translation>
-    </message>
 </context>
 <context>
     <name>WalletView</name>
@@ -3504,6 +3921,14 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">%s beschadigd. Probeer de wallet tool fixedcoin-wallet voor herstel of een backup terug te zetten.</translation>
     </message>
     <message>
+        <source>%s failed to validate the -assumeutxo snapshot state. This indicates a hardware problem, or a bug in the software, or a bad software modification that allowed an invalid snapshot to be loaded. As a result of this, the node will shut down and stop using any state that was built on the snapshot, resetting the chain height from %d to %d. On the next restart, the node will resume syncing from %d without using any snapshot data. Please report this incident to %s, including how you obtained the snapshot. The invalid snapshot chainstate will be left on disk in case it is helpful in diagnosing the issue that caused this error.</source>
+        <translation type="unfinished">%s kon de momentopnamestatus -assumeutxo niet valideren. Dit duidt op een hardwareprobleem, een fout in de software of een slechte softwarewijziging waardoor een ongeldige momentopname kon worden geladen. Als gevolg hiervan wordt het node afgesloten en stopt het met het gebruik van elke status die op de momentopname is gebouwd, waardoor de ketenhoogte wordt gereset van %d naar %d. Bij de volgende herstart hervat het node de synchronisatie vanaf %d zonder momentopnamegegevens te gebruiken. Rapporteer dit incident aan %s, inclusief hoe u aan de momentopname bent gekomen. De kettingstatus van de ongeldige momentopname is op schijf achtergelaten voor het geval dit nuttig is bij het diagnosticeren van het probleem dat deze fout heeft veroorzaakt.</translation>
+    </message>
+    <message>
+        <source>%s request to listen on port %u. This port is considered "bad" and thus it is unlikely that any peer will connect to it. See doc/p2p-bad-ports.md for details and a full list.</source>
+        <translation type="unfinished">%s verzoekt om te luisteren op poort %u. Deze poort wordt als "slecht" beschouwd en het is daarom onwaarschijnlijk dat FixedCoin Core peers er verbinding mee maken. Zie doc/p2p-bad-ports.md voor details en een volledige lijst.</translation>
+    </message>
+    <message>
         <source>Cannot downgrade wallet from version %i to version %i. Wallet version unchanged.</source>
         <translation type="unfinished">Kan wallet niet downgraden van versie %i naar version %i. Walletversie ongewijzigd.</translation>
     </message>
@@ -3516,12 +3941,16 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Kan een non HD split wallet niet upgraden van versie %i naar versie %i zonder pre split keypool te ondersteunen. Gebruik versie %i of specificeer geen versienummer.</translation>
     </message>
     <message>
+        <source>Disk space for %s may not accommodate the block files. Approximately %u GB of data will be stored in this directory.</source>
+        <translation type="unfinished">Schijfruimte voor %s is mogelijk niet geschikt voor de blokbestanden. In deze map wordt ongeveer %u GB aan gegevens opgeslagen.</translation>
+    </message>
+    <message>
         <source>Distributed under the MIT software license, see the accompanying file %s or %s</source>
         <translation type="unfinished">Uitgegeven onder de MIT software licentie, zie het bijgevoegde bestand %s of %s</translation>
     </message>
     <message>
-        <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation type="unfinished">Waarschuwing: Fout bij het lezen van %s! Alle sleutels zijn in goede orde uitgelezen, maar transactiedata of adresboeklemma's zouden kunnen ontbreken of fouten bevatten.</translation>
+        <source>Error loading wallet. Wallet requires blocks to be downloaded, and software does not currently support loading wallets while blocks are being downloaded out of order when using assumeutxo snapshots. Wallet should be able to load successfully after node sync reaches height %s</source>
+        <translation type="unfinished">Fout bij het laden van portemonnee. Portemonnee vereist dat blokken worden gedownload en de software ondersteunt momenteel het laden van portemonnees terwijl blokken niet in de juiste volgorde worden gedownload bij gebruik van assumeutxo momentopnames. Portemonnee zou met succes moeten kunnen worden geladen nadat de synchronisatie de hoogte %s heeft bereikt</translation>
     </message>
     <message>
         <source>Error reading %s! Transaction data may be missing or incorrect. Rescanning wallet.</source>
@@ -3542,6 +3971,10 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
     <message>
         <source>Error: Legacy wallets only support the "legacy", "p2sh-segwit", and "bech32" address types</source>
         <translation type="unfinished">Fout: Legacy wallets ondersteunen alleen "legacy", "p2sh-segwit" en "bech32" adres types</translation>
+    </message>
+    <message>
+        <source>Error: Unable to produce descriptors for this legacy wallet. Make sure to provide the wallet's passphrase if it is encrypted.</source>
+        <translation type="unfinished">Fout: Kan descriptors niet produceren voor deze verouderde portemonnee. Zorg ervoor dat u de wachtwoordzin van de portemonnee opgeeft als deze gecodeerd is.</translation>
     </message>
     <message>
         <source>File %s already exists. If you are sure this is what you want, move it out of the way first.</source>
@@ -3568,10 +4001,6 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Geen walletbestandsformaat opgegeven. Om createfromdump te gebruiken, moet -format=&lt;format&gt; opgegeven worden.</translation>
     </message>
     <message>
-        <source>Please check that your computer's date and time are correct! If your clock is wrong, %s will not work properly.</source>
-        <translation type="unfinished">Waarschuwing: Controleer dat de datum en tijd van uw computer correct zijn ingesteld! Bij een onjuist ingestelde klok zal %s niet goed werken.</translation>
-    </message>
-    <message>
         <source>Please contribute if you find %s useful. Visit %s for further information about the software.</source>
         <translation type="unfinished">Gelieve bij te dragen als je %s nuttig vindt. Bezoek %s voor meer informatie over de software.</translation>
     </message>
@@ -3588,16 +4017,16 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Prune: laatste wallet synchronisatie gaat verder terug dan de pruned gegevens. Je moet herindexeren met -reindex (de hele blokketen opnieuw downloaden in geval van een pruned node)</translation>
     </message>
     <message>
+        <source>Rename of '%s' -&gt; '%s' failed. You should resolve this by manually moving or deleting the invalid snapshot directory %s, otherwise you will encounter the same error again on the next startup.</source>
+        <translation type="unfinished">Hernoemen van '%s' -&gt; '%s' mislukt. U moet dit oplossen door de ongeldige snapshot-map %shandmatig te verplaatsen of te verwijderen, anders zult u bij de volgende keer opstarten dezelfde fout opnieuw tegenkomen.</translation>
+    </message>
+    <message>
         <source>SQLiteDatabase: Unknown sqlite wallet schema version %d. Only version %d is supported</source>
         <translation type="unfinished">SQLiteDatabase: Onbekende sqlite wallet schema versie %d. Alleen versie %d wordt ondersteund.</translation>
     </message>
     <message>
         <source>The block database contains a block which appears to be from the future. This may be due to your computer's date and time being set incorrectly. Only rebuild the block database if you are sure that your computer's date and time are correct</source>
         <translation type="unfinished">De blokdatabase bevat een blok dat lijkt uit de toekomst te komen. Dit kan gebeuren omdat de datum en tijd van uw computer niet goed staat. Herbouw de blokdatabase pas nadat u de datum en tijd van uw computer correct heeft ingesteld.</translation>
-    </message>
-    <message>
-        <source>The block index db contains a legacy 'txindex'. To clear the occupied disk space, run a full -reindex, otherwise ignore this error. This error message will not be displayed again.</source>
-        <translation type="unfinished">De blokindex db bevat een legacy 'txindex'. Om de bezette schijfruimte vrij te maken, voert u een volledige -reindex uit, anders negeert u deze fout. Deze foutmelding wordt niet meer weergegeven.</translation>
     </message>
     <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
@@ -3636,12 +4065,20 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Onbekend walletbestandsformaat "%s" opgegeven. Kies aub voor "bdb" of "sqlite".</translation>
     </message>
     <message>
+        <source>Unsupported category-specific logging level %1$s=%2$s. Expected %1$s=&lt;category&gt;:&lt;loglevel&gt;. Valid categories: %3$s. Valid loglevels: %4$s.</source>
+        <translation type="unfinished">Niet-ondersteund categoriespecifiek logboekniveau %1$s=%2$s. Verwacht %1$s=&lt;category&gt;:&lt;loglevel&gt;. Geldige categorieën: %3$s. Geldige logniveaus: %4$s.</translation>
+    </message>
+    <message>
         <source>Unsupported chainstate database format found. Please restart with -reindex-chainstate. This will rebuild the chainstate database.</source>
         <translation type="unfinished">Niet ondersteund chainstate databaseformaat gevonden. Herstart aub met -reindex-chainstate. Dit zal de chainstate database opnieuw opbouwen.</translation>
     </message>
     <message>
         <source>Wallet created successfully. The legacy wallet type is being deprecated and support for creating and opening legacy wallets will be removed in the future.</source>
         <translation type="unfinished">Wallet succesvol aangemaakt. Het oude wallettype wordt uitgefaseerd en ondersteuning voor het maken en openen van verouderde wallets zal in de toekomst komen te vervallen.</translation>
+    </message>
+    <message>
+        <source>Wallet loaded successfully. The legacy wallet type is being deprecated and support for creating and opening legacy wallets will be removed in the future. Legacy wallets can be migrated to a descriptor wallet with migratewallet.</source>
+        <translation type="unfinished">Wallet succesvol aangemaakt. Het oude wallettype wordt uitgefaseerd en ondersteuning voor het maken en openen van verouderde wallets zal in de toekomst komen te vervallen. Oude wallettypes kan gemigreerd worden naar een descriptor wallet met migratewallet.</translation>
     </message>
     <message>
         <source>Warning: Dumpfile wallet format "%s" does not match command line specified format "%s".</source>
@@ -3672,10 +4109,6 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">-maxmempool moet minstens %d MB zijn</translation>
     </message>
     <message>
-        <source>A fatal internal error occurred, see debug.log for details</source>
-        <translation type="unfinished">Een fatale interne fout heeft zich voor gedaan, zie debug.log voor details</translation>
-    </message>
-    <message>
         <source>Cannot resolve -%s address: '%s'</source>
         <translation type="unfinished">Kan -%s adres niet herleiden: '%s'</translation>
     </message>
@@ -3692,20 +4125,8 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Mag niet schrijven naar gegevensmap '%s'; controleer bestandsrechten.</translation>
     </message>
     <message>
-        <source>The -txindex upgrade started by a previous version cannot be completed. Restart with the previous version or run a full -reindex.</source>
-        <translation type="unfinished">De -txindex upgrade die door een eerdere versie is gestart, kan niet worden voltooid. Herstart opnieuw met de vorige versie of voer een volledige -reindex uit.</translation>
-    </message>
-    <message>
-        <source>-reindex-chainstate option is not compatible with -blockfilterindex. Please temporarily disable blockfilterindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes.</source>
-        <translation type="unfinished">-reindex-chainstate optie is niet compatibel met -blockfilterindex. Schakel -blockfilterindex tijdelijk uit aub en gebruik -reindex-chainstate, of vervang -reindex-chainstate met -reindex om alle indices volledig opnieuw op te bouwen.</translation>
-    </message>
-    <message>
-        <source>-reindex-chainstate option is not compatible with -coinstatsindex. Please temporarily disable coinstatsindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes.</source>
-        <translation type="unfinished">-reindex-chainstate optie is niet compatibel met -coinstatsindex. Schakel -coinstatsindex tijdelijk uit aub en gebruik -reindex-chainstate, of vervang -reindex-chainstate met -reindex om alle indices volledig opnieuw op te bouwen.</translation>
-    </message>
-    <message>
-        <source>-reindex-chainstate option is not compatible with -txindex. Please temporarily disable txindex while using -reindex-chainstate, or replace -reindex-chainstate with -reindex to fully rebuild all indexes.</source>
-        <translation type="unfinished">-reindex-chainstate optie is niet compatibel met -txindex. Schakel -txindex tijdelijk uit aub en gebruik -reindex-chainstate, of vervang -reindex-chainstate met -reindex om alle indices volledig opnieuw op te bouwen.</translation>
+        <source>%s is set very high! Fees this large could be paid on a single transaction.</source>
+        <translation type="unfinished">%s is erg hoog ingesteld! Dergelijke hoge vergoedingen kunnen worden betaald voor een enkele transactie.</translation>
     </message>
     <message>
         <source>Cannot provide specific connections and have addrman find outgoing connections at the same time.</source>
@@ -3716,8 +4137,108 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Fout bij laden %s: Externe signer wallet wordt geladen zonder gecompileerde ondersteuning voor externe signers</translation>
     </message>
     <message>
+        <source>Error reading %s! All keys read correctly, but transaction data or address metadata may be missing or incorrect.</source>
+        <translation type="unfinished">Fout bij het lezen van %s! Alle sleutels zijn in goede orde uitgelezen, maar transactiedata of adresboek metagegevens zouden kunnen ontbreken of fouten bevatten.</translation>
+    </message>
+    <message>
+        <source>Error: Address book data in wallet cannot be identified to belong to migrated wallets</source>
+        <translation type="unfinished">Fout: adresboekgegevens in portemonnee kunnen niet worden geïdentificeerd als behorend tot gemigreerde portemonnees</translation>
+    </message>
+    <message>
+        <source>Error: Duplicate descriptors created during migration. Your wallet may be corrupted.</source>
+        <translation type="unfinished">Fout: Dubbele descriptors gemaakt tijdens migratie. Uw portemonnee is mogelijk beschadigd.</translation>
+    </message>
+    <message>
+        <source>Error: Transaction %s in wallet cannot be identified to belong to migrated wallets</source>
+        <translation type="unfinished">Fout: Transactie %s in portemonnee kan niet worden geïdentificeerd als behorend bij gemigreerde portemonnees</translation>
+    </message>
+    <message>
+        <source>Failed to calculate bump fees, because unconfirmed UTXOs depend on enormous cluster of unconfirmed transactions.</source>
+        <translation type="unfinished">Berekenen van bump fees mislukt, omdat onbevestigde UTXO's afhankelijk zijn van een enorm cluster onbevestigde transacties.</translation>
+    </message>
+    <message>
         <source>Failed to rename invalid peers.dat file. Please move or delete it and try again.</source>
         <translation type="unfinished">Kan de naam van het ongeldige peers.dat bestand niet hernoemen. Verplaats of verwijder het en probeer het opnieuw.</translation>
+    </message>
+    <message>
+        <source>Fee estimation failed. Fallbackfee is disabled. Wait a few blocks or enable %s.</source>
+        <translation type="unfinished">Kostenschatting mislukt. Terugval vergoeding is uitgeschakeld. Wacht een paar blokken of schakel %s in.</translation>
+    </message>
+    <message>
+        <source>Incompatible options: -dnsseed=1 was explicitly specified, but -onlynet forbids connections to IPv4/IPv6</source>
+        <translation type="unfinished">Incompatibele opties: -dnsseed=1 is expliciet opgegeven, maar -onlynet verbiedt verbindingen met IPv4/IPv6</translation>
+    </message>
+    <message>
+        <source>Invalid amount for %s=&lt;amount&gt;: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
+        <translation type="unfinished">Ongeldig bedrag voor %s =&lt;amount&gt;: '%s' (moet ten minste de minimale doorgeef vergoeding van %s zijn om vastgelopen transacties te voorkomen)</translation>
+    </message>
+    <message>
+        <source>Outbound connections restricted to CJDNS (-onlynet=cjdns) but -cjdnsreachable is not provided</source>
+        <translation type="unfinished">Uitgaande verbindingen beperkt tot CJDNS (-onlynet=cjdns) maar -cjdnsreachable is niet verstrekt</translation>
+    </message>
+    <message>
+        <source>Outbound connections restricted to Tor (-onlynet=onion) but the proxy for reaching the Tor network is explicitly forbidden: -onion=0</source>
+        <translation type="unfinished">Uitgaande verbindingen beperkt tot Tor (-onlynet=onion) maar de proxy voor het bereiken van het Tor-netwerk is expliciet verboden: -onion=0</translation>
+    </message>
+    <message>
+        <source>Outbound connections restricted to Tor (-onlynet=onion) but the proxy for reaching the Tor network is not provided: none of -proxy, -onion or -listenonion is given</source>
+        <translation type="unfinished">Uitgaande verbindingen beperkt tot Tor (-onlynet=onion) maar de proxy voor het bereiken van het Tor netwerk is niet verstrekt: geen -proxy, -onion of -listenonion optie opgegeven</translation>
+    </message>
+    <message>
+        <source>Outbound connections restricted to i2p (-onlynet=i2p) but -i2psam is not provided</source>
+        <translation type="unfinished">Uitgaande verbindingen beperkt tot i2p (-onlynet=i2p) maar -i2psam is niet opgegeven</translation>
+    </message>
+    <message>
+        <source>The inputs size exceeds the maximum weight. Please try sending a smaller amount or manually consolidating your wallet's UTXOs</source>
+        <translation type="unfinished">De invoergrootte overschrijdt het maximale gewicht. Probeer een kleiner bedrag te verzenden of de UTXO's van uw portemonnee handmatig te consolideren</translation>
+    </message>
+    <message>
+        <source>The preselected coins total amount does not cover the transaction target. Please allow other inputs to be automatically selected or include more coins manually</source>
+        <translation type="unfinished">Het vooraf geselecteerde totale aantal munten dekt niet het transactiedoel. Laat andere invoeren automatisch selecteren of voeg handmatig meer munten toe</translation>
+    </message>
+    <message>
+        <source>Transaction requires one destination of non-0 value, a non-0 feerate, or a pre-selected input</source>
+        <translation type="unfinished">Transactie vereist één bestemming met een niet-0 waarde, een niet-0 tarief of een vooraf geselecteerde invoer</translation>
+    </message>
+    <message>
+        <source>UTXO snapshot failed to validate. Restart to resume normal initial block download, or try loading a different snapshot.</source>
+        <translation type="unfinished">UTXO-snapshot kan niet worden gevalideerd. Start opnieuw om de normale initiële blokdownload te hervatten, of probeer een andere momentopname te laden.</translation>
+    </message>
+    <message>
+        <source>Unconfirmed UTXOs are available, but spending them creates a chain of transactions that will be rejected by the mempool</source>
+        <translation type="unfinished">Er zijn onbevestigde UTXO's beschikbaar, maar als u ze uitgeeft, ontstaat er een reeks transacties die door de mempool worden afgewezen</translation>
+    </message>
+    <message>
+        <source>Unexpected legacy entry in descriptor wallet found. Loading wallet %s
+
+The wallet might have been tampered with or created with malicious intent.
+</source>
+        <translation type="unfinished">Onverwachte verouderde vermelding in descriptor portemonnee gevonden. Portemonnee %s laden
+
+Er is mogelijk met de portemonnee geknoeid of deze is met kwade bedoelingen gemaakt.
+</translation>
+    </message>
+    <message>
+        <source>Unrecognized descriptor found. Loading wallet %s
+
+The wallet might had been created on a newer version.
+Please try running the latest software version.
+</source>
+        <translation type="unfinished">Onbekende descriptor gevonden. Portemonnee%sladen
+
+De portemonnee is mogelijk gemaakt op een nieuwere versie.
+Probeer de nieuwste softwareversie te starten.
+</translation>
+    </message>
+    <message>
+        <source>
+Unable to cleanup failed migration</source>
+        <translation type="unfinished">
+Kan mislukte migratie niet opschonen</translation>
+    </message>
+    <message>
+        <source>Block verification was interrupted</source>
+        <translation type="unfinished">Blokverificatie is onderbroken</translation>
     </message>
     <message>
         <source>Config setting for %s only applied on %s network when in [%s] section.</source>
@@ -3756,6 +4277,10 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Dumpbestand %s bestaat niet.</translation>
     </message>
     <message>
+        <source>Error committing db txn for wallet transactions removal</source>
+        <translation type="unfinished">Fout bij db txn verwerking voor verwijderen wallet transacties</translation>
+    </message>
+    <message>
         <source>Error creating %s</source>
         <translation type="unfinished">Fout bij het maken van %s</translation>
     </message>
@@ -3792,12 +4317,24 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Fout bij openen blokkendatabase</translation>
     </message>
     <message>
+        <source>Error reading configuration file: %s</source>
+        <translation type="unfinished">Fout bij lezen configuratiebestand: %s</translation>
+    </message>
+    <message>
         <source>Error reading from database, shutting down.</source>
         <translation type="unfinished">Fout bij het lezen van de database, afsluiten.</translation>
     </message>
     <message>
         <source>Error reading next record from wallet database</source>
         <translation type="unfinished">Fout bij het lezen van het volgende record in de walletdatabase</translation>
+    </message>
+    <message>
+        <source>Error starting db txn for wallet transactions removal</source>
+        <translation type="unfinished">Fout bij starten db txn voor verwijderen wallet transacties</translation>
+    </message>
+    <message>
+        <source>Error: Cannot extract destination from the generated scriptpubkey</source>
+        <translation type="unfinished">Fout: Kan de bestemming niet extraheren uit de gegenereerde scriptpubkey</translation>
     </message>
     <message>
         <source>Error: Couldn't create cursor into database</source>
@@ -3810,6 +4347,10 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
     <message>
         <source>Error: Dumpfile checksum does not match. Computed %s, expected %s</source>
         <translation type="unfinished">Fout: Checksum van dumpbestand komt niet overeen. Berekend %s, verwacht %s</translation>
+    </message>
+    <message>
+        <source>Error: Failed to create new watchonly wallet</source>
+        <translation type="unfinished">Fout: het maken van een nieuwe alleen-bekijkbare portemonnee is mislukt</translation>
     </message>
     <message>
         <source>Error: Got key that was not hex: %s</source>
@@ -3832,12 +4373,56 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Fout: Geen %s adressen beschikbaar</translation>
     </message>
     <message>
+        <source>Error: This wallet already uses SQLite</source>
+        <translation type="unfinished">Fout: deze portemonnee gebruikt al SQLite</translation>
+    </message>
+    <message>
+        <source>Error: This wallet is already a descriptor wallet</source>
+        <translation type="unfinished">Error: Deze portemonnee is al een descriptor portemonnee</translation>
+    </message>
+    <message>
+        <source>Error: Unable to begin reading all records in the database</source>
+        <translation type="unfinished">Fout: Kan niet beginnen met het lezen van alle records in de database</translation>
+    </message>
+    <message>
+        <source>Error: Unable to make a backup of your wallet</source>
+        <translation type="unfinished">Fout: Kan geen back-up maken van uw portemonnee</translation>
+    </message>
+    <message>
         <source>Error: Unable to parse version %u as a uint32_t</source>
         <translation type="unfinished">Fout: Kan versie %u niet als een uint32_t verwerken</translation>
     </message>
     <message>
+        <source>Error: Unable to read all records in the database</source>
+        <translation type="unfinished">Fout: Kan niet alle records in de database lezen</translation>
+    </message>
+    <message>
+        <source>Error: Unable to read wallet's best block locator record</source>
+        <translation type="unfinished">Fout: Onleesbare beste block locatie aanduiding in wallet</translation>
+    </message>
+    <message>
+        <source>Error: Unable to remove watchonly address book data</source>
+        <translation type="unfinished">Fout: kan alleen-bekijkbaar adresboekgegevens niet verwijderen</translation>
+    </message>
+    <message>
         <source>Error: Unable to write record to new wallet</source>
         <translation type="unfinished">Fout: Kan record niet naar nieuwe wallet schrijven</translation>
+    </message>
+    <message>
+        <source>Error: Unable to write solvable wallet best block locator record</source>
+        <translation type="unfinished">Fout: Kan beste block locatie aanduiding niet opslaan in wallet</translation>
+    </message>
+    <message>
+        <source>Error: Unable to write watchonly wallet best block locator record</source>
+        <translation type="unfinished">Fout: Kan beste block locatie aanduiding niet opslaan in alleen lezen wallet</translation>
+    </message>
+    <message>
+        <source>Error: address book copy failed for wallet %s</source>
+        <translation type="unfinished">Fout: Kopiëren adresboek mislukt voor wallet %s</translation>
+    </message>
+    <message>
+        <source>Error: database transaction cannot be executed for wallet %s</source>
+        <translation type="unfinished">Fout: Kan databasetransactie niet uitvoeren voor wallet %s</translation>
     </message>
     <message>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
@@ -3848,8 +4433,16 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Herscannen van de wallet tijdens initialisatie mislukt</translation>
     </message>
     <message>
+        <source>Failed to start indexes, shutting down..</source>
+        <translation type="unfinished">Kan de indexen niet starten, wordt afgesloten..</translation>
+    </message>
+    <message>
         <source>Failed to verify database</source>
         <translation type="unfinished">Mislukt om de databank te controleren</translation>
+    </message>
+    <message>
+        <source>Failure removing transaction: %s</source>
+        <translation type="unfinished">Verwijderen transactie mislukt: %s</translation>
     </message>
     <message>
         <source>Fee rate (%s) is lower than the minimum fee rate setting (%s)</source>
@@ -3876,6 +4469,10 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Invoer niet gevonden of al uitgegeven</translation>
     </message>
     <message>
+        <source>Insufficient dbcache for block verification</source>
+        <translation type="unfinished">Onvoldoende dbcache voor blokverificatie</translation>
+    </message>
+    <message>
         <source>Insufficient funds</source>
         <translation type="unfinished">Ontoereikend saldo</translation>
     </message>
@@ -3896,12 +4493,28 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Ongeldige P2P-rechten: '%s'</translation>
     </message>
     <message>
+        <source>Invalid amount for %s=&lt;amount&gt;: '%s' (must be at least %s)</source>
+        <translation type="unfinished">Ongeldig bedrag voor %s=&lt;amount&gt;: '%s' (moet minimaal %s zijn)</translation>
+    </message>
+    <message>
+        <source>Invalid amount for %s=&lt;amount&gt;: '%s'</source>
+        <translation type="unfinished">Ongeldig bedrag voor %s=&lt;amount&gt;: '%s'</translation>
+    </message>
+    <message>
         <source>Invalid amount for -%s=&lt;amount&gt;: '%s'</source>
         <translation type="unfinished">Ongeldig bedrag voor -%s=&lt;amount&gt;: '%s'</translation>
     </message>
     <message>
         <source>Invalid netmask specified in -whitelist: '%s'</source>
         <translation type="unfinished">Ongeldig netmask gespecificeerd in -whitelist: '%s'</translation>
+    </message>
+    <message>
+        <source>Invalid port specified in %s: '%s'</source>
+        <translation type="unfinished">Ongeldige poort gespecificeerd in %s: '%s'</translation>
+    </message>
+    <message>
+        <source>Invalid pre-selected input %s</source>
+        <translation type="unfinished">Ongeldige vooraf geselecteerde invoer %s</translation>
     </message>
     <message>
         <source>Listening for incoming connections failed (listen returned error %s)</source>
@@ -3942,6 +4555,14 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
     <message>
         <source>Not enough file descriptors available.</source>
         <translation type="unfinished">Niet genoeg file descriptors beschikbaar.</translation>
+    </message>
+    <message>
+        <source>Not found pre-selected input %s</source>
+        <translation type="unfinished">Voorgeselecteerde invoer %s niet gevonden</translation>
+    </message>
+    <message>
+        <source>Not solvable pre-selected input %s</source>
+        <translation type="unfinished">Niet oplosbare voorgeselecteerde invoer %s</translation>
     </message>
     <message>
         <source>Prune cannot be configured with a negative value.</source>
@@ -4008,6 +4629,10 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Opgegeven blocks map "%s" bestaat niet.</translation>
     </message>
     <message>
+        <source>Specified data directory "%s" does not exist.</source>
+        <translation type="unfinished">Gespecificeerde gegevensdirectory "%s" bestaat niet.</translation>
+    </message>
+    <message>
         <source>Starting network threads…</source>
         <translation type="unfinished">Netwerkthreads starten...</translation>
     </message>
@@ -4040,6 +4665,10 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Dit is de transactievergoeding dat je betaalt wanneer je een transactie verstuurt.</translation>
     </message>
     <message>
+        <source>Transaction %s does not belong to this wallet</source>
+        <translation type="unfinished">Transactie %s behoort niet tot deze wallet</translation>
+    </message>
+    <message>
         <source>Transaction amount too small</source>
         <translation type="unfinished">Transactiebedrag te klein</translation>
     </message>
@@ -4052,10 +4681,6 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Transactie change output is buiten bereik</translation>
     </message>
     <message>
-        <source>Transaction has too long of a mempool chain</source>
-        <translation type="unfinished">Transactie heeft een te lange mempoolketen</translation>
-    </message>
-    <message>
         <source>Transaction must have at least one recipient</source>
         <translation type="unfinished">Transactie moet ten minste één ontvanger hebben</translation>
     </message>
@@ -4066,10 +4691,6 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
     <message>
         <source>Transaction too large</source>
         <translation type="unfinished">Transactie te groot</translation>
-    </message>
-    <message>
-        <source>Unable to allocate memory for -maxsigcachesize: '%s' MiB</source>
-        <translation type="unfinished">Kan geen geheugen toekennen voor -maxsigcachesize: '%s' MiB</translation>
     </message>
     <message>
         <source>Unable to bind to %s on this computer (bind returned error %s)</source>
@@ -4108,6 +4729,10 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Niet mogelijk ok HTTP-server te starten. Zie debuglogboek voor details.</translation>
     </message>
     <message>
+        <source>Unable to unload the wallet before migrating</source>
+        <translation type="unfinished">Kan de portemonnee niet leegmaken vóór de migratie</translation>
+    </message>
+    <message>
         <source>Unknown -blockfilterindex value %s.</source>
         <translation type="unfinished">Onbekende -blokfilterindexwaarde %s.</translation>
     </message>
@@ -4128,8 +4753,28 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
         <translation type="unfinished">Onbekende nieuwe regels geactiveerd (versionbit %i)</translation>
     </message>
     <message>
+        <source>Unsupported global logging level %s=%s. Valid values: %s.</source>
+        <translation type="unfinished">Niet-ondersteund globaal logniveau %s=%s. Geldige waarden: %s.</translation>
+    </message>
+    <message>
+        <source>Wallet file creation failed: %s</source>
+        <translation type="unfinished">Walletbestand maken mislukt: %s</translation>
+    </message>
+    <message>
+        <source>acceptstalefeeestimates is not supported on %s chain.</source>
+        <translation type="unfinished">acceptstalefeeestimates worden niet ondersteund in de %s keten.</translation>
+    </message>
+    <message>
         <source>Unsupported logging category %s=%s.</source>
         <translation type="unfinished">Niet-ondersteunde logcategorie %s=%s.</translation>
+    </message>
+    <message>
+        <source>Error: Could not add watchonly tx %s to watchonly wallet</source>
+        <translation type="unfinished">Fout: Kon alleen lezen tx %s niet toevoegen aan alleen lezen wallet</translation>
+    </message>
+    <message>
+        <source>Error: Could not delete watchonly transactions. </source>
+        <translation type="unfinished">Fout: Kon alleen-lezen transacties niet verwijderen</translation>
     </message>
     <message>
         <source>User Agent comment (%s) contains unsafe characters.</source>
@@ -4149,11 +4794,11 @@ Ga naar Bestand &gt; Wallet openen om een wallet te laden.
     </message>
     <message>
         <source>Settings file could not be read</source>
-        <translation type="unfinished">Instellingen bestand kon niet worden gelezen</translation>
+        <translation type="unfinished">Instellingen bestand kan niet gelezen worden</translation>
     </message>
     <message>
         <source>Settings file could not be written</source>
-        <translation type="unfinished">Instellingen bestand kon niet worden geschreven</translation>
+        <translation type="unfinished">Instelling bestand kan niet opgeschreven worden</translation>
     </message>
 </context>
 </TS>

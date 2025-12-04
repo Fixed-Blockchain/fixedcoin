@@ -20,11 +20,12 @@ from test_framework.script import (
     OP_NOP,
     OP_RETURN,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_greater_than,
     assert_raises_rpc_error,
+    try_rpc,
 )
 
 # Rescans start at the earliest block up to 2 hours before a key timestamp, so
@@ -64,7 +65,7 @@ def mine_large_blocks(node, n):
 def calc_usage(blockdir):
     return sum(os.path.getsize(blockdir + f) for f in os.listdir(blockdir) if os.path.isfile(os.path.join(blockdir, f))) / (1024. * 1024.)
 
-class PruneTest(FixedCoinTestFramework):
+class PruneTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -91,7 +92,7 @@ class PruneTest(FixedCoinTestFramework):
     def setup_network(self):
         self.setup_nodes()
 
-        self.prunedir = os.path.join(self.nodes[2].datadir, self.chain, 'blocks', '')
+        self.prunedir = os.path.join(self.nodes[2].blocks_path, '')
 
         self.connect_nodes(0, 1)
         self.connect_nodes(1, 2)
@@ -134,6 +135,10 @@ class PruneTest(FixedCoinTestFramework):
             expected_msg='Error: Prune mode is incompatible with -reindex-chainstate. Use full -reindex instead.',
             extra_args=['-prune=550', '-reindex-chainstate'],
         )
+
+    def test_rescan_blockchain(self):
+        self.restart_node(0, ["-prune=550"])
+        assert_raises_rpc_error(-1, "Can't rescan beyond pruned data. Use RPC call getblockchaininfo to determine your pruned height.", self.nodes[0].rescanblockchain)
 
     def test_height_min(self):
         assert os.path.isfile(os.path.join(self.prunedir, "blk00000.dat")), "blk00000.dat is missing, pruning too early"
@@ -286,7 +291,7 @@ class PruneTest(FixedCoinTestFramework):
             assert_equal(ret + 1, node.getblockchaininfo()['pruneheight'])
 
         def has_block(index):
-            return os.path.isfile(os.path.join(self.nodes[node_number].datadir, self.chain, "blocks", f"blk{index:05}.dat"))
+            return os.path.isfile(os.path.join(self.nodes[node_number].blocks_path, f"blk{index:05}.dat"))
 
         # should not prune because chain tip of node 3 (995) < PruneAfterHeight (1000)
         assert_raises_rpc_error(-1, "Blockchain is too short for pruning", node.pruneblockchain, height(500))
@@ -469,10 +474,17 @@ class PruneTest(FixedCoinTestFramework):
             self.log.info("Test wallet re-scan")
             self.wallet_test()
 
+            self.log.info("Test it's not possible to rescan beyond pruned data")
+            self.test_rescan_blockchain()
+
         self.log.info("Test invalid pruning command line options")
         self.test_invalid_command_line_options()
 
+        self.log.info("Test scanblocks can not return pruned data")
         self.test_scanblocks_pruned()
+
+        self.log.info("Test pruneheight reflects the presence of block and undo data")
+        self.test_pruneheight_undo_presence()
 
         self.log.info("Done")
 
@@ -487,5 +499,18 @@ class PruneTest(FixedCoinTestFramework):
         assert_raises_rpc_error(-1, "Block not available (pruned data)", node.scanblocks,
             "start", [{"desc": f"raw({false_positive_spk.hex()})"}], 0, 0, "basic", {"filter_false_positives": True})
 
+    def test_pruneheight_undo_presence(self):
+        node = self.nodes[2]
+        pruneheight = node.getblockchaininfo()["pruneheight"]
+        fetch_block = node.getblockhash(pruneheight - 1)
+
+        self.connect_nodes(1, 2)
+        peers = node.getpeerinfo()
+        node.getblockfrompeer(fetch_block, peers[0]["id"])
+        self.wait_until(lambda: not try_rpc(-1, "Block not available (pruned data)", node.getblock, fetch_block), timeout=5)
+
+        new_pruneheight = node.getblockchaininfo()["pruneheight"]
+        assert_equal(pruneheight, new_pruneheight)
+
 if __name__ == '__main__':
-    PruneTest().main()
+    PruneTest(__file__).main()

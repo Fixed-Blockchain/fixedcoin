@@ -7,7 +7,7 @@
 import random
 import threading
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import get_rpc_proxy
 from test_framework.wallet import MiniWallet
 
@@ -25,7 +25,7 @@ class LongpollThread(threading.Thread):
     def run(self):
         self.node.getblocktemplate({'longpollid': self.longpollid, 'rules': ['segwit']})
 
-class GetBlockTemplateLPTest(FixedCoinTestFramework):
+class GetBlockTemplateLPTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.supports_cli = False
@@ -41,7 +41,8 @@ class GetBlockTemplateLPTest(FixedCoinTestFramework):
 
         self.log.info("Test that longpoll waits if we do nothing")
         thr = LongpollThread(self.nodes[0])
-        thr.start()
+        with self.nodes[0].assert_debug_log(["ThreadRPCServer method=getblocktemplate"], timeout=3):
+            thr.start()
         # check that thread still lives
         thr.join(5)  # wait 5 seconds or until thread exits
         assert thr.is_alive()
@@ -55,14 +56,16 @@ class GetBlockTemplateLPTest(FixedCoinTestFramework):
 
         self.log.info("Test that longpoll will terminate if we generate a block ourselves")
         thr = LongpollThread(self.nodes[0])
-        thr.start()
+        with self.nodes[0].assert_debug_log(["ThreadRPCServer method=getblocktemplate"], timeout=3):
+            thr.start()
         self.generate(self.nodes[0], 1)  # generate a block on own node
         thr.join(5)  # wait 5 seconds or until thread exits
         assert not thr.is_alive()
 
         self.log.info("Test that introducing a new transaction into the mempool will terminate the longpoll")
         thr = LongpollThread(self.nodes[0])
-        thr.start()
+        with self.nodes[0].assert_debug_log(["ThreadRPCServer method=getblocktemplate"], timeout=3):
+            thr.start()
         # generate a transaction and submit it
         self.miniwallet.send_self_transfer(from_node=random.choice(self.nodes))
         # after one minute, every 10 seconds the mempool is probed, so in 80 seconds it should have returned
@@ -70,4 +73,4 @@ class GetBlockTemplateLPTest(FixedCoinTestFramework):
         assert not thr.is_alive()
 
 if __name__ == '__main__':
-    GetBlockTemplateLPTest().main()
+    GetBlockTemplateLPTest(__file__).main()

@@ -54,7 +54,7 @@ from decimal import Decimal
 import itertools
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.descriptors import (
     descsum_create,
     descsum_check,
@@ -65,7 +65,7 @@ from test_framework.util import (
     assert_raises_rpc_error,
 )
 
-class AddressTypeTest(FixedCoinTestFramework):
+class AddressTypeTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -79,9 +79,8 @@ class AddressTypeTest(FixedCoinTestFramework):
             ["-changetype=p2sh-segwit"],
             [],
         ]
-        # whitelist all peers to speed up tx relay / mempool sync
-        for args in self.extra_args:
-            args.append("-whitelist=noban@127.0.0.1")
+        # whitelist peers to speed up tx relay / mempool sync
+        self.noban_tx_relay = True
         self.supports_cli = False
 
     def skip_test_if_missing_module(self):
@@ -176,7 +175,7 @@ class AddressTypeTest(FixedCoinTestFramework):
         for deriv in decode['inputs'][0]['bip32_derivs']:
             assert_equal(len(deriv['master_fingerprint']), 8)
             assert_equal(deriv['path'][0], 'm')
-            key_descs[deriv['pubkey']] = '[' + deriv['master_fingerprint'] + deriv['path'][1:] + ']' + deriv['pubkey']
+            key_descs[deriv['pubkey']] = '[' + deriv['master_fingerprint'] + deriv['path'][1:].replace("'","h") + ']' + deriv['pubkey']
 
         # Verify the descriptor checksum against the Python implementation
         assert descsum_check(info['desc'])
@@ -370,6 +369,8 @@ class AddressTypeTest(FixedCoinTestFramework):
         assert_raises_rpc_error(-5, "Unknown address type ''", self.nodes[3].getnewaddress, None, '')
         assert_raises_rpc_error(-5, "Unknown address type ''", self.nodes[3].getrawchangeaddress, '')
         assert_raises_rpc_error(-5, "Unknown address type 'bech23'", self.nodes[3].getrawchangeaddress, 'bech23')
+        if self.options.descriptors:
+            assert_raises_rpc_error(-5, "Unknown address type 'bech23'", self.nodes[3].createwalletdescriptor, "bech23")
 
         self.log.info("Nodes with changetype=p2sh-segwit never use a P2WPKH change output")
         self.test_change_output_type(4, [to_address_bech32_1], 'p2sh-segwit')
@@ -388,4 +389,4 @@ class AddressTypeTest(FixedCoinTestFramework):
             assert_raises_rpc_error(-8, "Legacy wallets cannot provide bech32m addresses", self.nodes[0].getrawchangeaddress, "bech32m")
 
 if __name__ == '__main__':
-    AddressTypeTest().main()
+    AddressTypeTest(__file__).main()

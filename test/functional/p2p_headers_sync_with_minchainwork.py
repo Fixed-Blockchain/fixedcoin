@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# Copyright (c) 2019-2022 The Bitcoin Core developers
+# Copyright (c) 2019-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test that we reject low difficulty headers to prevent our block tree from filling up with useless bloat"""
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 from test_framework.p2p import (
     P2PInterface,
@@ -21,11 +21,13 @@ from test_framework.blocktools import (
 
 from test_framework.util import assert_equal
 
+import time
+
 NODE1_BLOCKS_REQUIRED = 15
 NODE2_BLOCKS_REQUIRED = 2047
 
 
-class RejectLowDifficultyHeadersTest(FixedCoinTestFramework):
+class RejectLowDifficultyHeadersTest(BitcoinTestFramework):
     def set_test_params(self):
         self.rpc_timeout *= 4  # To avoid timeout when generating BLOCKS_TO_MINE
         self.setup_clean_chain = True
@@ -47,6 +49,10 @@ class RejectLowDifficultyHeadersTest(FixedCoinTestFramework):
         self.connect_nodes(0, 1)
         self.connect_nodes(0, 2)
         self.connect_nodes(0, 3)
+
+    def mocktime_all(self, time):
+        for n in self.nodes:
+            n.setmocktime(time)
 
     def test_chains_sync_when_long_enough(self):
         self.log.info("Generate blocks on the node with no required chainwork, and verify nodes 1 and 2 have no new headers in their headers tree")
@@ -149,7 +155,9 @@ class RejectLowDifficultyHeadersTest(FixedCoinTestFramework):
 
         self.reconnect_all()
 
+        self.mocktime_all(int(time.time()))  # Temporarily hold time to avoid internal timeouts
         self.sync_blocks(timeout=300) # Ensure tips eventually agree
+        self.mocktime_all(0)
 
 
     def run_test(self):
@@ -162,4 +170,4 @@ class RejectLowDifficultyHeadersTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    RejectLowDifficultyHeadersTest().main()
+    RejectLowDifficultyHeadersTest(__file__).main()

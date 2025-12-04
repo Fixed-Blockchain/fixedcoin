@@ -12,12 +12,12 @@ from test_framework.p2p import (
     P2PInterface,
     msg_headers,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 import os
 
 
-class RejectLowDifficultyHeadersTest(FixedCoinTestFramework):
+class RejectLowDifficultyHeadersTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.chain = 'testnet3'  # Use testnet chain because it has an early checkpoint
@@ -85,4 +85,4 @@ class RejectLowDifficultyHeadersTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    RejectLowDifficultyHeadersTest().main()
+    RejectLowDifficultyHeadersTest(__file__).main()

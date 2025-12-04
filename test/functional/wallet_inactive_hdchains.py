@@ -5,18 +5,16 @@
 """
 Test Inactive HD Chains.
 """
-import os
 import shutil
-import time
 
 from test_framework.authproxy import JSONRPCException
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.wallet_util import (
     get_generate_key,
 )
 
 
-class InactiveHDChainsTest(FixedCoinTestFramework):
+class InactiveHDChainsTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser, descriptors=False)
 
@@ -76,12 +74,13 @@ class InactiveHDChainsTest(FixedCoinTestFramework):
         self.generate(self.nodes[0], 1)
 
         # Wait for the test wallet to see the transaction
-        while True:
+        def is_tx_available(txid):
             try:
                 test_wallet.gettransaction(txid)
-                break
+                return True
             except JSONRPCException:
-                time.sleep(0.1)
+                return False
+        self.nodes[0].wait_until(lambda: is_tx_available(txid), timeout=10, check_interval=0.1)
 
         if encrypt:
             # The test wallet will not be able to generate the topped up keypool
@@ -109,7 +108,7 @@ class InactiveHDChainsTest(FixedCoinTestFramework):
     def test_without_upgraded_keymeta(self):
         # Test that it is possible to top up inactive hd chains even if there is no key origin
         # in CKeyMetadata. This tests for the segfault reported in
-        # https://github.com/fixedcoin/fixedcoin/issues/21605
+        # https://github.com/Fixed-Blockchain/fixedcoin/issues/21605
         self.log.info("Test that topping up inactive HD chains does not need upgraded key origin")
 
         self.nodes[0].createwallet(wallet_name="keymeta_base", descriptors=False, blank=True)
@@ -130,8 +129,8 @@ class InactiveHDChainsTest(FixedCoinTestFramework):
 
         # Copy test wallet to node 0
         test_wallet.unloadwallet()
-        test_wallet_dir = os.path.join(self.nodes[1].datadir, "regtest/wallets/keymeta_test")
-        new_test_wallet_dir = os.path.join(self.nodes[0].datadir, "regtest/wallets/keymeta_test")
+        test_wallet_dir = self.nodes[1].wallets_path / "keymeta_test"
+        new_test_wallet_dir = self.nodes[0].wallets_path / "keymeta_test"
         shutil.copytree(test_wallet_dir, new_test_wallet_dir)
         self.nodes[0].loadwallet("keymeta_test")
         test_wallet = self.nodes[0].get_wallet_rpc("keymeta_test")
@@ -147,4 +146,4 @@ class InactiveHDChainsTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    InactiveHDChainsTest().main()
+    InactiveHDChainsTest(__file__).main()

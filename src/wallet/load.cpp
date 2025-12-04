@@ -1,16 +1,16 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <wallet/load.h>
 
+#include <common/args.h>
 #include <interfaces/chain.h>
 #include <scheduler.h>
 #include <util/check.h>
 #include <util/fs.h>
 #include <util/string.h>
-#include <util/system.h>
 #include <util/translation.h>
 #include <wallet/context.h>
 #include <wallet/spend.h>
@@ -20,6 +20,8 @@
 #include <univalue.h>
 
 #include <system_error>
+
+using util::Join;
 
 namespace wallet {
 bool VerifyWallets(WalletContext& context)
@@ -50,7 +52,7 @@ bool VerifyWallets(WalletContext& context)
 
     LogPrintf("Using wallet directory %s\n", fs::PathToString(GetWalletDir()));
 
-    chain.initMessage(_("Verifying wallet(s)…").translated);
+    chain.initMessage(_("Verifying wallet(s)…"));
 
     // For backwards compatibility if an unnamed top level wallet exists in the
     // wallets directory, include it in the default list of wallets to load.
@@ -62,12 +64,12 @@ bool VerifyWallets(WalletContext& context)
         options.require_existing = true;
         options.verify = false;
         if (MakeWalletDatabase("", options, status, error_string)) {
-            util::SettingsValue wallets(util::SettingsValue::VARR);
+            common::SettingsValue wallets(common::SettingsValue::VARR);
             wallets.push_back(""); // Default wallet name is ""
             // Pass write=false because no need to write file and probably
             // better not to. If unnamed wallet needs to be added next startup
             // and the setting is empty, this code will just run again.
-            chain.updateRwSetting("wallet", wallets, /* write= */ false);
+            chain.overwriteRwSetting("wallet", std::move(wallets), interfaces::SettingsAction::SKIP_WRITE);
         }
     }
 
@@ -75,6 +77,11 @@ bool VerifyWallets(WalletContext& context)
     std::set<fs::path> wallet_paths;
 
     for (const auto& wallet : chain.getSettingsList("wallet")) {
+        if (!wallet.isStr()) {
+            chain.initError(_("Invalid value detected for '-wallet' or '-nowallet'. "
+                              "'-wallet' requires a string value, while '-nowallet' accepts only '1' to disable all wallets"));
+            return false;
+        }
         const auto& wallet_file = wallet.get_str();
         const fs::path path = fsbridge::AbsPathJoin(GetWalletDir(), fs::PathFromString(wallet_file));
 
@@ -108,6 +115,11 @@ bool LoadWallets(WalletContext& context)
     try {
         std::set<fs::path> wallet_paths;
         for (const auto& wallet : chain.getSettingsList("wallet")) {
+            if (!wallet.isStr()) {
+                chain.initError(_("Invalid value detected for '-wallet' or '-nowallet'. "
+                                  "'-wallet' requires a string value, while '-nowallet' accepts only '1' to disable all wallets"));
+                return false;
+            }
             const auto& name = wallet.get_str();
             if (!wallet_paths.insert(fs::PathFromString(name)).second) {
                 continue;
@@ -123,7 +135,7 @@ bool LoadWallets(WalletContext& context)
             if (!database && status == DatabaseStatus::FAILED_NOT_FOUND) {
                 continue;
             }
-            chain.initMessage(_("Loading wallet…").translated);
+            chain.initMessage(_("Loading wallet…"));
             std::shared_ptr<CWallet> pwallet = database ? CWallet::Create(context, name, std::move(database), options.create_flags, error, warnings) : nullptr;
             if (!warnings.empty()) chain.initWarning(Join(warnings, Untranslated("\n")));
             if (!pwallet) {
@@ -141,7 +153,7 @@ bool LoadWallets(WalletContext& context)
     }
 }
 
-void StartWallets(WalletContext& context, CScheduler& scheduler)
+void StartWallets(WalletContext& context)
 {
     for (const std::shared_ptr<CWallet>& pwallet : GetWallets(context)) {
         pwallet->postInitProcess();
@@ -149,9 +161,9 @@ void StartWallets(WalletContext& context, CScheduler& scheduler)
 
     // Schedule periodic wallet flushes and tx rebroadcasts
     if (context.args->GetBoolArg("-flushwallet", DEFAULT_FLUSHWALLET)) {
-        scheduler.scheduleEvery([&context] { MaybeCompactWalletDB(context); }, std::chrono::milliseconds{500});
+        context.scheduler->scheduleEvery([&context] { MaybeCompactWalletDB(context); }, 500ms);
     }
-    scheduler.scheduleEvery([&context] { MaybeResendWalletTxs(context); }, 1min);
+    context.scheduler->scheduleEvery([&context] { MaybeResendWalletTxs(context); }, 1min);
 }
 
 void FlushWallets(WalletContext& context)
@@ -176,7 +188,7 @@ void UnloadWallets(WalletContext& context)
         wallets.pop_back();
         std::vector<bilingual_str> warnings;
         RemoveWallet(context, wallet, /* load_on_start= */ std::nullopt, warnings);
-        UnloadWallet(std::move(wallet));
+        WaitForDeleteWallet(std::move(wallet));
     }
 }
 } // namespace wallet

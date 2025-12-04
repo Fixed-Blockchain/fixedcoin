@@ -7,14 +7,14 @@
 
 from decimal import Decimal
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_approx,
     assert_equal,
     assert_raises_rpc_error,
 )
 
-class SimulateTxTest(FixedCoinTestFramework):
+class SimulateTxTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -71,10 +71,10 @@ class SimulateTxTest(FixedCoinTestFramework):
         funding = w0.fundrawtransaction(tx1)
         tx1 = funding["hex"]
         tx1changepos = funding["changepos"]
-        fixedcoin_fee = Decimal(funding["fee"])
+        bitcoin_fee = Decimal(funding["fee"])
 
-        # w0 sees fee + 5 fix decrease, w2 sees + 5 fix
-        assert_approx(w0.simulaterawtransaction([tx1])["balance_change"], -(Decimal("5") + fixedcoin_fee))
+        # w0 sees fee + 5 btc decrease, w2 sees + 5 btc
+        assert_approx(w0.simulaterawtransaction([tx1])["balance_change"], -(Decimal("5") + bitcoin_fee))
         assert_approx(w2.simulaterawtransaction([tx1])["balance_change"], Decimal("5"))
 
         # w1 sees same as before
@@ -99,11 +99,11 @@ class SimulateTxTest(FixedCoinTestFramework):
 
         # they should succeed when including tx1:
         #       wallet                  tx3                             tx4
-        #       w0                      -5 - fixedcoin_fee + 4.9999       -5 - fixedcoin_fee
+        #       w0                      -5 - bitcoin_fee + 4.9999       -5 - bitcoin_fee
         #       w1                      0                               +4.9999
-        assert_approx(w0.simulaterawtransaction([tx1, tx3])["balance_change"], -Decimal("5") - fixedcoin_fee + Decimal("4.9999"))
+        assert_approx(w0.simulaterawtransaction([tx1, tx3])["balance_change"], -Decimal("5") - bitcoin_fee + Decimal("4.9999"))
         assert_approx(w1.simulaterawtransaction([tx1, tx3])["balance_change"], 0)
-        assert_approx(w0.simulaterawtransaction([tx1, tx4])["balance_change"], -Decimal("5") - fixedcoin_fee)
+        assert_approx(w0.simulaterawtransaction([tx1, tx4])["balance_change"], -Decimal("5") - bitcoin_fee)
         assert_approx(w1.simulaterawtransaction([tx1, tx4])["balance_change"], Decimal("4.9999"))
 
         # they should fail if attempting to include both tx3 and tx4
@@ -118,8 +118,8 @@ class SimulateTxTest(FixedCoinTestFramework):
         # w0 funds transaction 2; it should now see a decrease in (tx fee and payment), and w1 should see the same as above
         funding = w0.fundrawtransaction(tx2)
         tx2 = funding["hex"]
-        fixedcoin_fee2 = Decimal(funding["fee"])
-        assert_approx(w0.simulaterawtransaction([tx2])["balance_change"], -(Decimal("10") + fixedcoin_fee2))
+        bitcoin_fee2 = Decimal(funding["fee"])
+        assert_approx(w0.simulaterawtransaction([tx2])["balance_change"], -(Decimal("10") + bitcoin_fee2))
         assert_approx(w1.simulaterawtransaction([tx2])["balance_change"], +(Decimal("10")))
         assert_approx(w2.simulaterawtransaction([tx2])["balance_change"], 0)
 
@@ -129,4 +129,4 @@ class SimulateTxTest(FixedCoinTestFramework):
         assert_raises_rpc_error(-8, "One or more transaction inputs are missing or have been spent already", w2.simulaterawtransaction, [tx1, tx2])
 
 if __name__ == '__main__':
-    SimulateTxTest().main()
+    SimulateTxTest(__file__).main()

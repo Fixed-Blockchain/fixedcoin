@@ -7,12 +7,12 @@
 Tests listtransactions, listsinceblock, and gettransaction.
 """
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_array_result
 )
 
-class CoinbaseCategoryTest(FixedCoinTestFramework):
+class CoinbaseCategoryTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -60,4 +60,4 @@ class CoinbaseCategoryTest(FixedCoinTestFramework):
         self.assert_category("orphan", address, txid, 100)
 
 if __name__ == '__main__':
-    CoinbaseCategoryTest().main()
+    CoinbaseCategoryTest(__file__).main()

@@ -22,7 +22,7 @@ from test_framework.p2p import (
         msg_headers,
         P2PDataStore,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
         assert_equal,
 )
@@ -44,7 +44,7 @@ class P2PStaller(P2PDataStore):
         pass
 
 
-class P2PIBDStallingTest(FixedCoinTestFramework):
+class P2PIBDStallingTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -73,6 +73,8 @@ class P2PIBDStallingTest(FixedCoinTestFramework):
         peers = []
 
         self.log.info("Check that a staller does not get disconnected if the 1024 block lookahead buffer is filled")
+        self.mocktime = int(time.time()) + 1
+        node.setmocktime(self.mocktime)
         for id in range(NUM_PEERS):
             peers.append(node.add_outbound_p2p_connection(P2PStaller(stall_block), p2p_idx=id, connection_type="outbound-full-relay"))
             peers[-1].block_store = block_dict
@@ -80,11 +82,12 @@ class P2PIBDStallingTest(FixedCoinTestFramework):
 
         # Need to wait until 1023 blocks are received - the magic total bytes number is a workaround in lack of an rpc
         # returning the number of downloaded (but not connected) blocks.
-        self.wait_until(lambda: self.total_bytes_recv_for_blocks() == 172761)
+        bytes_recv = 172761 if not self.options.v2transport else 169692
+        self.wait_until(lambda: self.total_bytes_recv_for_blocks() == bytes_recv)
 
         self.all_sync_send_with_ping(peers)
         # If there was a peer marked for stalling, it would get disconnected
-        self.mocktime = int(time.time()) + 3
+        self.mocktime += 3
         node.setmocktime(self.mocktime)
         self.all_sync_send_with_ping(peers)
         assert_equal(node.num_test_p2p_connections(), NUM_PEERS)
@@ -151,7 +154,7 @@ class P2PIBDStallingTest(FixedCoinTestFramework):
     def all_sync_send_with_ping(self, peers):
         for p in peers:
             if p.is_connected:
-                p.sync_send_with_ping()
+                p.sync_with_ping()
 
     def is_block_requested(self, peers, hash):
         for p in peers:
@@ -161,4 +164,4 @@ class P2PIBDStallingTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    P2PIBDStallingTest().main()
+    P2PIBDStallingTest(__file__).main()

@@ -6,10 +6,10 @@
 Test whether persistent or transient I2P sessions are being used, based on `-i2pacceptincoming`.
 """
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 
-class I2PSessions(FixedCoinTestFramework):
+class I2PSessions(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         # The test assumes that an I2P SAM proxy is not listening here.
@@ -33,4 +33,4 @@ class I2PSessions(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    I2PSessions().main()
+    I2PSessions(__file__).main()

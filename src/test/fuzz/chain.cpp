@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 The Bitcoin Core developers
+// Copyright (c) 2020-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -29,7 +29,7 @@ FUZZ_TARGET(chain)
         (void)disk_block_index->GetBlockTimeMax();
         (void)disk_block_index->GetMedianTimePast();
         (void)disk_block_index->GetUndoPos();
-        (void)disk_block_index->HaveTxsDownloaded();
+        (void)disk_block_index->HaveNumChainTxs();
         (void)disk_block_index->IsValid();
     }
 

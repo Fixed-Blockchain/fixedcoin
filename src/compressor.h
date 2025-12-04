@@ -1,6 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
-// Copyright (c) 2025 The FixedCoin Core developers
+// Copyright (c) 2009-2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -56,8 +55,8 @@ struct ScriptCompression
 {
     /**
      * make this static for now (there are only 6 special scripts defined)
-     * this can potentially be extended together with a new nVersion for
-     * transactions, in which case this value becomes dependent on nVersion
+     * this can potentially be extended together with a new version for
+     * transactions, in which case this value becomes dependent on version
      * and nHeight of the enclosing transaction.
      */
     static const unsigned int nSpecialScripts = 6;

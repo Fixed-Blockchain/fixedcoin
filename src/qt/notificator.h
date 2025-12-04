@@ -1,13 +1,11 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef FIXEDCOIN_QT_NOTIFICATOR_H
 #define FIXEDCOIN_QT_NOTIFICATOR_H
 
-#if defined(HAVE_CONFIG_H)
-#include <config/fixedcoin-config.h>
-#endif
+#include <fixedcoin-build-config.h> // IWYU pragma: keep
 
 #include <QIcon>
 #include <QObject>

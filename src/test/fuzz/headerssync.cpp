@@ -6,6 +6,7 @@
 #include <test/fuzz/util.h>
 #include <test/util/setup_common.h>
 #include <uint256.h>
+#include <util/chaintype.h>
 #include <util/time.h>
 #include <validation.h>
 
@@ -15,7 +16,7 @@
 static void initialize_headers_sync_state_fuzz()
 {
     static const auto testing_setup = MakeNoLogFileContext<>(
-        /*chain_name=*/CBaseChainParams::MAIN);
+        /*chain_type=*/ChainType::MAIN);
 }
 
 void MakeHeadersContinuous(
@@ -45,8 +46,9 @@ public:
     }
 };
 
-FUZZ_TARGET_INIT(headers_sync_state, initialize_headers_sync_state_fuzz)
+FUZZ_TARGET(headers_sync_state, .init = initialize_headers_sync_state_fuzz)
 {
+    SeedRandomStateForTest(SeedRand::ZEROS);
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     auto mock_time{ConsumeTime(fuzzed_data_provider)};
 
@@ -107,7 +109,7 @@ FUZZ_TARGET_INIT(headers_sync_state, initialize_headers_sync_state_fuzz)
 
                     // If we get to redownloading, the presynced headers need
                     // to have the min amount of work on them.
-                    assert(CalculateHeadersWork(all_headers) >= min_work);
+                    assert(CalculateClaimedHeadersWork(all_headers) >= min_work);
                 }
             }
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# Copyright (c) 2020-2022 The Bitcoin Core developers
+# Copyright (c) 2020-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test error messages for 'getaddressinfo' and 'validateaddress' RPC commands."""
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 from test_framework.util import (
     assert_equal,
@@ -12,6 +12,7 @@ from test_framework.util import (
 )
 
 BECH32_VALID = 'bcrt1qtmp74ayg7p24uslctssvjm06q5phz4yrxucgnv'
+BECH32_VALID_UNKNOWN_WITNESS = 'bcrt1p424qxxyd0r'
 BECH32_VALID_CAPITALS = 'BCRT1QPLMTZKC2XHARPPZDLNPAQL78RSHJ68U33RAH7R'
 BECH32_VALID_MULTISIG = 'bcrt1qdg3myrgvzw7ml9q0ejxhlkyxm7vl9r56yzkfgvzclrf4hkpx9yfqhpsuks'
 
@@ -38,7 +39,7 @@ BASE58_INVALID_LENGTH = '2VKf7XKMrp4bVNVmuRbyCewkP8FhGLP2E54LHDPakr9Sq5mtU2'
 INVALID_ADDRESS = 'asfah14i8fajz0123f'
 INVALID_ADDRESS_2 = '1q049ldschfnwystcqnsvyfpj23mpsg3jcedq9xv'
 
-class InvalidAddressErrorMessageTest(FixedCoinTestFramework):
+class InvalidAddressErrorMessageTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -63,12 +64,12 @@ class InvalidAddressErrorMessageTest(FixedCoinTestFramework):
 
     def test_validateaddress(self):
         # Invalid Bech32
-        self.check_invalid(BECH32_INVALID_SIZE, 'Invalid Bech32 address data size')
+        self.check_invalid(BECH32_INVALID_SIZE, "Invalid Bech32 address program size (41 bytes)")
         self.check_invalid(BECH32_INVALID_PREFIX, 'Invalid or unsupported Segwit (Bech32) or Base58 encoding.')
         self.check_invalid(BECH32_INVALID_BECH32, 'Version 1+ witness address must use Bech32m checksum')
         self.check_invalid(BECH32_INVALID_BECH32M, 'Version 0 witness address must use Bech32 checksum')
         self.check_invalid(BECH32_INVALID_VERSION, 'Invalid Bech32 address witness version')
-        self.check_invalid(BECH32_INVALID_V0_SIZE, 'Invalid Bech32 v0 address data size')
+        self.check_invalid(BECH32_INVALID_V0_SIZE, "Invalid Bech32 v0 address program size (21 bytes), per BIP141")
         self.check_invalid(BECH32_TOO_LONG, 'Bech32 string too long', list(range(90, 108)))
         self.check_invalid(BECH32_ONE_ERROR, 'Invalid Bech32 checksum', [9])
         self.check_invalid(BECH32_TWO_ERRORS, 'Invalid Bech32 checksum', [22, 43])
@@ -80,6 +81,7 @@ class InvalidAddressErrorMessageTest(FixedCoinTestFramework):
 
         # Valid Bech32
         self.check_valid(BECH32_VALID)
+        self.check_valid(BECH32_VALID_UNKNOWN_WITNESS)
         self.check_valid(BECH32_VALID_CAPITALS)
         self.check_valid(BECH32_VALID_MULTISIG)
 
@@ -98,17 +100,18 @@ class InvalidAddressErrorMessageTest(FixedCoinTestFramework):
         node = self.nodes[0]
 
         # Missing arg returns the help text
-        assert_raises_rpc_error(-1, "Return information about the given fixedcoin address.", node.validateaddress)
+        assert_raises_rpc_error(-1, "Return information about the given bitcoin address.", node.validateaddress)
         # Explicit None is not allowed for required parameters
         assert_raises_rpc_error(-3, "JSON value of type null is not of expected type string", node.validateaddress, None)
 
     def test_getaddressinfo(self):
         node = self.nodes[0]
 
-        assert_raises_rpc_error(-5, "Invalid Bech32 address data size", node.getaddressinfo, BECH32_INVALID_SIZE)
+        assert_raises_rpc_error(-5, "Invalid Bech32 address program size (41 bytes)", node.getaddressinfo, BECH32_INVALID_SIZE)
         assert_raises_rpc_error(-5, "Invalid or unsupported Segwit (Bech32) or Base58 encoding.", node.getaddressinfo, BECH32_INVALID_PREFIX)
         assert_raises_rpc_error(-5, "Invalid or unsupported Base58-encoded address.", node.getaddressinfo, BASE58_INVALID_PREFIX)
         assert_raises_rpc_error(-5, "Invalid or unsupported Segwit (Bech32) or Base58 encoding.", node.getaddressinfo, INVALID_ADDRESS)
+        assert "isscript" not in node.getaddressinfo(BECH32_VALID_UNKNOWN_WITNESS)
 
     def run_test(self):
         self.test_validateaddress()
@@ -119,4 +122,4 @@ class InvalidAddressErrorMessageTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    InvalidAddressErrorMessageTest().main()
+    InvalidAddressErrorMessageTest(__file__).main()

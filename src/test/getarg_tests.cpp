@@ -1,12 +1,13 @@
-// Copyright (c) 2012-2022 The Bitcoin Core developers
+// Copyright (c) 2012-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <common/args.h>
+#include <common/settings.h>
+#include <logging.h>
 #include <test/util/setup_common.h>
 #include <univalue.h>
-#include <util/settings.h>
 #include <util/strencodings.h>
-#include <util/system.h>
 
 #include <limits>
 #include <string>
@@ -14,6 +15,8 @@
 #include <vector>
 
 #include <boost/test/unit_test.hpp>
+
+using util::SplitString;
 
 BOOST_FIXTURE_TEST_SUITE(getarg_tests, BasicTestingSetup)
 
@@ -56,8 +59,8 @@ BOOST_AUTO_TEST_CASE(setting_args)
     ArgsManager args;
     SetupArgs(args, {{"-foo", ArgsManager::ALLOW_ANY}});
 
-    auto set_foo = [&](const util::SettingsValue& value) {
-      args.LockSettings([&](util::Settings& settings) {
+    auto set_foo = [&](const common::SettingsValue& value) {
+      args.LockSettings([&](common::Settings& settings) {
         settings.rw_settings["foo"] = value;
       });
     };

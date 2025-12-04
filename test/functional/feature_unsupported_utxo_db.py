@@ -9,11 +9,11 @@ Previous releases are required by this test, see test/README.md.
 
 import shutil
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
 
-class UnsupportedUtxoDbTest(FixedCoinTestFramework):
+class UnsupportedUtxoDbTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2
@@ -40,9 +40,9 @@ class UnsupportedUtxoDbTest(FixedCoinTestFramework):
 
         self.log.info("Check init error")
         legacy_utxos_dir = self.nodes[0].chain_path / "chainstate"
-        legacy_blocks_dir = self.nodes[0].chain_path / "blocks"
+        legacy_blocks_dir = self.nodes[0].blocks_path
         recent_utxos_dir = self.nodes[1].chain_path / "chainstate"
-        recent_blocks_dir = self.nodes[1].chain_path / "blocks"
+        recent_blocks_dir = self.nodes[1].blocks_path
         shutil.copytree(legacy_utxos_dir, recent_utxos_dir)
         shutil.copytree(legacy_blocks_dir, recent_blocks_dir)
         self.nodes[1].assert_start_raises_init_error(
@@ -58,4 +58,4 @@ class UnsupportedUtxoDbTest(FixedCoinTestFramework):
 
 
 if __name__ == "__main__":
-    UnsupportedUtxoDbTest().main()
+    UnsupportedUtxoDbTest(__file__).main()

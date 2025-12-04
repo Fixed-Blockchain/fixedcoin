@@ -16,10 +16,9 @@ import os
 
 EXCLUDE = [
     # auto generated:
-    'src/qt/fixedcoinstrings.cpp',
+    'src/qt/bitcoinstrings.cpp',
     'src/chainparamsseeds.h',
     # other external copyrights:
-    'src/reverse_iterator.h',
     'src/test/fuzz/FuzzedDataProvider.h',
     'src/tinyformat.h',
     'src/bench/nanobench.h',
@@ -93,7 +92,7 @@ def compile_copyright_regex(copyright_style, year_style, name):
 
 EXPECTED_HOLDER_NAMES = [
     r"Satoshi Nakamoto",
-    r"The FixedCoin Core developers",
+    r"The Bitcoin Core developers",
     r"BitPay Inc\.",
     r"University of Illinois at Urbana-Champaign\.",
     r"Pieter Wuille",
@@ -273,7 +272,7 @@ Usage:
     $ ./copyright_header.py report <base_directory> [verbose]
 
 Arguments:
-    <base_directory> - The base directory of a fixedcoin source code repository.
+    <base_directory> - The base directory of a bitcoin source code repository.
     [verbose] - Includes a list of every file of each subcategory in the report.
 """
 
@@ -334,7 +333,7 @@ def write_file_lines(filename, file_lines):
 COPYRIGHT = r'Copyright \(c\)'
 YEAR = "20[0-9][0-9]"
 YEAR_RANGE = '(%s)(-%s)?' % (YEAR, YEAR)
-HOLDER = 'The FixedCoin Core developers'
+HOLDER = 'The Bitcoin Core developers'
 UPDATEABLE_LINE_COMPILED = re.compile(' '.join([COPYRIGHT, YEAR_RANGE, HOLDER]))
 
 def get_updatable_copyright_line(file_lines):
@@ -424,7 +423,7 @@ Usage:
     $ ./copyright_header.py update <base_directory>
 
 Arguments:
-    <base_directory> - The base directory of a fixedcoin source code repository.
+    <base_directory> - The base directory of a bitcoin source code repository.
 """
 
 def print_file_action_message(filename, action):
@@ -547,7 +546,7 @@ Usage:
     $ ./copyright_header.py insert <file>
 
 Arguments:
-    <file> - A source file in the fixedcoin repository.
+    <file> - A source file in the bitcoin repository.
 """
 
 def insert_cmd(argv):

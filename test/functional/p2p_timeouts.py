@@ -22,7 +22,7 @@
 
 from test_framework.messages import msg_ping
 from test_framework.p2p import P2PInterface
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 import time
 
@@ -33,7 +33,7 @@ class TestP2PConn(P2PInterface):
         pass
 
 
-class TimeoutsTest(FixedCoinTestFramework):
+class TimeoutsTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -68,11 +68,11 @@ class TimeoutsTest(FixedCoinTestFramework):
 
         with self.nodes[0].assert_debug_log(['Unsupported message "ping" prior to verack from peer=0']):
             no_verack_node.send_message(msg_ping())
+
         with self.nodes[0].assert_debug_log(['non-version message before version handshake. Message "ping" from peer=1']):
             no_version_node.send_message(msg_ping())
 
         self.mock_forward(1)
-
         assert "version" in no_verack_node.last_message
 
         assert no_verack_node.is_connected
@@ -82,11 +82,18 @@ class TimeoutsTest(FixedCoinTestFramework):
         no_verack_node.send_message(msg_ping())
         no_version_node.send_message(msg_ping())
 
-        expected_timeout_logs = [
-            "version handshake timeout peer=0",
-            "socket no message in first 3 seconds, 1 0 peer=1",
-            "socket no message in first 3 seconds, 0 0 peer=2",
-        ]
+        if self.options.v2transport:
+            expected_timeout_logs = [
+                "version handshake timeout, disconnecting peer=0",
+                "version handshake timeout, disconnecting peer=1",
+                "version handshake timeout, disconnecting peer=2",
+            ]
+        else:
+            expected_timeout_logs = [
+                "version handshake timeout, disconnecting peer=0",
+                "socket no message in first 3 seconds, never sent to peer, disconnecting peer=1",
+                "socket no message in first 3 seconds, never received from peer, never sent to peer, disconnecting peer=2",
+            ]
 
         with self.nodes[0].assert_debug_log(expected_msgs=expected_timeout_logs):
             self.mock_forward(2)
@@ -100,5 +107,6 @@ class TimeoutsTest(FixedCoinTestFramework):
             extra_args=['-peertimeout=0'],
         )
 
+
 if __name__ == '__main__':
-    TimeoutsTest().main()
+    TimeoutsTest(__file__).main()

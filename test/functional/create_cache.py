@@ -9,9 +9,9 @@ multiple functional tests. This helper script is executed by test_runner when mu
 tests are being run in parallel.
 """
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
-class CreateCache(FixedCoinTestFramework):
+class CreateCache(BitcoinTestFramework):
     # Test network and test nodes are not required:
 
     def set_test_params(self):
@@ -24,4 +24,4 @@ class CreateCache(FixedCoinTestFramework):
         pass
 
 if __name__ == '__main__':
-    CreateCache().main()
+    CreateCache(__file__).main()

@@ -5,7 +5,7 @@ Setup
 ---------------------
 FixedCoin Core is the original FixedCoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of FixedCoin transactions, which requires a few hundred gigabytes of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download FixedCoin Core, visit [fixedcoincore.org](https://bitcoincore.org/en/download/).
+To download FixedCoin Core, visit [fixedcoincore.org](https://fixedcoin.org/en/download/).
 
 Running
 ---------------------

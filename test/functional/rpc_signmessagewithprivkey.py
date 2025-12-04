@@ -7,14 +7,14 @@
 from test_framework.descriptors import (
     descsum_create,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
 
 
-class SignMessagesWithPrivTest(FixedCoinTestFramework):
+class SignMessagesWithPrivTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -60,4 +60,4 @@ class SignMessagesWithPrivTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    SignMessagesWithPrivTest().main()
+    SignMessagesWithPrivTest(__file__).main()

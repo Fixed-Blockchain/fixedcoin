@@ -23,7 +23,7 @@ from test_framework.p2p import (
     P2P_SERVICES,
     P2P_VERSION_RELAY,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_greater_than_or_equal,
@@ -97,7 +97,7 @@ class P2PVersionStore(P2PInterface):
         self.version_received = msg
 
 
-class P2PLeakTest(FixedCoinTestFramework):
+class P2PLeakTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [[f"-peertimeout={PEER_TIMEOUT}"]]
@@ -172,10 +172,10 @@ class P2PLeakTest(FixedCoinTestFramework):
 
         self.log.info('Check that old peers are disconnected')
         p2p_old_peer = self.nodes[0].add_p2p_connection(P2PInterface(), send_version=False, wait_for_verack=False)
-        with self.nodes[0].assert_debug_log(["using obsolete version 31799; disconnecting"]):
+        with self.nodes[0].assert_debug_log(["using obsolete version 31799, disconnecting peer=5"]):
             p2p_old_peer.send_message(self.create_old_version(31799))
             p2p_old_peer.wait_for_disconnect()
 
 
 if __name__ == '__main__':
-    P2PLeakTest().main()
+    P2PLeakTest(__file__).main()

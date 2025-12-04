@@ -5,8 +5,6 @@
 """Test segwit transactions and blocks on P2P network."""
 from decimal import Decimal
 import random
-import struct
-import time
 
 from test_framework.blocktools import (
     WITNESS_COMMITMENT_HEADER,
@@ -14,7 +12,6 @@ from test_framework.blocktools import (
     create_block,
     create_coinbase,
 )
-from test_framework.key import ECKey
 from test_framework.messages import (
     MAX_BIP125_RBF_SEQUENCE,
     CBlockHeader,
@@ -71,9 +68,9 @@ from test_framework.script import (
     SIGHASH_ANYONECANPAY,
     SIGHASH_NONE,
     SIGHASH_SINGLE,
-    SegwitV0SignatureHash,
-    LegacySignatureHash,
     hash160,
+    sign_input_legacy,
+    sign_input_segwitv0,
 )
 from test_framework.script_util import (
     key_to_p2pk_script,
@@ -82,13 +79,15 @@ from test_framework.script_util import (
     script_to_p2sh_script,
     script_to_p2wsh_script,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
-    softfork_active,
     assert_raises_rpc_error,
+    ensure_for,
+    softfork_active,
 )
 from test_framework.wallet import MiniWallet
+from test_framework.wallet_util import generate_keypair
 
 
 MAX_SIGOP_COST = 80000
@@ -121,10 +120,8 @@ def subtest(func):
 
 def sign_p2pk_witness_input(script, tx_to, in_idx, hashtype, value, key):
     """Add signature for a P2PK witness script."""
-    tx_hash = SegwitV0SignatureHash(script, tx_to, in_idx, hashtype, value)
-    signature = key.sign_ecdsa(tx_hash) + chr(hashtype).encode('latin-1')
-    tx_to.wit.vtxinwit[in_idx].scriptWitness.stack = [signature, script]
-    tx_to.rehash()
+    tx_to.wit.vtxinwit[in_idx].scriptWitness.stack = [script]
+    sign_input_segwitv0(tx_to, in_idx, script, value, key, hashtype)
 
 def test_transaction_acceptance(node, p2p, tx, with_witness, accepted, reason=None):
     """Send a transaction to the node and check that it's accepted to the mempool
@@ -187,37 +184,40 @@ class TestP2PConn(P2PInterface):
             else:
                 self.wait_for_getdata([tx.sha256])
         else:
-            time.sleep(5)
-            assert not self.last_message.get("getdata")
+            ensure_for(duration=5, f=lambda: not self.last_message.get("getdata"))
 
     def announce_block_and_wait_for_getdata(self, block, use_header, timeout=60):
         with p2p_lock:
             self.last_message.pop("getdata", None)
-            self.last_message.pop("getheaders", None)
         msg = msg_headers()
         msg.headers = [CBlockHeader(block)]
         if use_header:
             self.send_message(msg)
         else:
             self.send_message(msg_inv(inv=[CInv(MSG_BLOCK, block.sha256)]))
-            self.wait_for_getheaders()
+            self.wait_for_getheaders(block_hash=block.hashPrevBlock, timeout=timeout)
             self.send_message(msg)
-        self.wait_for_getdata([block.sha256])
+        self.wait_for_getdata([block.sha256], timeout=timeout)
 
     def request_block(self, blockhash, inv_type, timeout=60):
         with p2p_lock:
             self.last_message.pop("block", None)
         self.send_message(msg_getdata(inv=[CInv(inv_type, blockhash)]))
-        self.wait_for_block(blockhash, timeout)
+        self.wait_for_block(blockhash, timeout=timeout)
         return self.last_message["block"].block
 
-class SegWitTest(FixedCoinTestFramework):
+class SegWitTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2
+        # whitelist peers to speed up tx relay / mempool sync
+        self.noban_tx_relay = True
         # This test tests SegWit both pre and post-activation, so use the normal BIP9 activation.
         self.extra_args = [
-            ["-acceptnonstdtxn=1", f"-testactivationheight=segwit@{SEGWIT_HEIGHT}", "-whitelist=noban@127.0.0.1", "-par=1"],
+            # -par=1 should not affect validation outcome or logging/reported failures. It is kept
+            # here to exercise the code path still (as it is distinct for multithread script
+            # validation).
+            ["-acceptnonstdtxn=1", f"-testactivationheight=segwit@{SEGWIT_HEIGHT}", "-par=1"],
             ["-acceptnonstdtxn=0", f"-testactivationheight=segwit@{SEGWIT_HEIGHT}"],
         ]
         self.supports_cli = False
@@ -510,12 +510,8 @@ class SegWitTest(FixedCoinTestFramework):
             # When the block is serialized without witness, validation fails because the transaction is
             # invalid (transactions are always validated with SCRIPT_VERIFY_WITNESS so a segwit v0 transaction
             # without a witness is invalid).
-            # Note: The reject reason for this failure could be
-            # 'block-validation-failed' (if script check threads > 1) or
-            # 'non-mandatory-script-verify-flag (Witness program was passed an
-            # empty witness)' (otherwise).
             test_witness_block(self.nodes[0], self.test_node, block, accepted=False, with_witness=False,
-                               reason='non-mandatory-script-verify-flag (Witness program was passed an empty witness)')
+                               reason='mandatory-script-verify-flag-failed (Witness program was passed an empty witness)')
 
         self.utxo.pop(0)
         self.utxo.append(UTXO(txid, 2, value))
@@ -705,17 +701,17 @@ class SegWitTest(FixedCoinTestFramework):
         # This transaction should not be accepted into the mempool pre- or
         # post-segwit.  Mempool acceptance will use SCRIPT_VERIFY_WITNESS which
         # will require a witness to spend a witness program regardless of
-        # segwit activation.  Note that older fixedcoind's that are not
+        # segwit activation.  Note that older bitcoind's that are not
         # segwit-aware would also reject this for failing CLEANSTACK.
         with self.nodes[0].assert_debug_log(
-                expected_msgs=(spend_tx.hash, 'was not accepted: non-mandatory-script-verify-flag (Witness program was passed an empty witness)')):
+                expected_msgs=[spend_tx.hash, 'was not accepted: mandatory-script-verify-flag-failed (Witness program was passed an empty witness)']):
             test_transaction_acceptance(self.nodes[0], self.test_node, spend_tx, with_witness=False, accepted=False)
 
         # Try to put the witness script in the scriptSig, should also fail.
         spend_tx.vin[0].scriptSig = CScript([p2wsh_pubkey, b'a'])
         spend_tx.rehash()
         with self.nodes[0].assert_debug_log(
-                expected_msgs=(spend_tx.hash, 'was not accepted: mandatory-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element)')):
+                expected_msgs=[spend_tx.hash, 'was not accepted: mandatory-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element)']):
             test_transaction_acceptance(self.nodes[0], self.test_node, spend_tx, with_witness=False, accepted=False)
 
         # Now put the witness script in the witness, should succeed after
@@ -955,7 +951,7 @@ class SegWitTest(FixedCoinTestFramework):
         assert_equal('bad-witness-merkle-match', self.nodes[0].submitblock(block.serialize().hex()))
         assert self.nodes[0].getbestblockhash() != block.hash
 
-        # Now redo commitment with the standard nonce, but let fixedcoind fill it in.
+        # Now redo commitment with the standard nonce, but let bitcoind fill it in.
         add_witness_commitment(block, nonce=0)
         block.vtx[0].wit = CTxWitness()
         block.solve()
@@ -999,7 +995,7 @@ class SegWitTest(FixedCoinTestFramework):
 
         # Extra witness data should not be allowed.
         test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                           reason='non-mandatory-script-verify-flag (Witness provided for non-witness script)')
+                           reason='mandatory-script-verify-flag-failed (Witness provided for non-witness script)')
 
         # Try extra signature data.  Ok if we're not spending a witness output.
         block.vtx[1].wit.vtxinwit = []
@@ -1018,14 +1014,14 @@ class SegWitTest(FixedCoinTestFramework):
         tx2.vout.append(CTxOut(tx.vout[0].nValue, CScript([OP_TRUE])))
         tx2.wit.vtxinwit.extend([CTxInWitness(), CTxInWitness()])
         tx2.wit.vtxinwit[0].scriptWitness.stack = [CScript([CScriptNum(1)]), CScript([CScriptNum(1)]), witness_script]
-        tx2.wit.vtxinwit[1].scriptWitness.stack = [CScript([OP_TRUE])]
+        tx2.wit.vtxinwit[1].scriptWitness.stack = []
 
         block = self.build_next_block()
         self.update_witness_block_with_transactions(block, [tx2])
 
         # This has extra witness data, so it should fail.
         test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                           reason='non-mandatory-script-verify-flag (Stack size must be exactly one after execution)')
+                           reason='mandatory-script-verify-flag-failed (Stack size must be exactly one after execution)')
 
         # Now get rid of the extra witness, but add extra scriptSig data
         tx2.vin[0].scriptSig = CScript([OP_TRUE])
@@ -1038,7 +1034,7 @@ class SegWitTest(FixedCoinTestFramework):
 
         # This has extra signature data for a witness input, so it should fail.
         test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                           reason='non-mandatory-script-verify-flag (Witness requires empty scriptSig)')
+                           reason='mandatory-script-verify-flag-failed (Witness requires empty scriptSig)')
 
         # Now get rid of the extra scriptsig on the witness input, and verify
         # success (even with extra scriptsig data in the non-witness input)
@@ -1055,7 +1051,7 @@ class SegWitTest(FixedCoinTestFramework):
 
     @subtest
     def test_max_witness_push_length(self):
-        """Test that witness stack can only allow up to 520 byte pushes."""
+        """Test that witness stack can only allow up to MAX_SCRIPT_ELEMENT_SIZE byte pushes."""
 
         block = self.build_next_block()
 
@@ -1077,7 +1073,7 @@ class SegWitTest(FixedCoinTestFramework):
 
         self.update_witness_block_with_transactions(block, [tx, tx2])
         test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                           reason='non-mandatory-script-verify-flag (Push value size limit exceeded)')
+                           reason='mandatory-script-verify-flag-failed (Push value size limit exceeded)')
 
         # Now reduce the length of the stack element
         tx2.wit.vtxinwit[0].scriptWitness.stack[0] = b'a' * (MAX_SCRIPT_ELEMENT_SIZE)
@@ -1118,7 +1114,7 @@ class SegWitTest(FixedCoinTestFramework):
         self.update_witness_block_with_transactions(block, [tx, tx2])
 
         test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                           reason='non-mandatory-script-verify-flag (Script is too big)')
+                           reason='mandatory-script-verify-flag-failed (Script is too big)')
 
         # Try again with one less byte in the witness script
         witness_script = CScript([b'a' * MAX_SCRIPT_ELEMENT_SIZE] * 19 + [OP_DROP] * 62 + [OP_TRUE])
@@ -1166,16 +1162,16 @@ class SegWitTest(FixedCoinTestFramework):
                 if not self.wit.is_null():
                     flags |= 1
                 r = b""
-                r += struct.pack("<i", self.nVersion)
+                r += self.version.to_bytes(4, "little")
                 if flags:
                     dummy = []
                     r += ser_vector(dummy)
-                    r += struct.pack("<B", flags)
+                    r += flags.to_bytes(1, "little")
                 r += ser_vector(self.vin)
                 r += ser_vector(self.vout)
                 if flags & 1:
                     r += self.wit.serialize()
-                r += struct.pack("<I", self.nLockTime)
+                r += self.nLockTime.to_bytes(4, "little")
                 return r
 
         tx2 = BrokenCTransaction()
@@ -1210,7 +1206,7 @@ class SegWitTest(FixedCoinTestFramework):
         block.vtx = [block.vtx[0]]
         self.update_witness_block_with_transactions(block, [tx2])
         test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                           reason='non-mandatory-script-verify-flag (Operation not valid with the current stack size)')
+                           reason='mandatory-script-verify-flag-failed (Operation not valid with the current stack size)')
 
         # Fix the broken witness and the block should be accepted.
         tx2.wit.vtxinwit[5].scriptWitness.stack = [b'a', witness_script]
@@ -1448,9 +1444,7 @@ class SegWitTest(FixedCoinTestFramework):
 
         # Segwit transactions using uncompressed pubkeys are not accepted
         # under default policy, but should still pass consensus.
-        key = ECKey()
-        key.generate(False)
-        pubkey = key.get_pubkey().get_bytes()
+        key, pubkey = generate_keypair(compressed=False)
         assert_equal(len(pubkey), 65)  # This should be an uncompressed pubkey
 
         utxo = self.utxo.pop(0)
@@ -1478,11 +1472,9 @@ class SegWitTest(FixedCoinTestFramework):
         tx2.vin.append(CTxIn(COutPoint(tx.sha256, 0), b""))
         tx2.vout.append(CTxOut(tx.vout[0].nValue - 1000, script_wsh))
         script = keyhash_to_p2pkh_script(pubkeyhash)
-        sig_hash = SegwitV0SignatureHash(script, tx2, 0, SIGHASH_ALL, tx.vout[0].nValue)
-        signature = key.sign_ecdsa(sig_hash) + b'\x01'  # 0x1 is SIGHASH_ALL
         tx2.wit.vtxinwit.append(CTxInWitness())
-        tx2.wit.vtxinwit[0].scriptWitness.stack = [signature, pubkey]
-        tx2.rehash()
+        tx2.wit.vtxinwit[0].scriptWitness.stack = [pubkey]
+        sign_input_segwitv0(tx2, 0, script, tx.vout[0].nValue, key)
 
         # Should fail policy test.
         test_transaction_acceptance(self.nodes[0], self.test_node, tx2, True, False, 'non-mandatory-script-verify-flag (Using non-compressed keys in segwit)')
@@ -1531,10 +1523,8 @@ class SegWitTest(FixedCoinTestFramework):
         tx5 = CTransaction()
         tx5.vin.append(CTxIn(COutPoint(tx4.sha256, 0), b""))
         tx5.vout.append(CTxOut(tx4.vout[0].nValue - 1000, CScript([OP_TRUE])))
-        (sig_hash, err) = LegacySignatureHash(script_pubkey, tx5, 0, SIGHASH_ALL)
-        signature = key.sign_ecdsa(sig_hash) + b'\x01'  # 0x1 is SIGHASH_ALL
-        tx5.vin[0].scriptSig = CScript([signature, pubkey])
-        tx5.rehash()
+        tx5.vin[0].scriptSig = CScript([pubkey])
+        sign_input_legacy(tx5, 0, script_pubkey, key)
         # Should pass policy and consensus.
         test_transaction_acceptance(self.nodes[0], self.test_node, tx5, True, True)
         block = self.build_next_block()
@@ -1544,11 +1534,7 @@ class SegWitTest(FixedCoinTestFramework):
 
     @subtest
     def test_signature_version_1(self):
-
-        key = ECKey()
-        key.generate()
-        pubkey = key.get_pubkey().get_bytes()
-
+        key, pubkey = generate_keypair()
         witness_script = key_to_p2pk_script(pubkey)
         script_pubkey = script_to_p2wsh_script(witness_script)
 
@@ -1580,7 +1566,7 @@ class SegWitTest(FixedCoinTestFramework):
                 sign_p2pk_witness_input(witness_script, tx, 0, hashtype, prev_utxo.nValue + 1, key)
                 self.update_witness_block_with_transactions(block, [tx])
                 test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                                   reason='non-mandatory-script-verify-flag (Script evaluated without error '
+                                   reason='mandatory-script-verify-flag-failed (Script evaluated without error '
                                           'but finished with a false/empty top stack element')
 
                 # Too-small input value
@@ -1588,7 +1574,7 @@ class SegWitTest(FixedCoinTestFramework):
                 block.vtx.pop()  # remove last tx
                 self.update_witness_block_with_transactions(block, [tx])
                 test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                                   reason='non-mandatory-script-verify-flag (Script evaluated without error '
+                                   reason='mandatory-script-verify-flag-failed (Script evaluated without error '
                                           'but finished with a false/empty top stack element')
 
                 # Now try correct value
@@ -1684,15 +1670,17 @@ class SegWitTest(FixedCoinTestFramework):
         tx2.vout.append(CTxOut(tx.vout[0].nValue, CScript([OP_TRUE])))
 
         script = keyhash_to_p2pkh_script(pubkeyhash)
-        sig_hash = SegwitV0SignatureHash(script, tx2, 0, SIGHASH_ALL, tx.vout[0].nValue)
-        signature = key.sign_ecdsa(sig_hash) + b'\x01'  # 0x1 is SIGHASH_ALL
+        tx2.wit.vtxinwit.append(CTxInWitness())
+        sign_input_segwitv0(tx2, 0, script, tx.vout[0].nValue, key)
+        signature = tx2.wit.vtxinwit[0].scriptWitness.stack.pop()
 
         # Check that we can't have a scriptSig
         tx2.vin[0].scriptSig = CScript([signature, pubkey])
+        tx2.rehash()
         block = self.build_next_block()
         self.update_witness_block_with_transactions(block, [tx, tx2])
         test_witness_block(self.nodes[0], self.test_node, block, accepted=False,
-                           reason='non-mandatory-script-verify-flag (Witness requires empty scriptSig)')
+                           reason='mandatory-script-verify-flag-failed (Witness requires empty scriptSig)')
 
         # Move the signature to the witness.
         block.vtx.pop()
@@ -1985,11 +1973,11 @@ class SegWitTest(FixedCoinTestFramework):
         def serialize_with_bogus_witness(tx):
             flags = 3
             r = b""
-            r += struct.pack("<i", tx.nVersion)
+            r += tx.version.to_bytes(4, "little")
             if flags:
                 dummy = []
                 r += ser_vector(dummy)
-                r += struct.pack("<B", flags)
+                r += flags.to_bytes(1, "little")
             r += ser_vector(tx.vin)
             r += ser_vector(tx.vout)
             if flags & 1:
@@ -1999,7 +1987,7 @@ class SegWitTest(FixedCoinTestFramework):
                     for _ in range(len(tx.wit.vtxinwit), len(tx.vin)):
                         tx.wit.vtxinwit.append(CTxInWitness())
                 r += tx.wit.serialize()
-            r += struct.pack("<I", tx.nLockTime)
+            r += tx.nLockTime.to_bytes(4, "little")
             return r
 
         class msg_bogus_tx(msg_tx):
@@ -2063,8 +2051,11 @@ class SegWitTest(FixedCoinTestFramework):
             self.wtx_node.last_message.pop("getdata", None)
         test_transaction_acceptance(self.nodes[0], self.wtx_node, tx2, with_witness=True, accepted=False)
 
+        # Disconnect tx_node to avoid the possibility of it being selected for orphan resolution.
+        self.tx_node.peer_disconnect()
+
         # Expect a request for parent (tx) by txid despite use of WTX peer
-        self.wtx_node.wait_for_getdata([tx.sha256], 60)
+        self.wtx_node.wait_for_getdata([tx.sha256], timeout=60)
         with p2p_lock:
             lgd = self.wtx_node.lastgetdata[:]
         assert_equal(lgd, [CInv(MSG_WITNESS_TX, tx.sha256)])
@@ -2077,4 +2068,4 @@ class SegWitTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    SegWitTest().main()
+    SegWitTest(__file__).main()

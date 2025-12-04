@@ -13,7 +13,7 @@ import re
 from test_framework.blocktools import create_block, create_coinbase
 from test_framework.messages import msg_block
 from test_framework.p2p import P2PInterface
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
 VB_PERIOD = 144           # versionbits period length for regtest
 VB_THRESHOLD = 108        # versionbits activation threshold for regtest
@@ -24,13 +24,10 @@ VB_UNKNOWN_VERSION = VB_TOP_BITS | (1 << VB_UNKNOWN_BIT)
 WARN_UNKNOWN_RULES_ACTIVE = f"Unknown new rules activated (versionbit {VB_UNKNOWN_BIT})"
 VB_PATTERN = re.compile("Unknown new rules activated.*versionbit")
 
-class VersionBitsWarningTest(FixedCoinTestFramework):
+class VersionBitsWarningTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
-        # The experimental syscall sandbox feature (-sandbox) is not compatible with -alertnotify
-        # (which invokes execve).
-        self.disable_syscall_sandbox = True
 
     def setup_network(self):
         self.alert_filename = os.path.join(self.options.tmpdir, "alert.txt")
@@ -76,8 +73,8 @@ class VersionBitsWarningTest(FixedCoinTestFramework):
         self.generatetoaddress(node, VB_PERIOD - VB_THRESHOLD + 1, node_deterministic_address)
 
         # Check that we're not getting any versionbit-related errors in get*info()
-        assert not VB_PATTERN.match(node.getmininginfo()["warnings"])
-        assert not VB_PATTERN.match(node.getnetworkinfo()["warnings"])
+        assert not VB_PATTERN.match(",".join(node.getmininginfo()["warnings"]))
+        assert not VB_PATTERN.match(",".join(node.getnetworkinfo()["warnings"]))
 
         # Build one period of blocks with VB_THRESHOLD blocks signaling some unknown bit
         self.send_blocks_with_version(peer, VB_THRESHOLD, VB_UNKNOWN_VERSION)
@@ -88,7 +85,7 @@ class VersionBitsWarningTest(FixedCoinTestFramework):
         # is cleared. This will move the versionbit state to ACTIVE.
         self.generatetoaddress(node, VB_PERIOD, node_deterministic_address)
 
-        # Stop-start the node. This is required because fixedcoind will only warn once about unknown versions or unknown rules activating.
+        # Stop-start the node. This is required because bitcoind will only warn once about unknown versions or unknown rules activating.
         self.restart_node(0)
 
         # Generating one block guarantees that we'll get out of IBD
@@ -97,10 +94,10 @@ class VersionBitsWarningTest(FixedCoinTestFramework):
         # Generating one more block will be enough to generate an error.
         self.generatetoaddress(node, 1, node_deterministic_address)
         # Check that get*info() shows the versionbits unknown rules warning
-        assert WARN_UNKNOWN_RULES_ACTIVE in node.getmininginfo()["warnings"]
-        assert WARN_UNKNOWN_RULES_ACTIVE in node.getnetworkinfo()["warnings"]
+        assert WARN_UNKNOWN_RULES_ACTIVE in ",".join(node.getmininginfo()["warnings"])
+        assert WARN_UNKNOWN_RULES_ACTIVE in ",".join(node.getnetworkinfo()["warnings"])
         # Check that the alert file shows the versionbits unknown rules warning
         self.wait_until(lambda: self.versionbits_in_alert_file())
 
 if __name__ == '__main__':
-    VersionBitsWarningTest().main()
+    VersionBitsWarningTest(__file__).main()

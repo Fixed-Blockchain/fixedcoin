@@ -29,16 +29,15 @@ from test_framework.script import (
     OP_0,
     OP_TRUE,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
 from test_framework.wallet import getnewdestination
-from test_framework.key import ECKey
-from test_framework.wallet_util import bytes_to_wif
+from test_framework.wallet_util import generate_keypair
 
-NULLDUMMY_ERROR = "non-mandatory-script-verify-flag (Dummy CHECKMULTISIG argument must be zero)"
+NULLDUMMY_ERROR = "mandatory-script-verify-flag-failed (Dummy CHECKMULTISIG argument must be zero)"
 
 
 def invalidate_nulldummy_tx(tx):
@@ -49,7 +48,7 @@ def invalidate_nulldummy_tx(tx):
     tx.rehash()
 
 
-class NULLDUMMYTest(FixedCoinTestFramework):
+class NULLDUMMYTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
@@ -58,7 +57,6 @@ class NULLDUMMYTest(FixedCoinTestFramework):
         self.extra_args = [[
             f'-testactivationheight=segwit@{COINBASE_MATURITY + 5}',
             '-addresstype=legacy',
-            '-par=1',  # Use only one script thread to get the exact reject reason for testing
         ]]
 
     def create_transaction(self, *, txid, input_details=None, addr, amount, privkey):
@@ -71,12 +69,9 @@ class NULLDUMMYTest(FixedCoinTestFramework):
         return tx_from_hex(signedtx["hex"])
 
     def run_test(self):
-        eckey = ECKey()
-        eckey.generate()
-        self.privkey = bytes_to_wif(eckey.get_bytes())
-        self.pubkey = eckey.get_pubkey().get_bytes().hex()
-        cms = self.nodes[0].createmultisig(1, [self.pubkey])
-        wms = self.nodes[0].createmultisig(1, [self.pubkey], 'p2sh-segwit')
+        self.privkey, self.pubkey = generate_keypair(wif=True)
+        cms = self.nodes[0].createmultisig(1, [self.pubkey.hex()])
+        wms = self.nodes[0].createmultisig(1, [self.pubkey.hex()], 'p2sh-segwit')
         self.ms_address = cms["address"]
         ms_unlock_details = {"scriptPubKey": address_to_scriptpubkey(self.ms_address).hex(),
                              "redeemScript": cms["redeemScript"]}
@@ -158,4 +153,4 @@ class NULLDUMMYTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    NULLDUMMYTest().main()
+    NULLDUMMYTest(__file__).main()

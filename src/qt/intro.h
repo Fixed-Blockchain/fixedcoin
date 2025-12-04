@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2011-2021 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -64,6 +64,7 @@ private Q_SLOTS:
 
 private:
     Ui::Intro *ui;
+    bool m_prune_checkbox_is_default{true};
     QThread* thread{nullptr};
     QMutex mutex;
     bool signalled{false};

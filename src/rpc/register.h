@@ -1,9 +1,11 @@
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef FIXEDCOIN_RPC_REGISTER_H
 #define FIXEDCOIN_RPC_REGISTER_H
+
+#include <fixedcoin-build-config.h> // IWYU pragma: keep
 
 /** These are in one header file to avoid creating tons of single-function
  * headers for everything under src/rpc/ */

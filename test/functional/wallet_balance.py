@@ -4,13 +4,13 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the wallet balance RPC methods."""
 from decimal import Decimal
-import struct
 
 from test_framework.address import ADDRESS_BCRT1_UNSPENDABLE as ADDRESS_WATCHONLY
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
+    assert_is_hash_string,
     assert_raises_rpc_error,
 )
 
@@ -45,22 +45,21 @@ def create_transactions(node, address, amt, fees):
 
     return txs
 
-class WalletTest(FixedCoinTestFramework):
+class WalletTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
     def set_test_params(self):
         self.num_nodes = 2
         self.setup_clean_chain = True
+        # whitelist peers to speed up tx relay / mempool sync
+        self.noban_tx_relay = True
         self.extra_args = [
             # Limit mempool descendants as a hack to have wallet txs rejected from the mempool.
             # Set walletrejectlongchains=0 so the wallet still creates the transactions.
             ['-limitdescendantcount=3', '-walletrejectlongchains=0'],
             [],
         ]
-        # whitelist peers to speed up tx relay / mempool sync
-        for args in self.extra_args:
-            args.append("-whitelist=noban@127.0.0.1")
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
@@ -116,7 +115,7 @@ class WalletTest(FixedCoinTestFramework):
             assert_equal(self.nodes[0].getbalance("*", 1, True), 50)
         assert_equal(self.nodes[1].getbalance(minconf=0, include_watchonly=True), 50)
 
-        # Send 40 FIX from 0 to 1 and 60 FIX from 1 to 0.
+        # Send 40 BTC from 0 to 1 and 60 BTC from 1 to 0.
         txs = create_transactions(self.nodes[0], self.nodes[1].getnewaddress(), 40, [Decimal('0.01')])
         self.nodes[0].sendrawtransaction(txs[0]['hex'])
         self.nodes[1].sendrawtransaction(txs[0]['hex'])  # sending on both nodes is faster than waiting for propagation
@@ -166,7 +165,7 @@ class WalletTest(FixedCoinTestFramework):
         # 2) Sent 10 from node B to node A with fee 0.01
         #
         # Then our node would report a confirmed balance of 40 + 50 - 10 = 80
-        # FIX, which is more than would be available if transaction 1 were
+        # BTC, which is more than would be available if transaction 1 were
         # replaced.
 
 
@@ -183,8 +182,13 @@ class WalletTest(FixedCoinTestFramework):
                                                  'untrusted_pending': Decimal('30.0') - fee_node_1}}  # Doesn't include output of node 0's send since it was spent
             if self.options.descriptors:
                 del expected_balances_0["watchonly"]
-            assert_equal(self.nodes[0].getbalances(), expected_balances_0)
-            assert_equal(self.nodes[1].getbalances(), expected_balances_1)
+            balances_0 = self.nodes[0].getbalances()
+            balances_1 = self.nodes[1].getbalances()
+            # remove lastprocessedblock keys (they will be tested later)
+            del balances_0['lastprocessedblock']
+            del balances_1['lastprocessedblock']
+            assert_equal(balances_0, expected_balances_0)
+            assert_equal(balances_1, expected_balances_1)
             # getbalance without any arguments includes unconfirmed transactions, but not untrusted transactions
             assert_equal(self.nodes[0].getbalance(), Decimal('9.99'))  # change from node 0's send
             assert_equal(self.nodes[1].getbalance(), Decimal('0'))  # node 1's send had an unsafe input
@@ -261,8 +265,8 @@ class WalletTest(FixedCoinTestFramework):
         tx_orig = self.nodes[0].gettransaction(txid)['hex']
         # Increase fee by 1 coin
         tx_replace = tx_orig.replace(
-            struct.pack("<q", 99 * 10**8).hex(),
-            struct.pack("<q", 98 * 10**8).hex(),
+            (99 * 10**8).to_bytes(8, "little", signed=True).hex(),
+            (98 * 10**8).to_bytes(8, "little", signed=True).hex(),
         )
         tx_replace = self.nodes[0].signrawtransactionwithwallet(tx_replace)['hex']
         # Total balance is given by the sum of outputs of the tx
@@ -309,5 +313,30 @@ class WalletTest(FixedCoinTestFramework):
             assert_equal(self.nodes[0].getbalances()['mine']['untrusted_pending'], Decimal('0.1'))
 
 
+        # Tests the lastprocessedblock JSON object in getbalances, getwalletinfo
+        # and gettransaction by checking for valid hex strings and by comparing
+        # the hashes & heights between generated blocks.
+        self.log.info("Test getbalances returns expected lastprocessedblock json object")
+        prev_hash = self.nodes[0].getbestblockhash()
+        prev_height = self.nodes[0].getblock(prev_hash)['height']
+        self.generatetoaddress(self.nodes[0], 5, self.nodes[0].get_deterministic_priv_key().address)
+        lastblock = self.nodes[0].getbalances()['lastprocessedblock']
+        assert_is_hash_string(lastblock['hash'])
+        assert_equal((prev_hash == lastblock['hash']), False)
+        assert_equal(lastblock['height'], prev_height + 5)
+
+        prev_hash = self.nodes[0].getbestblockhash()
+        prev_height = self.nodes[0].getblock(prev_hash)['height']
+        self.log.info("Test getwalletinfo returns expected lastprocessedblock json object")
+        walletinfo = self.nodes[0].getwalletinfo()
+        assert_equal(walletinfo['lastprocessedblock']['height'], prev_height)
+        assert_equal(walletinfo['lastprocessedblock']['hash'], prev_hash)
+
+        self.log.info("Test gettransaction returns expected lastprocessedblock json object")
+        txid = self.nodes[1].sendtoaddress(self.nodes[1].getnewaddress(), 0.01)
+        tx_info = self.nodes[1].gettransaction(txid)
+        assert_equal(tx_info['lastprocessedblock']['height'], prev_height)
+        assert_equal(tx_info['lastprocessedblock']['hash'], prev_hash)
+
 if __name__ == '__main__':
-    WalletTest().main()
+    WalletTest(__file__).main()

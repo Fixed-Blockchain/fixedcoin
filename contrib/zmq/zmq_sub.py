@@ -6,13 +6,13 @@
 """
     ZMQ example using python3's asyncio
 
-    FixedCoin should be started with the command line arguments:
-        fixedcoind -testnet -daemon \
-                -zmqpubrawtx=tcp://127.0.0.1:224767 \
-                -zmqpubrawblock=tcp://127.0.0.1:224767 \
-                -zmqpubhashtx=tcp://127.0.0.1:224767 \
-                -zmqpubhashblock=tcp://127.0.0.1:224767 \
-                -zmqpubsequence=tcp://127.0.0.1:224767
+    Bitcoin should be started with the command line arguments:
+        bitcoind -testnet -daemon \
+                -zmqpubrawtx=tcp://127.0.0.1:28332 \
+                -zmqpubrawblock=tcp://127.0.0.1:28332 \
+                -zmqpubhashtx=tcp://127.0.0.1:28332 \
+                -zmqpubhashblock=tcp://127.0.0.1:28332 \
+                -zmqpubsequence=tcp://127.0.0.1:28332
 
     We use the asyncio library here.  `self.handle()` installs itself as a
     future at the end of the function.  Since it never returns with the event
@@ -20,7 +20,7 @@
     alternative is to wrap the contents of `handle` inside `while True`.
 
     A blocking example using python 2.7 can be obtained from the git history:
-    https://github.com/fixedcoin/fixedcoin/blob/37a7fe9e440b83e2364d5498931253937abe9294/contrib/zmq/zmq_sub.py
+    https://github.com/Fixed-Blockchain/fixedcoin/blob/37a7fe9e440b83e2364d5498931253937abe9294/contrib/zmq/zmq_sub.py
 """
 
 import asyncio
@@ -34,7 +34,7 @@ if (sys.version_info.major, sys.version_info.minor) < (3, 5):
     print("This example only works with Python 3.5 and greater")
     sys.exit(1)
 
-port = 224767
+port = 28332
 
 class ZMQHandler():
     def __init__(self):

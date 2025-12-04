@@ -19,7 +19,7 @@ from io import BytesIO
 from test_framework.blocktools import COINBASE_MATURITY
 from test_framework.bdb import dump_bdb_kv
 from test_framework.messages import deser_compact_size, deser_string
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_is_hex_string,
@@ -44,7 +44,7 @@ def deser_keymeta(f):
         has_key_orig = bool(f.read(1))
     return ver, create_time, kp_str, seed_id, fpr, path_len, path, has_key_orig
 
-class UpgradeWalletTest(FixedCoinTestFramework):
+class UpgradeWalletTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser, descriptors=False)
 
@@ -83,7 +83,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
         v0.15.2 is only being used to test for version upgrade
         and master hash key presence.
         v0.16.3 is being used to test for version upgrade and balances.
-        Further info: https://github.com/fixedcoin/fixedcoin/pull/18774#discussion_r416967844
+        Further info: https://github.com/Fixed-Blockchain/fixedcoin/pull/18774#discussion_r416967844
         """
         node_from = self.nodes[0]
         v16_3_node = self.nodes[1]
@@ -138,11 +138,11 @@ class UpgradeWalletTest(FixedCoinTestFramework):
 
         self.log.info("Test upgradewallet RPC...")
         # Prepare for copying of the older wallet
-        node_master_wallet_dir = os.path.join(node_master.datadir, "regtest/wallets", self.default_wallet_name)
-        node_master_wallet = os.path.join(node_master_wallet_dir, self.default_wallet_name, self.wallet_data_filename)
-        v16_3_wallet       = os.path.join(v16_3_node.datadir, "regtest/wallets/wallet.dat")
-        v15_2_wallet       = os.path.join(v15_2_node.datadir, "regtest/wallet.dat")
-        split_hd_wallet    = os.path.join(v15_2_node.datadir, "regtest/splithd")
+        node_master_wallet_dir = node_master.wallets_path / self.default_wallet_name
+        node_master_wallet = node_master_wallet_dir / self.default_wallet_name / self.wallet_data_filename
+        v16_3_wallet = v16_3_node.wallets_path / "wallet.dat"
+        v15_2_wallet = v15_2_node.chain_path / "wallet.dat"
+        split_hd_wallet = v15_2_node.chain_path / "splithd"
         self.stop_nodes()
 
         # Make split hd wallet
@@ -151,7 +151,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
 
         def copy_v16():
             node_master.get_wallet_rpc(self.default_wallet_name).unloadwallet()
-            # Copy the 0.16.3 wallet to the last FixedCoin Core version and open it:
+            # Copy the 0.16.3 wallet to the last Bitcoin Core version and open it:
             shutil.rmtree(node_master_wallet_dir)
             os.mkdir(node_master_wallet_dir)
             shutil.copy(
@@ -162,7 +162,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
 
         def copy_non_hd():
             node_master.get_wallet_rpc(self.default_wallet_name).unloadwallet()
-            # Copy the 0.15.2 non hd wallet to the last FixedCoin Core version and open it:
+            # Copy the 0.15.2 non hd wallet to the last Bitcoin Core version and open it:
             shutil.rmtree(node_master_wallet_dir)
             os.mkdir(node_master_wallet_dir)
             shutil.copy(
@@ -173,7 +173,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
 
         def copy_split_hd():
             node_master.get_wallet_rpc(self.default_wallet_name).unloadwallet()
-            # Copy the 0.15.2 split hd wallet to the last FixedCoin Core version and open it:
+            # Copy the 0.15.2 split hd wallet to the last Bitcoin Core version and open it:
             shutil.rmtree(node_master_wallet_dir)
             os.mkdir(node_master_wallet_dir)
             shutil.copy(
@@ -185,6 +185,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
         self.restart_node(0)
         copy_v16()
         wallet = node_master.get_wallet_rpc(self.default_wallet_name)
+        assert_equal(wallet.getbalance(), v16_3_balance)
         self.log.info("Test upgradewallet without a version argument")
         self.test_upgradewallet(wallet, previous_version=159900, expected_version=169900)
         # wallet should still contain the same balance
@@ -231,7 +232,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
         assert b'\x07hdchain' in new_kvs
         hd_chain = new_kvs[b'\x07hdchain']
         assert_equal(28, len(hd_chain))
-        hd_chain_version, external_counter, seed_id = struct.unpack('<iI20s', hd_chain)
+        hd_chain_version, _external_counter, seed_id = struct.unpack('<iI20s', hd_chain)
         assert_equal(1, hd_chain_version)
         seed_id = bytearray(seed_id)
         seed_id.reverse()
@@ -258,7 +259,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
         new_kvs = dump_bdb_kv(node_master_wallet)
         hd_chain = new_kvs[b'\x07hdchain']
         assert_equal(32, len(hd_chain))
-        hd_chain_version, external_counter, seed_id, internal_counter = struct.unpack('<iI20sI', hd_chain)
+        hd_chain_version, _external_counter, seed_id, internal_counter = struct.unpack('<iI20sI', hd_chain)
         assert_equal(2, hd_chain_version)
         assert_equal(0, internal_counter)
         seed_id = bytearray(seed_id)
@@ -284,7 +285,7 @@ class UpgradeWalletTest(FixedCoinTestFramework):
         new_kvs = dump_bdb_kv(node_master_wallet)
         hd_chain = new_kvs[b'\x07hdchain']
         assert_equal(32, len(hd_chain))
-        hd_chain_version, external_counter, seed_id, internal_counter = struct.unpack('<iI20sI', hd_chain)
+        hd_chain_version, _external_counter, seed_id, internal_counter = struct.unpack('<iI20sI', hd_chain)
         assert_equal(2, hd_chain_version)
         assert_equal(2, internal_counter)
         # The next addresses are HD and should be on different HD chains (the one remaining key in each pool should have been flushed)
@@ -301,8 +302,8 @@ class UpgradeWalletTest(FixedCoinTestFramework):
         new_kvs = dump_bdb_kv(node_master_wallet)
         for k, old_v in old_kvs.items():
             if k.startswith(b'\x07keymeta'):
-                new_ver, new_create_time, new_kp_str, new_seed_id, new_fpr, new_path_len, new_path, new_has_key_orig = deser_keymeta(BytesIO(new_kvs[k]))
-                old_ver, old_create_time, old_kp_str, old_seed_id, old_fpr, old_path_len, old_path, old_has_key_orig = deser_keymeta(BytesIO(old_v))
+                new_ver, new_create_time, new_kp_str, new_seed_id, _new_fpr, new_path_len, new_path, new_has_key_orig = deser_keymeta(BytesIO(new_kvs[k]))
+                old_ver, old_create_time, old_kp_str, old_seed_id, _old_fpr, old_path_len, old_path, old_has_key_orig = deser_keymeta(BytesIO(old_v))
                 assert_equal(10, old_ver)
                 if old_kp_str == b"": # imported things that don't have keymeta (i.e. imported coinbase privkeys) won't be upgraded
                     assert_equal(new_kvs[k], old_v)
@@ -360,4 +361,4 @@ class UpgradeWalletTest(FixedCoinTestFramework):
             self.test_upgradewallet(disabled_wallet, previous_version=169900, expected_version=169900)
 
 if __name__ == '__main__':
-    UpgradeWalletTest().main()
+    UpgradeWalletTest(__file__).main()

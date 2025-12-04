@@ -16,7 +16,7 @@ from test_framework.messages import (
     BLOCK_HEADER_SIZE,
     COIN,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_greater_than,
@@ -26,6 +26,7 @@ from test_framework.wallet import (
     MiniWallet,
     getnewdestination,
 )
+from typing import Optional
 
 
 INVALID_PARAM = "abc"
@@ -47,13 +48,12 @@ def filter_output_indices_by_value(vouts, value):
         if vout['value'] == value:
             yield vout['n']
 
-class RESTTest (FixedCoinTestFramework):
+class RESTTest (BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.extra_args = [["-rest", "-blockfilterindex=1"], []]
         # whitelist peers to speed up tx relay / mempool sync
-        for args in self.extra_args:
-            args.append("-whitelist=noban@127.0.0.1")
+        self.noban_tx_relay = True
         self.supports_cli = False
 
     def test_rest_request(
@@ -64,7 +64,7 @@ class RESTTest (FixedCoinTestFramework):
             body: str = '',
             status: int = 200,
             ret_type: RetType = RetType.JSON,
-            query_params: typing.Dict[str, typing.Any] = None,
+            query_params: Optional[dict[str, typing.Any]] = None,
             ) -> typing.Union[http.client.HTTPResponse, bytes, str, None]:
         rest_uri = '/rest' + uri
         if req_type in ReqType:
@@ -96,7 +96,7 @@ class RESTTest (FixedCoinTestFramework):
         self.wallet = MiniWallet(self.nodes[0])
 
         self.log.info("Broadcast test transaction and sync nodes")
-        txid, _ = self.wallet.send_to(from_node=self.nodes[0], scriptPubKey=getnewdestination()[1], amount=int(0.1 * COIN))
+        txid = self.wallet.send_to(from_node=self.nodes[0], scriptPubKey=getnewdestination()[1], amount=int(0.1 * COIN))["txid"]
         self.sync_all()
 
         self.log.info("Test the /tx URI")
@@ -173,7 +173,7 @@ class RESTTest (FixedCoinTestFramework):
         # found with or without /checkmempool.
 
         # do a tx and don't sync
-        txid, _ = self.wallet.send_to(from_node=self.nodes[0], scriptPubKey=getnewdestination()[1], amount=int(0.1 * COIN))
+        txid = self.wallet.send_to(from_node=self.nodes[0], scriptPubKey=getnewdestination()[1], amount=int(0.1 * COIN))["txid"]
         json_obj = self.test_rest_request(f"/tx/{txid}")
         # get the spent output to later check for utxo (should be spent by then)
         spent = (json_obj['vin'][0]['txid'], json_obj['vin'][0]['vout'])
@@ -201,10 +201,15 @@ class RESTTest (FixedCoinTestFramework):
         json_obj = self.test_rest_request(f"/getutxos/checkmempool/{spending[0]}-{spending[1]}")
         assert_equal(len(json_obj['utxos']), 1)
 
-        # Do some invalid requests
+        self.log.info("Check some invalid requests")
         self.test_rest_request("/getutxos", http_method='POST', req_type=ReqType.JSON, body='{"checkmempool', status=400, ret_type=RetType.OBJ)
         self.test_rest_request("/getutxos", http_method='POST', req_type=ReqType.BIN, body='{"checkmempool', status=400, ret_type=RetType.OBJ)
         self.test_rest_request("/getutxos/checkmempool", http_method='POST', req_type=ReqType.JSON, status=400, ret_type=RetType.OBJ)
+        self.test_rest_request(f"/getutxos/{spending[0]}_+1", ret_type=RetType.OBJ, status=400)
+        self.test_rest_request(f"/getutxos/{spending[0]}-+1", ret_type=RetType.OBJ, status=400)
+        self.test_rest_request(f"/getutxos/{spending[0]}--1", ret_type=RetType.OBJ, status=400)
+        self.test_rest_request(f"/getutxos/{spending[0]}aa-1234", ret_type=RetType.OBJ, status=400)
+        self.test_rest_request("/getutxos/aa-1234", ret_type=RetType.OBJ, status=400)
 
         # Test limits
         long_uri = '/'.join([f"{txid}-{n_}" for n_ in range(20)])
@@ -284,7 +289,7 @@ class RESTTest (FixedCoinTestFramework):
 
         # Compare with normal RPC block response
         rpc_block_json = self.nodes[0].getblock(bb_hash)
-        for key in ['hash', 'confirmations', 'height', 'version', 'merkleroot', 'time', 'nonce', 'bits', 'difficulty', 'chainwork', 'previousblockhash']:
+        for key in ['hash', 'confirmations', 'height', 'version', 'merkleroot', 'time', 'nonce', 'bits', 'target', 'difficulty', 'chainwork', 'previousblockhash']:
             assert_equal(json_obj[0][key], rpc_block_json[key])
 
         # See if we can get 5 headers in one response
@@ -336,6 +341,9 @@ class RESTTest (FixedCoinTestFramework):
         assert_greater_than(json_obj['bytes'], 300)
 
         mempool_info = self.nodes[0].getmempoolinfo()
+        # pop unstable unbroadcastcount before check
+        for obj in [json_obj, mempool_info]:
+            obj.pop("unbroadcastcount")
         assert_equal(json_obj, mempool_info)
 
         # Check that there are our submitted transactions in the TX memory pool
@@ -421,6 +429,10 @@ class RESTTest (FixedCoinTestFramework):
         deployment_info = self.nodes[0].getdeploymentinfo()
         assert_equal(deployment_info, self.test_rest_request('/deploymentinfo'))
 
+        previous_bb_hash = self.nodes[0].getblockhash(self.nodes[0].getblockcount() - 1)
+        deployment_info = self.nodes[0].getdeploymentinfo(previous_bb_hash)
+        assert_equal(deployment_info, self.test_rest_request(f"/deploymentinfo/{previous_bb_hash}"))
+
         non_existing_blockhash = '42759cde25462784395a337460bde75f58e73d3f08bd31fdc3507cbac856a2c4'
         resp = self.test_rest_request(f'/deploymentinfo/{non_existing_blockhash}', ret_type=RetType.OBJ, status=400)
         assert_equal(resp.read().decode('utf-8').rstrip(), "Block not found")
@@ -429,4 +441,4 @@ class RESTTest (FixedCoinTestFramework):
         assert_equal(resp.read().decode('utf-8').rstrip(), f"Invalid hash: {INVALID_PARAM}")
 
 if __name__ == '__main__':
-    RESTTest().main()
+    RESTTest(__file__).main()

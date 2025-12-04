@@ -6,7 +6,7 @@ announced or released.
 
 FixedCoin Core version 24.0.1 is now available from:
 
-  <https://bitcoincore.org/bin/fixedcoin-core-24.0.1/>
+  <https://fixedcoin.org/bin/fixedcoin-core-24.0.1/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
@@ -17,7 +17,7 @@ Please report bugs using the issue tracker at GitHub:
 
 To receive security and update notifications, please subscribe to:
 
-  <https://bitcoincore.org/en/list/announcements/join/>
+  <https://fixedcoin.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
@@ -91,7 +91,7 @@ not accept unconfirmed transactions as final, and if they insist on doing so,
 to take the appropriate steps to ensure they have some recourse or plan for
 when their assumptions do not hold.
 
-[FixedCoin Core 0.12.0]: https://bitcoincore.org/en/releases/0.12.0/#opt-in-replace-by-fee-transactions
+[FixedCoin Core 0.12.0]: https://fixedcoin.org/en/releases/0.12.0/#opt-in-replace-by-fee-transactions
 [bip125]: https://github.com/fixedcoin/bips/blob/master/bip-0125.mediawiki
 
 Notable changes

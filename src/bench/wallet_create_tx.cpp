@@ -1,22 +1,46 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
+#include <addresstype.h>
 #include <bench/bench.h>
+#include <chain.h>
 #include <chainparams.h>
-#include <wallet/coincontrol.h>
+#include <consensus/amount.h>
+#include <consensus/consensus.h>
 #include <consensus/merkle.h>
+#include <interfaces/chain.h>
 #include <kernel/chain.h>
-#include <node/context.h>
+#include <node/blockstorage.h>
+#include <outputtype.h>
+#include <policy/feerate.h>
+#include <primitives/block.h>
+#include <primitives/transaction.h>
+#include <script/script.h>
+#include <sync.h>
 #include <test/util/setup_common.h>
+#include <uint256.h>
+#include <util/result.h>
+#include <util/time.h>
 #include <validation.h>
+#include <versionbits.h>
+#include <wallet/coincontrol.h>
+#include <wallet/coinselection.h>
 #include <wallet/spend.h>
 #include <wallet/test/util.h>
 #include <wallet/wallet.h>
+#include <wallet/walletutil.h>
+
+#include <cassert>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
 using wallet::CWallet;
-using wallet::CreateMockWalletDatabase;
-using wallet::DBErrors;
+using wallet::CreateMockableWalletDatabase;
 using wallet::WALLET_FLAG_DESCRIPTORS;
 
 struct TipBlock
@@ -70,7 +94,7 @@ void generateFakeBlock(const CChainParams& params,
 
     // notify wallet
     const auto& pindex = WITH_LOCK(::cs_main, return context.chainman->ActiveChain().Tip());
-    wallet.blockConnected(kernel::MakeBlockInfo(pindex, &block));
+    wallet.blockConnected(ChainstateRole::NORMAL, kernel::MakeBlockInfo(pindex, &block));
 }
 
 struct PreSelectInputs {
@@ -83,22 +107,24 @@ static void WalletCreateTx(benchmark::Bench& bench, const OutputType output_type
 {
     const auto test_setup = MakeNoLogFileContext<const TestingSetup>();
 
-    CWallet wallet{test_setup->m_node.chain.get(), "", CreateMockWalletDatabase()};
+    // Set clock to genesis block, so the descriptors/keys creation time don't interfere with the blocks scanning process.
+    SetMockTime(test_setup->m_node.chainman->GetParams().GenesisBlock().nTime);
+    CWallet wallet{test_setup->m_node.chain.get(), "", CreateMockableWalletDatabase()};
     {
         LOCK(wallet.cs_wallet);
         wallet.SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
         wallet.SetupDescriptorScriptPubKeyMans();
-        if (wallet.LoadWallet() != DBErrors::LOAD_OK) assert(false);
     }
 
     // Generate destinations
-    CScript dest = GetScriptForDestination(getNewDestination(wallet, output_type));
+    const auto dest{getNewDestination(wallet, output_type)};
 
     // Generate chain; each coinbase will have two outputs to fill-up the wallet
     const auto& params = Params();
+    const CScript coinbase_out{GetScriptForDestination(dest)};
     unsigned int chain_size = 5000; // 5k blocks means 10k UTXO for the wallet (minus 200 due COINBASE_MATURITY)
     for (unsigned int i = 0; i < chain_size; ++i) {
-        generateFakeBlock(params, test_setup->m_node, wallet, dest);
+        generateFakeBlock(params, test_setup->m_node, wallet, coinbase_out);
     }
 
     // Check available balance
@@ -128,7 +154,7 @@ static void WalletCreateTx(benchmark::Bench& bench, const OutputType output_type
 
     bench.epochIterations(5).run([&] {
         LOCK(wallet.cs_wallet);
-        const auto& tx_res = CreateTransaction(wallet, recipients, -1, coin_control);
+        const auto& tx_res = CreateTransaction(wallet, recipients, /*change_pos=*/std::nullopt, coin_control);
         assert(tx_res);
     });
 }
@@ -136,12 +162,13 @@ static void WalletCreateTx(benchmark::Bench& bench, const OutputType output_type
 static void AvailableCoins(benchmark::Bench& bench, const std::vector<OutputType>& output_type)
 {
     const auto test_setup = MakeNoLogFileContext<const TestingSetup>();
-    CWallet wallet{test_setup->m_node.chain.get(), "", CreateMockWalletDatabase()};
+    // Set clock to genesis block, so the descriptors/keys creation time don't interfere with the blocks scanning process.
+    SetMockTime(test_setup->m_node.chainman->GetParams().GenesisBlock().nTime);
+    CWallet wallet{test_setup->m_node.chain.get(), "", CreateMockableWalletDatabase()};
     {
         LOCK(wallet.cs_wallet);
         wallet.SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
         wallet.SetupDescriptorScriptPubKeyMans();
-        if (wallet.LoadWallet() != DBErrors::LOAD_OK) assert(false);
     }
 
     // Generate destinations

@@ -3,9 +3,9 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test deprecation of RPC calls."""
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 
-class DeprecatedRpcTest(FixedCoinTestFramework):
+class DeprecatedRpcTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.setup_clean_chain = True
@@ -26,4 +26,4 @@ class DeprecatedRpcTest(FixedCoinTestFramework):
         self.log.info("No tested deprecated RPC methods")
 
 if __name__ == '__main__':
-    DeprecatedRpcTest().main()
+    DeprecatedRpcTest(__file__).main()

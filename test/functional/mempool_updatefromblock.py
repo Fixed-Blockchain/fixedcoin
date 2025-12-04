@@ -10,12 +10,12 @@ when transactions have been re-added from a disconnected block to the mempool.
 from math import ceil
 import time
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 from test_framework.wallet import MiniWallet
 
 
-class MempoolUpdateFromBlockTest(FixedCoinTestFramework):
+class MempoolUpdateFromBlockTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [['-limitdescendantsize=1000', '-limitancestorsize=1000', '-limitancestorcount=100']]
@@ -103,4 +103,4 @@ class MempoolUpdateFromBlockTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    MempoolUpdateFromBlockTest().main()
+    MempoolUpdateFromBlockTest(__file__).main()

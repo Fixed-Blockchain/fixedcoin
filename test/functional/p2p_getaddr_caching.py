@@ -6,12 +6,11 @@
 
 import time
 
-from test_framework.messages import msg_getaddr
 from test_framework.p2p import (
     P2PInterface,
     p2p_lock
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     p2p_port,
@@ -20,6 +19,7 @@ from test_framework.util import (
 # As defined in net_processing.
 MAX_ADDR_TO_SEND = 1000
 MAX_PCT_ADDR_TO_SEND = 23
+
 
 class AddrReceiver(P2PInterface):
 
@@ -40,7 +40,7 @@ class AddrReceiver(P2PInterface):
         return self.received_addrs is not None
 
 
-class AddrTest(FixedCoinTestFramework):
+class AddrTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         # Use some of the remaining p2p ports for the onion binds.
@@ -56,7 +56,7 @@ class AddrTest(FixedCoinTestFramework):
             first_octet = i >> 8
             second_octet = i % 256
             a = "{}.{}.1.1".format(first_octet, second_octet)
-            self.nodes[0].addpeeraddress(a, 24768)
+            self.nodes[0].addpeeraddress(a, 8333)
 
         # Need to make sure we hit MAX_ADDR_TO_SEND records in the addr response later because
         # only a fraction of all known addresses can be cached and returned.
@@ -70,11 +70,8 @@ class AddrTest(FixedCoinTestFramework):
         cur_mock_time = int(time.time())
         for i in range(N):
             addr_receiver_local = self.nodes[0].add_p2p_connection(AddrReceiver())
-            addr_receiver_local.send_and_ping(msg_getaddr())
             addr_receiver_onion1 = self.nodes[0].add_p2p_connection(AddrReceiver(), dstport=self.onion_port1)
-            addr_receiver_onion1.send_and_ping(msg_getaddr())
             addr_receiver_onion2 = self.nodes[0].add_p2p_connection(AddrReceiver(), dstport=self.onion_port2)
-            addr_receiver_onion2.send_and_ping(msg_getaddr())
 
             # Trigger response
             cur_mock_time += 5 * 60
@@ -105,11 +102,8 @@ class AddrTest(FixedCoinTestFramework):
 
         self.log.info('After time passed, see a new response to addr request')
         addr_receiver_local = self.nodes[0].add_p2p_connection(AddrReceiver())
-        addr_receiver_local.send_and_ping(msg_getaddr())
         addr_receiver_onion1 = self.nodes[0].add_p2p_connection(AddrReceiver(), dstport=self.onion_port1)
-        addr_receiver_onion1.send_and_ping(msg_getaddr())
         addr_receiver_onion2 = self.nodes[0].add_p2p_connection(AddrReceiver(), dstport=self.onion_port2)
-        addr_receiver_onion2.send_and_ping(msg_getaddr())
 
         # Trigger response
         cur_mock_time += 5 * 60
@@ -123,5 +117,6 @@ class AddrTest(FixedCoinTestFramework):
         assert set(last_response_on_onion_bind1) != set(addr_receiver_onion1.get_received_addrs())
         assert set(last_response_on_onion_bind2) != set(addr_receiver_onion2.get_received_addrs())
 
+
 if __name__ == '__main__':
-    AddrTest().main()
+    AddrTest(__file__).main()

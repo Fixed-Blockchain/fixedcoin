@@ -4,13 +4,13 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test using named arguments for RPCs."""
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
 
-class NamedArgumentTest(FixedCoinTestFramework):
+class NamedArgumentTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.supports_cli = False
@@ -35,4 +35,4 @@ class NamedArgumentTest(FixedCoinTestFramework):
         assert_raises_rpc_error(-8, "Parameter arg1 specified twice both as positional and named argument", node.echo, 0, None, 2, arg1=1)
 
 if __name__ == '__main__':
-    NamedArgumentTest().main()
+    NamedArgumentTest(__file__).main()

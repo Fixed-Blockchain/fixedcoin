@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 The Bitcoin Core developers
+// Copyright (c) 2020-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,6 +9,7 @@
 #include <test/fuzz/FuzzedDataProvider.h>
 #include <test/fuzz/fuzz.h>
 #include <test/fuzz/util.h>
+#include <util/chaintype.h>
 #include <util/check.h>
 #include <util/overflow.h>
 
@@ -19,10 +20,10 @@
 
 void initialize_pow()
 {
-    SelectParams(CBaseChainParams::MAIN);
+    SelectParams(ChainType::MAIN);
 }
 
-FUZZ_TARGET_INIT(pow, initialize_pow)
+FUZZ_TARGET(pow, .init = initialize_pow)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     const Consensus::Params& consensus_params = Params().GetConsensus();
@@ -79,14 +80,14 @@ FUZZ_TARGET_INIT(pow, initialize_pow)
         {
             const std::optional<uint256> hash = ConsumeDeserializable<uint256>(fuzzed_data_provider);
             if (hash) {
-                (void)CheckProofOfWork(*hash, fuzzed_data_provider.ConsumeIntegral<unsigned int>(), consensus_params);
+                (void)CheckProofOfWorkImpl(*hash, fuzzed_data_provider.ConsumeIntegral<unsigned int>(), consensus_params);
             }
         }
     }
 }
 
 
-FUZZ_TARGET_INIT(pow_transition, initialize_pow)
+FUZZ_TARGET(pow_transition, .init = initialize_pow)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
     const Consensus::Params& consensus_params{Params().GetConsensus()};

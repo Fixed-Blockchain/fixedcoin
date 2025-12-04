@@ -16,13 +16,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName",        "FixedCoin"
             VALUE "FileDescription",    "fixedcoin-tx (CLI FixedCoin transaction editor utility)"
-            VALUE "FileVersion",        PACKAGE_VERSION
+            VALUE "FileVersion",        CLIENT_VERSION_STRING
             VALUE "InternalName",       "fixedcoin-tx"
             VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
             VALUE "OriginalFilename",   "fixedcoin-tx.exe"
             VALUE "ProductName",        "fixedcoin-tx"
-            VALUE "ProductVersion",     PACKAGE_VERSION
+            VALUE "ProductVersion",     CLIENT_VERSION_STRING
         END
     END
 

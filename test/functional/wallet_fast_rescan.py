@@ -4,12 +4,9 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test that fast rescan using block filters for descriptor wallets detects
    top-ups correctly and finds the same transactions than the slow variant."""
-import os
-from typing import List
-
 from test_framework.address import address_to_scriptpubkey
 from test_framework.descriptors import descsum_create
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.test_node import TestNode
 from test_framework.util import assert_equal
 from test_framework.wallet import MiniWallet
@@ -21,7 +18,7 @@ NUM_DESCRIPTORS = 9  # number of descriptors (8 default ranged ones + 1 fixed no
 NUM_BLOCKS = 6       # number of blocks to mine
 
 
-class WalletFastRescanTest(FixedCoinTestFramework):
+class WalletFastRescanTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser, legacy=False)
 
@@ -33,7 +30,7 @@ class WalletFastRescanTest(FixedCoinTestFramework):
         self.skip_if_no_wallet()
         self.skip_if_no_sqlite()
 
-    def get_wallet_txids(self, node: TestNode, wallet_name: str) -> List[str]:
+    def get_wallet_txids(self, node: TestNode, wallet_name: str) -> list[str]:
         w = node.get_wallet_rpc(wallet_name)
         txs = w.listtransactions('*', 1000000)
         return [tx['txid'] for tx in txs]
@@ -43,7 +40,7 @@ class WalletFastRescanTest(FixedCoinTestFramework):
         wallet = MiniWallet(node)
 
         self.log.info("Create descriptor wallet with backup")
-        WALLET_BACKUP_FILENAME = os.path.join(node.datadir, 'wallet.bak')
+        WALLET_BACKUP_FILENAME = node.datadir_path / 'wallet.bak'
         node.createwallet(wallet_name='topup_test', descriptors=True)
         w = node.get_wallet_rpc('topup_test')
         fixed_key = get_generate_key()
@@ -52,7 +49,7 @@ class WalletFastRescanTest(FixedCoinTestFramework):
         assert_equal(len(descriptors), NUM_DESCRIPTORS)
         w.backupwallet(WALLET_BACKUP_FILENAME)
 
-        self.log.info(f"Create txs sending to end range address of each descriptor, triggering top-ups")
+        self.log.info("Create txs sending to end range address of each descriptor, triggering top-ups")
         for i in range(NUM_BLOCKS):
             self.log.info(f"Block {i+1}/{NUM_BLOCKS}")
             for desc_info in w.listdescriptors()['descriptors']:
@@ -102,4 +99,4 @@ class WalletFastRescanTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    WalletFastRescanTest().main()
+    WalletFastRescanTest(__file__).main()

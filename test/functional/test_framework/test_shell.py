@@ -2,20 +2,22 @@
 # Copyright (c) 2019-2022 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
+import pathlib
 
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
+
 
 class TestShell:
-    """Wrapper Class for FixedCoinTestFramework.
+    """Wrapper Class for BitcoinTestFramework.
 
-    The TestShell class extends the FixedCoinTestFramework
+    The TestShell class extends the BitcoinTestFramework
     rpc & daemon process management functionality to external
     python environments.
 
     It is a singleton class, which ensures that users only
     start a single TestShell at a time."""
 
-    class __TestShell(FixedCoinTestFramework):
+    class __TestShell(BitcoinTestFramework):
         def add_options(self, parser):
             self.add_wallet_options(parser)
 
@@ -31,7 +33,7 @@ class TestShell:
                 return
 
             # Num_nodes parameter must be set
-            # by FixedCoinTestFramework child class.
+            # by BitcoinTestFramework child class.
             self.num_nodes = 1
 
             # User parameters override default values.
@@ -59,7 +61,8 @@ class TestShell:
                 print("Shutdown TestShell before resetting!")
             else:
                 self.num_nodes = None
-                super().__init__()
+                dummy_testshell_file = pathlib.Path(__file__).absolute().parent.parent / "testshell_dummy.py"
+                super().__init__(dummy_testshell_file)
 
     instance = None
 
@@ -67,7 +70,13 @@ class TestShell:
         # This implementation enforces singleton pattern, and will return the
         # previously initialized instance if available
         if not TestShell.instance:
-            TestShell.instance = TestShell.__TestShell()
+            # BitcoinTestFramework instances are supposed to be constructed with the path
+            # of the calling test in order to find shared data like configuration and the
+            # cache. Since TestShell is meant for interactive use, there is no concrete
+            # test; passing a dummy name is fine though, as only the containing directory
+            # is relevant for successful initialization.
+            dummy_testshell_file = pathlib.Path(__file__).absolute().parent.parent / "testshell_dummy.py"
+            TestShell.instance = TestShell.__TestShell(dummy_testshell_file)
             TestShell.instance.running = False
         return TestShell.instance
 

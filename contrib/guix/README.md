@@ -1,6 +1,6 @@
-# Bootstrappable FixedCoin Core Builds
+# Bootstrappable Bitcoin Core Builds
 
-This directory contains the files necessary to perform bootstrappable FixedCoin
+This directory contains the files necessary to perform bootstrappable Bitcoin
 Core builds.
 
 [Bootstrappability][b17e] furthers our binary security guarantees by allowing us
@@ -11,7 +11,7 @@ We achieve bootstrappability by using Guix as a functional package manager.
 
 # Requirements
 
-Conservatively, you will need an x86_64 machine with:
+Conservatively, you will need:
 
 - 16GB of free disk space on the partition that /gnu/store will reside in
 - 8GB of free disk space **per platform triple** you're planning on building
@@ -31,7 +31,7 @@ section](#choosing-your-security-model) before proceeding to perform a build.
 
 In order to perform a build for macOS (which is included in the default set of
 platform triples to build), you'll need to extract the macOS SDK tarball using
-tools found in the [`macdeploy` directory](../macdeploy/README.md).
+tools found in the [`macdeploy` directory](../macdeploy/README.md#sdk-extraction).
 
 You can then either point to the SDK using the `SDK_PATH` environment variable:
 
@@ -57,7 +57,7 @@ and examples](#common-guix-build-invocation-patterns-and-examples) section below
 before starting a build. For a full list of customization options, see the
 [recognized environment variables][env-vars-list] section.*
 
-To build FixedCoin Core reproducibly with all default options, invoke the
+To build Bitcoin Core reproducibly with all default options, invoke the
 following from the top of a clean repository:
 
 ```sh
@@ -68,7 +68,7 @@ following from the top of a clean repository:
 
 The `guix-codesign` command attaches codesignatures (produced by codesigners) to
 existing non-codesigned outputs. Please see the [release process
-documentation](/doc/release-process.md) for more context.
+documentation](/doc/release-process.md#codesigning) for more context.
 
 It respects many of the same environment variable flags as `guix-build`, with 2
 crucial differences:
@@ -80,14 +80,14 @@ crucial differences:
     * _**DETACHED_SIGS_REPO**_
 
       Set the directory where detached codesignatures can be found for the current
-      FixedCoin Core version being built.
+      Bitcoin Core version being built.
 
       _REQUIRED environment variable_
 
 An invocation with all default options would look like:
 
 ```
-env DETACHED_SIGS_REPO=<path/to/fixedcoin-detached-sigs> ./contrib/guix/guix-codesign
+env DETACHED_SIGS_REPO=<path/to/bitcoin-detached-sigs> ./contrib/guix/guix-codesign
 ```
 
 ## Cleaning intermediate work directories
@@ -108,7 +108,7 @@ worktree to save disk space:
 
 Much like how Gitian build outputs are attested to in a `gitian.sigs`
 repository, Guix build outputs are attested to in the [`guix.sigs`
-repository](https://github.com/fixedcoin-core/guix.sigs).
+repository](https://github.com/bitcoin-core/guix.sigs).
 
 After you've cloned the `guix.sigs` repository, to attest to the current
 worktree's commit/tag:
@@ -247,7 +247,7 @@ details.
 * _**SDK_PATH**_
 
   Set the path where _extracted_ SDKs can be found. This is passed through to
-  the depends tree. Note that this is should be set to the _parent_ directory of
+  the depends tree. Note that this should be set to the _parent_ directory of
   the actual SDK (e.g. `SDK_PATH=$HOME/Downloads/macOS-SDKs` instead of
   `$HOME/Downloads/macOS-SDKs/Xcode-12.2-12B45b-extracted-SDK-with-libcxx-headers`).
 
@@ -259,8 +259,9 @@ details.
   Override the number of jobs to run simultaneously, you might want to do so on
   a memory-limited machine. This may be passed to:
 
-  - `guix` build commands as in `guix environment --cores="$JOBS"`
+  - `guix` build commands as in `guix shell --cores="$JOBS"`
   - `make` as in `make --jobs="$JOBS"`
+  - `cmake` as in `cmake --build build -j "$JOBS"`
   - `xargs` as in `xargs -P"$JOBS"`
 
   See [here](#controlling-the-number-of-threads-used-by-guix-build-commands) for
@@ -301,7 +302,7 @@ details.
 
 * _**ADDITIONAL_GUIX_ENVIRONMENT_FLAGS**_
 
-  Additional flags to be passed to the invocation of `guix environment` inside
+  Additional flags to be passed to the invocation of `guix shell` inside
   `guix time-machine`.
 
 # Choosing your security model

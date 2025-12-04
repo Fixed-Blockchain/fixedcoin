@@ -7,19 +7,18 @@
 from test_framework.address import key_to_p2wpkh
 from test_framework.blocktools import COINBASE_MATURITY
 from test_framework.descriptors import descsum_create
-from test_framework.key import ECKey
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.messages import MAX_BIP125_RBF_SEQUENCE
 from test_framework.util import (
     assert_array_result,
     assert_equal,
     assert_raises_rpc_error,
 )
-from test_framework.wallet_util import bytes_to_wif
+from test_framework.wallet_util import generate_keypair
 
 from decimal import Decimal
 
-class ListSinceBlockTest(FixedCoinTestFramework):
+class ListSinceBlockTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -27,7 +26,7 @@ class ListSinceBlockTest(FixedCoinTestFramework):
         self.num_nodes = 4
         self.setup_clean_chain = True
         # whitelist peers to speed up tx relay / mempool sync
-        self.extra_args = [["-whitelist=noban@127.0.0.1"]] * self.num_nodes
+        self.noban_tx_relay = True
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
@@ -41,6 +40,7 @@ class ListSinceBlockTest(FixedCoinTestFramework):
         self.test_no_blockhash()
         self.test_invalid_blockhash()
         self.test_reorg()
+        self.test_cant_read_block()
         self.test_double_spend()
         self.test_double_send()
         self.double_spends_filtered()
@@ -168,6 +168,31 @@ class ListSinceBlockTest(FixedCoinTestFramework):
         found = next(tx for tx in transactions if tx['txid'] == senttx)
         assert_equal(found['blockheight'], self.nodes[0].getblockheader(nodes2_first_blockhash)['height'])
 
+    def test_cant_read_block(self):
+        self.log.info('Test the RPC error "Can\'t read block from disk"')
+
+        # Split network into two
+        self.split_network()
+
+        # generate on both sides
+        nodes1_last_blockhash = self.generate(self.nodes[1], 6, sync_fun=lambda: self.sync_all(self.nodes[:2]))[-1]
+        self.generate(self.nodes[2], 7, sync_fun=lambda: self.sync_all(self.nodes[2:]))[0]
+
+        self.join_network()
+
+        # Renaming the block file to induce unsuccessful block read
+        blk_dat = (self.nodes[0].blocks_path / "blk00000.dat")
+        blk_dat_moved = blk_dat.rename(self.nodes[0].blocks_path / "blk00000.dat.moved")
+        assert not blk_dat.exists()
+
+        # listsinceblock(nodes1_last_blockhash) should now fail as blocks are not accessible
+        assert_raises_rpc_error(-32603, "Can't read block from disk",
+            self.nodes[0].listsinceblock, nodes1_last_blockhash)
+
+        # Restoring block file
+        blk_dat_moved.rename(self.nodes[0].blocks_path / "blk00000.dat")
+        assert blk_dat.exists()
+
     def test_double_spend(self):
         '''
         This tests the case where the same UTXO is spent twice on two separate
@@ -185,8 +210,8 @@ class ListSinceBlockTest(FixedCoinTestFramework):
 
         Problematic case:
 
-        1. User 1 receives FIX in tx1 from utxo1 in block aa1.
-        2. User 2 receives FIX in tx2 from utxo1 (same) in block bb1
+        1. User 1 receives BTC in tx1 from utxo1 in block aa1.
+        2. User 2 receives BTC in tx2 from utxo1 (same) in block bb1
         3. User 1 sees 2 confirmations at block aa3.
         4. Reorg into bb chain.
         5. User 1 asks `listsinceblock aa3` and does not see that tx1 is now
@@ -202,10 +227,8 @@ class ListSinceBlockTest(FixedCoinTestFramework):
         self.sync_all()
 
         # share utxo between nodes[1] and nodes[2]
-        eckey = ECKey()
-        eckey.generate()
-        privkey = bytes_to_wif(eckey.get_bytes())
-        address = key_to_p2wpkh(eckey.get_pubkey().get_bytes())
+        privkey, pubkey = generate_keypair(wif=True)
+        address = key_to_p2wpkh(pubkey)
         self.nodes[2].sendtoaddress(address, 10)
         self.generate(self.nodes[2], 6)
         self.nodes[2].importprivkey(privkey)
@@ -482,4 +505,4 @@ class ListSinceBlockTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    ListSinceBlockTest().main()
+    ListSinceBlockTest(__file__).main()

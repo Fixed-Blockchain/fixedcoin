@@ -13,11 +13,11 @@ Test that, when bloom filters are not enabled, peers are disconnected if:
 
 from test_framework.messages import msg_mempool, msg_filteradd, msg_filterload, msg_filterclear
 from test_framework.p2p import P2PInterface
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
 
-class P2PNoBloomFilterMessages(FixedCoinTestFramework):
+class P2PNoBloomFilterMessages(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -45,4 +45,4 @@ class P2PNoBloomFilterMessages(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    P2PNoBloomFilterMessages().main()
+    P2PNoBloomFilterMessages(__file__).main()

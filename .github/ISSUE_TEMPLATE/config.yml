@@ -1,8 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-  - name: FixedCoin Core Security Policy
-    url: https://github.com/fixedcoin/fixedcoin/blob/master/SECURITY.md
-    about: View security policy
-  - name: FixedCoin Core Developers
-    url: https://bitcoincore.org
-    about: FixedCoin Core homepage

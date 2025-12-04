@@ -5,10 +5,10 @@
 """Test wallet replace-by-fee capabilities in conjunction with the fallbackfee."""
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_raises_rpc_error
 
-class WalletRBFTest(FixedCoinTestFramework):
+class WalletRBFTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -32,4 +32,4 @@ class WalletRBFTest(FixedCoinTestFramework):
         assert_raises_rpc_error(-6, "Fee estimation failed", lambda: self.nodes[0].sendmany("", {self.nodes[0].getnewaddress(): 1}))
 
 if __name__ == '__main__':
-    WalletRBFTest().main()
+    WalletRBFTest(__file__).main()

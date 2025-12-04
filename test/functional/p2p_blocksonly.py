@@ -8,12 +8,12 @@ import time
 
 from test_framework.messages import msg_tx, msg_inv, CInv, MSG_WTX
 from test_framework.p2p import P2PInterface, P2PTxInvStore
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 from test_framework.wallet import MiniWallet
 
 
-class P2PBlocksOnly(FixedCoinTestFramework):
+class P2PBlocksOnly(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [["-blocksonly"]]
@@ -64,10 +64,10 @@ class P2PBlocksOnly(FixedCoinTestFramework):
         with self.nodes[0].assert_debug_log(["received getdata"]):
             # Note that normally, first_peer would never send us transactions since we're a blocksonly node.
             # By activating blocksonly, we explicitly tell our peers that they should not send us transactions,
-            # and FixedCoin Core respects that choice and will not send transactions.
+            # and Bitcoin Core respects that choice and will not send transactions.
             # But if, for some reason, first_peer decides to relay transactions to us anyway, we should relay them to
             # second_peer since we gave relay permission to first_peer.
-            # See https://github.com/fixedcoin/fixedcoin/issues/19943 for details.
+            # See https://github.com/Fixed-Blockchain/fixedcoin/issues/19943 for details.
             first_peer.send_message(msg_tx(tx))
             self.log.info('Check that the peer with relay-permission is still connected after sending the transaction')
             assert_equal(first_peer.is_connected, True)
@@ -101,7 +101,7 @@ class P2PBlocksOnly(FixedCoinTestFramework):
         # Bump time forward to ensure m_next_inv_send_time timer pops
         self.nodes[0].setmocktime(int(time.time()) + 60)
 
-        conn.sync_send_with_ping()
+        conn.sync_with_ping()
         assert int(txid, 16) not in conn.get_invs()
 
     def check_p2p_inv_violation(self, peer):
@@ -115,7 +115,7 @@ class P2PBlocksOnly(FixedCoinTestFramework):
         self.log.info('Check that txs from P2P are rejected and result in disconnect')
         spendtx = self.miniwallet.create_self_transfer()
 
-        with self.nodes[0].assert_debug_log(['transaction sent in violation of protocol peer=0']):
+        with self.nodes[0].assert_debug_log(['transaction sent in violation of protocol, disconnecting peer=0']):
             self.nodes[0].p2ps[0].send_message(msg_tx(spendtx['tx']))
             self.nodes[0].p2ps[0].wait_for_disconnect()
             assert_equal(self.nodes[0].getmempoolinfo()['size'], 0)
@@ -125,4 +125,4 @@ class P2PBlocksOnly(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    P2PBlocksOnly().main()
+    P2PBlocksOnly(__file__).main()

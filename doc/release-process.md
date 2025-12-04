@@ -294,7 +294,7 @@ cat "$VERSION"/*/all.SHA256SUMS.asc > SHA256SUMS.asc
 
   - fixedcoin-dev and fixedcoin-core-dev mailing list
 
-  - FixedCoin Core announcements list https://bitcoincore.org/en/list/announcements/join/
+  - FixedCoin Core announcements list https://fixedcoin.org/en/list/announcements/join/
 
   - FixedCoin Core Twitter https://twitter.com/fixedcoincoreorg
 

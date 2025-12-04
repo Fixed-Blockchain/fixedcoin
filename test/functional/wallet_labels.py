@@ -12,12 +12,12 @@ RPCs tested are:
 from collections import defaultdict
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error
 from test_framework.wallet_util import test_address
 
 
-class WalletLabelsTest(FixedCoinTestFramework):
+class WalletLabelsTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
@@ -82,7 +82,7 @@ class WalletLabelsTest(FixedCoinTestFramework):
         assert_equal(node.getbalance(), 100)
 
         # there should be 2 address groups
-        # each with 1 address with a balance of 50 FixedCoins
+        # each with 1 address with a balance of 50 Bitcoins
         address_groups = node.listaddressgroupings()
         assert_equal(len(address_groups), 2)
         # the addresses aren't linked now, but will be after we send to the
@@ -212,7 +212,7 @@ class WalletLabelsTest(FixedCoinTestFramework):
                 ad = BECH32_INVALID[l]
                 assert_raises_rpc_error(
                     -5,
-                    "Address is not valid" if self.options.descriptors else "Invalid FixedCoin address or script",
+                    "Address is not valid" if self.options.descriptors else "Invalid Bitcoin address or script",
                     lambda: wallet_watch_only.importaddress(label=l, rescan=False, address=ad),
                 )
 
@@ -256,4 +256,4 @@ def change_label(node, address, old_label, new_label):
     new_label.verify(node)
 
 if __name__ == '__main__':
-    WalletLabelsTest().main()
+    WalletLabelsTest(__file__).main()

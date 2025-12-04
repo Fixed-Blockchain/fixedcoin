@@ -1,23 +1,22 @@
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include <config/fixedcoin-config.h>
-#endif
+#include <fixedcoin-build-config.h> // IWYU pragma: keep
 
 #include <arith_uint256.h>
 #include <chain.h>
 #include <chainparams.h>
 #include <chainparamsbase.h>
 #include <clientversion.h>
+#include <common/args.h>
+#include <common/system.h>
 #include <compat/compat.h>
 #include <core_io.h>
 #include <streams.h>
 #include <util/exception.h>
-#include <util/system.h>
+#include <util/strencodings.h>
 #include <util/translation.h>
-#include <version.h>
 
 #include <atomic>
 #include <cstdio>
@@ -27,7 +26,7 @@
 
 static const int CONTINUE_EXECUTION=-1;
 
-const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
+const TranslateFn G_TRANSLATION_FUN{nullptr};
 
 static void SetupFixedCoinUtilArgs(ArgsManager &argsman)
 {
@@ -51,15 +50,18 @@ static int AppInitUtil(ArgsManager& args, int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    if (HelpRequested(args) || args.IsArgSet("-version")) {
+    if (HelpRequested(args) || args.GetBoolArg("-version", false)) {
         // First part of help message is specific to this utility
-        std::string strUsage = PACKAGE_NAME " fixedcoin-util utility version " + FormatFullVersion() + "\n";
+        std::string strUsage = CLIENT_NAME " fixedcoin-util utility version " + FormatFullVersion() + "\n";
 
-        if (args.IsArgSet("-version")) {
+        if (args.GetBoolArg("-version", false)) {
             strUsage += FormatParagraph(LicenseInfo());
         } else {
             strUsage += "\n"
-                "Usage:  fixedcoin-util [options] [commands]  Do stuff\n";
+                "The fixedcoin-util tool provides fixedcoin related functionality that does not rely on the ability to access a running node. Available [commands] are listed below.\n"
+                "\n"
+                "Usage:  fixedcoin-util [options] [command]\n"
+                "or:     fixedcoin-util [options] grind <hex-block-header>\n";
             strUsage += "\n" + args.GetHelpMessage();
         }
 
@@ -74,7 +76,7 @@ static int AppInitUtil(ArgsManager& args, int argc, char* argv[])
 
     // Check for chain settings (Params() calls are only valid after this clause)
     try {
-        SelectParams(args.GetChainName());
+        SelectParams(args.GetChainType());
     } catch (const std::exception& e) {
         tfm::format(std::cerr, "Error: %s\n", e.what());
         return EXIT_FAILURE;

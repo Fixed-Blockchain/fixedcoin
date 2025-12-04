@@ -1,5 +1,5 @@
 // Copyright 2014 BitPay Inc.
-// Copyright 2015 Bitcoin Core Developers
+// Copyright 2015 FixedCoin Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://opensource.org/licenses/mit-license.php.
 
@@ -7,15 +7,18 @@
 #define FIXEDCOIN_UNIVALUE_INCLUDE_UNIVALUE_H
 
 #include <charconv>
+#include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
+// NOLINTNEXTLINE(misc-no-recursion)
 class UniValue {
 public:
     enum VType { VNULL, VOBJ, VARR, VSTR, VNUM, VBOOL, };
@@ -87,16 +90,14 @@ public:
     template <class It>
     void push_backV(It first, It last);
 
-    void __pushKV(std::string key, UniValue val);
+    void pushKVEnd(std::string key, UniValue val);
     void pushKV(std::string key, UniValue val);
     void pushKVs(UniValue obj);
 
     std::string write(unsigned int prettyIndent = 0,
                       unsigned int indentLevel = 0) const;
 
-    bool read(const char *raw, size_t len);
-    bool read(const char *raw) { return read(raw, strlen(raw)); }
-    bool read(std::string_view raw) { return read(raw.data(), raw.size()); }
+    bool read(std::string_view raw);
 
 private:
     UniValue::VType typ;
@@ -123,7 +124,7 @@ public:
     const UniValue& get_array() const;
 
     enum VType type() const { return getType(); }
-    friend const UniValue& find_value( const UniValue& obj, const std::string& name);
+    const UniValue& find_value(std::string_view key) const;
 };
 
 template <class It>
@@ -200,7 +201,5 @@ static inline bool json_isspace(int ch)
 }
 
 extern const UniValue NullUniValue;
-
-const UniValue& find_value( const UniValue& obj, const std::string& name);
 
 #endif // FIXEDCOIN_UNIVALUE_INCLUDE_UNIVALUE_H

@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2022 The Bitcoin Core developers
+// Copyright (c) 2015-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,8 +24,10 @@
 #include <qt/transactiontablemodel.h>
 #include <qt/transactionview.h>
 #include <qt/walletmodel.h>
+#include <script/solver.h>
 #include <test/util/setup_common.h>
 #include <validation.h>
+#include <wallet/test/util.h>
 #include <wallet/wallet.h>
 
 #include <chrono>
@@ -46,7 +48,7 @@
 
 using wallet::AddWallet;
 using wallet::CWallet;
-using wallet::CreateMockWalletDatabase;
+using wallet::CreateMockableWalletDatabase;
 using wallet::RemoveWallet;
 using wallet::WALLET_FLAG_DESCRIPTORS;
 using wallet::WALLET_FLAG_DISABLE_PRIVATE_KEYS;
@@ -189,7 +191,7 @@ void SyncUpWallet(const std::shared_ptr<CWallet>& wallet, interfaces::Node& node
 
 std::shared_ptr<CWallet> SetupLegacyWatchOnlyWallet(interfaces::Node& node, TestChain100Setup& test)
 {
-    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockWalletDatabase());
+    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockableWalletDatabase());
     wallet->LoadWallet();
     {
         LOCK(wallet->cs_wallet);
@@ -197,7 +199,7 @@ std::shared_ptr<CWallet> SetupLegacyWatchOnlyWallet(interfaces::Node& node, Test
         wallet->SetupLegacyScriptPubKeyMan();
         // Add watched key
         CPubKey pubKey = test.coinbaseKey.GetPubKey();
-        bool import_keys = wallet->ImportPubKeys({pubKey.GetID()}, {{pubKey.GetID(), pubKey}} , /*key_origins=*/{}, /*add_keypool=*/false, /*internal=*/false, /*timestamp=*/1);
+        bool import_keys = wallet->ImportPubKeys({{pubKey.GetID(), false}}, {{pubKey.GetID(), pubKey}} , /*key_origins=*/{}, /*add_keypool=*/false, /*timestamp=*/1);
         assert(import_keys);
         wallet->SetLastBlockProcessed(105, WITH_LOCK(node.context()->chainman->GetMutex(), return node.context()->chainman->ActiveChain().Tip()->GetBlockHash()));
     }
@@ -207,7 +209,7 @@ std::shared_ptr<CWallet> SetupLegacyWatchOnlyWallet(interfaces::Node& node, Test
 
 std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChain100Setup& test)
 {
-    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockWalletDatabase());
+    std::shared_ptr<CWallet> wallet = std::make_shared<CWallet>(node.context()->chain.get(), "", CreateMockableWalletDatabase());
     wallet->LoadWallet();
     LOCK(wallet->cs_wallet);
     wallet->SetWalletFlag(WALLET_FLAG_DESCRIPTORS);
@@ -216,8 +218,10 @@ std::shared_ptr<CWallet> SetupDescriptorsWallet(interfaces::Node& node, TestChai
     // Add the coinbase key
     FlatSigningProvider provider;
     std::string error;
-    std::unique_ptr<Descriptor> desc = Parse("combo(" + EncodeSecret(test.coinbaseKey) + ")", provider, error, /* require_checksum=*/ false);
-    assert(desc);
+    auto descs = Parse("combo(" + EncodeSecret(test.coinbaseKey) + ")", provider, error, /* require_checksum=*/ false);
+    assert(!descs.empty());
+    assert(descs.size() == 1);
+    auto& desc = descs.at(0);
     WalletDescriptor w_desc(std::move(desc), 0, 0, 1, 1);
     if (!wallet->AddWalletDescriptor(w_desc, provider, "", false)) assert(false);
     CTxDestination dest = GetDestinationForKey(test.coinbaseKey.GetPubKey(), wallet->m_default_address_type);
@@ -264,9 +268,9 @@ public:
 //
 // This also requires overriding the default minimal Qt platform:
 //
-//     QT_QPA_PLATFORM=xcb     src/qt/test/test_fixedcoin-qt  # Linux
-//     QT_QPA_PLATFORM=windows src/qt/test/test_fixedcoin-qt  # Windows
-//     QT_QPA_PLATFORM=cocoa   src/qt/test/test_fixedcoin-qt  # macOS
+//     QT_QPA_PLATFORM=xcb     build/bin/test_fixedcoin-qt  # Linux
+//     QT_QPA_PLATFORM=windows build/bin/test_fixedcoin-qt  # Windows
+//     QT_QPA_PLATFORM=cocoa   build/bin/test_fixedcoin-qt  # macOS
 void TestGUI(interfaces::Node& node, const std::shared_ptr<CWallet>& wallet)
 {
     // Create widgets for sending coins and listing transactions.
@@ -416,7 +420,7 @@ void TestGUIWatchOnly(interfaces::Node& node, TestChain100Setup& test)
     timer.setInterval(500);
     QObject::connect(&timer, &QTimer::timeout, [&](){
         for (QWidget* widget : QApplication::topLevelWidgets()) {
-            if (widget->inherits("QMessageBox")) {
+            if (widget->inherits("QMessageBox") && widget->objectName().compare("psbt_copied_message") == 0) {
                 QMessageBox* dialog = qobject_cast<QMessageBox*>(widget);
                 QAbstractButton* button = dialog->button(QMessageBox::Discard);
                 button->setEnabled(true);
@@ -471,8 +475,8 @@ void WalletTests::walletTests()
         // framework when it tries to look up unimplemented cocoa functions,
         // and fails to handle returned nulls
         // (https://bugreports.qt.io/browse/QTBUG-49686).
-        QWARN("Skipping WalletTests on mac build with 'minimal' platform set due to Qt bugs. To run AppTests, invoke "
-              "with 'QT_QPA_PLATFORM=cocoa test_fixedcoin-qt' on mac, or else use a linux or windows build.");
+        qWarning() << "Skipping WalletTests on mac build with 'minimal' platform set due to Qt bugs. To run AppTests, invoke "
+                      "with 'QT_QPA_PLATFORM=cocoa test_fixedcoin-qt' on mac, or else use a linux or windows build.";
         return;
     }
 #endif

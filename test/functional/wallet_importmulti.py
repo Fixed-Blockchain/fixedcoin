@@ -20,7 +20,7 @@ from test_framework.script import (
     CScript,
     OP_NOP,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.descriptors import descsum_create
 from test_framework.util import (
     assert_equal,
@@ -34,7 +34,7 @@ from test_framework.wallet_util import (
 )
 
 
-class ImportMultiTest(FixedCoinTestFramework):
+class ImportMultiTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser, descriptors=False)
 
@@ -84,7 +84,7 @@ class ImportMultiTest(FixedCoinTestFramework):
 
         # RPC importmulti -----------------------------------------------
 
-        # FixedCoin Address (implicit non-internal)
+        # Bitcoin Address (implicit non-internal)
         self.log.info("Should import an address")
         key = get_key(self.nodes[0])
         self.test_importmulti({"scriptPubKey": {"address": key.p2pkh_addr},
@@ -896,6 +896,43 @@ class ImportMultiTest(FixedCoinTestFramework):
         )
         assert result[0]['success']
 
+        self.log.info("Multipath descriptors")
+        self.nodes[1].createwallet(wallet_name="multipath", blank=True, disable_private_keys=True)
+        w_multipath = self.nodes[1].get_wallet_rpc("multipath")
+        self.nodes[1].createwallet(wallet_name="multipath_split", blank=True, disable_private_keys=True)
+        w_multisplit = self.nodes[1].get_wallet_rpc("multipath_split")
+
+        res = w_multipath.importmulti([{"desc": descsum_create(f"wpkh({xpub}/<10;20>/0/*)"),
+                              "keypool": True,
+                              "range": 10,
+                              "timestamp": "now",
+                              "internal": True}])
+        assert_equal(res[0]["success"], False)
+        assert_equal(res[0]["error"]["code"], -5)
+        assert_equal(res[0]["error"]["message"], "Cannot have multipath descriptor while also specifying 'internal'")
+
+        res = w_multipath.importmulti([{"desc": descsum_create(f"wpkh({xpub}/<10;20>/0/*)"),
+                              "keypool": True,
+                              "range": 10,
+                              "timestamp": "now"}])
+        assert_equal(res[0]["success"], True)
+
+        res = w_multisplit.importmulti([{"desc": descsum_create(f"wpkh({xpub}/10/0/*)"),
+                              "keypool": True,
+                              "range": 10,
+                              "timestamp": "now"}])
+        assert_equal(res[0]["success"], True)
+        res = w_multisplit.importmulti([{"desc": descsum_create(f"wpkh({xpub}/20/0/*)"),
+                              "keypool": True,
+                              "range": 10,
+                              "internal": True,
+                              "timestamp": timestamp}])
+        assert_equal(res[0]["success"], True)
+
+        for _ in range(0, 9):
+            assert_equal(w_multipath.getnewaddress(address_type="bech32"), w_multisplit.getnewaddress(address_type="bech32"))
+            assert_equal(w_multipath.getrawchangeaddress(address_type="bech32"), w_multisplit.getrawchangeaddress(address_type="bech32"))
+
 
 if __name__ == '__main__':
-    ImportMultiTest().main()
+    ImportMultiTest(__file__).main()

@@ -17,7 +17,7 @@ from test_framework.p2p import (
     p2p_lock,
     P2P_SERVICES,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
 ADDR = CAddress()
@@ -27,7 +27,7 @@ ADDR.ip = "192.0.0.8"
 ADDR.port = 18444
 
 
-class P2PAddrFetch(FixedCoinTestFramework):
+class P2PAddrFetch(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -48,7 +48,7 @@ class P2PAddrFetch(FixedCoinTestFramework):
         self.assert_getpeerinfo(peer_ids=[peer_id])
 
         self.log.info("Check that we send getaddr but don't try to sync headers with the addr-fetch peer")
-        peer.sync_send_with_ping()
+        peer.sync_with_ping()
         with p2p_lock:
             assert peer.message_count['getaddr'] == 1
             assert peer.message_count['getheaders'] == 0
@@ -83,4 +83,4 @@ class P2PAddrFetch(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    P2PAddrFetch().main()
+    P2PAddrFetch(__file__).main()

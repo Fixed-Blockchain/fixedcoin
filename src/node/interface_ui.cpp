@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2022 The Bitcoin Core developers
+// Copyright (c) 2010-2022 The FixedCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,6 +9,8 @@
 
 #include <boost/signals2/optional_last_value.hpp>
 #include <boost/signals2/signal.hpp>
+
+using util::MakeUnorderedList;
 
 CClientUIInterface uiInterface;
 
@@ -72,7 +74,7 @@ bool InitError(const bilingual_str& str, const std::vector<std::string>& details
     // functions which provide error details are ones that run during early init
     // before the GUI uiInterface is registered, so there's no point passing
     // main messages and details separately to uiInterface yet.
-    return InitError(details.empty() ? str : strprintf(Untranslated("%s:\n%s"), str, MakeUnorderedList(details)));
+    return InitError(details.empty() ? str : str + Untranslated(strprintf(":\n%s", MakeUnorderedList(details))));
 }
 
 void InitWarning(const bilingual_str& str)

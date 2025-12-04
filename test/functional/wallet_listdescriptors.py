@@ -10,14 +10,14 @@ from test_framework.blocktools import (
 from test_framework.descriptors import (
     descsum_create,
 )
-from test_framework.test_framework import FixedCoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
 
 
-class ListDescriptorsTest(FixedCoinTestFramework):
+class ListDescriptorsTest(BitcoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser, legacy=False)
 
@@ -65,7 +65,7 @@ class ListDescriptorsTest(FixedCoinTestFramework):
         self.log.info('Test descriptors with hardened derivations are listed in importable form.')
         xprv = 'tprv8ZgxMBicQKsPeuVhWwi6wuMQGfPKi9Li5GtX35jVNknACgqe3CY4g5xgkfDDJcmtF7o1QnxWDRYw4H5P26PXq7sbcUkEqeR4fg3Kxp2tigg'
         xpub_acc = 'tpubDCMVLhErorrAGfApiJSJzEKwqeaf2z3NrkVMxgYQjZLzMjXMBeRw2muGNYbvaekAE8rUFLftyEar4LdrG2wXyyTJQZ26zptmeTEjPTaATts'
-        hardened_path = '/84\'/1\'/0\''
+        hardened_path = '/84h/1h/0h'
         wallet = node.get_wallet_rpc('w2')
         wallet.importdescriptors([{
             'desc': descsum_create('wpkh(' + xprv + hardened_path + '/0/*)'),
@@ -136,4 +136,4 @@ class ListDescriptorsTest(FixedCoinTestFramework):
 
 
 if __name__ == '__main__':
-    ListDescriptorsTest().main()
+    ListDescriptorsTest(__file__).main()
