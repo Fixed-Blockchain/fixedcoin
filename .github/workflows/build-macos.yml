@@ -16,7 +16,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install automake libtool pkg-config cmake
+          brew install automake libtool pkg-config cmake create-dmg
 
       - name: Build depends
         run: |
@@ -31,7 +31,7 @@ jobs:
                 ..
           make -j$(sysctl -n hw.ncpu)
 
-      - name: Create package
+      - name: Create tar.gz package
         run: |
           mkdir -p release/fixedcoin-29.0.0/bin
           cp build/bin/fixedcoind release/fixedcoin-29.0.0/bin/
@@ -46,8 +46,64 @@ jobs:
           cd release
           tar -czvf fixedcoin-29.0.0-x86_64-apple-darwin.tar.gz fixedcoin-29.0.0/
 
-      - name: Upload artifact
+      - name: Create DMG installer
+        run: |
+          mkdir -p dmg_contents
+          
+          # Créer le bundle .app
+          mkdir -p "dmg_contents/FixedCoin-Qt.app/Contents/MacOS"
+          mkdir -p "dmg_contents/FixedCoin-Qt.app/Contents/Resources"
+          
+          cp build/bin/fixedcoin-qt "dmg_contents/FixedCoin-Qt.app/Contents/MacOS/"
+          cp src/qt/res/icons/fixedcoin.icns "dmg_contents/FixedCoin-Qt.app/Contents/Resources/fixedcoin.icns"
+          
+          cat > "dmg_contents/FixedCoin-Qt.app/Contents/Info.plist" << 'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>fixedcoin-qt</string>
+              <key>CFBundleIconFile</key>
+              <string>fixedcoin.icns</string>
+              <key>CFBundleIdentifier</key>
+              <string>org.fixedcoin.FixedCoin-Qt</string>
+              <key>CFBundleName</key>
+              <string>FixedCoin-Qt</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>CFBundleShortVersionString</key>
+              <string>29.0.0</string>
+              <key>CFBundleVersion</key>
+              <string>29.0.0</string>
+              <key>LSMinimumSystemVersion</key>
+              <string>11.0</string>
+              <key>NSHighResolutionCapable</key>
+              <true/>
+          </dict>
+          </plist>
+          PLIST
+          
+          # Créer le DMG
+          create-dmg \
+            --volname "FixedCoin Core" \
+            --volicon "src/qt/res/icons/fixedcoin.icns" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "FixedCoin-Qt.app" 150 185 \
+            --app-drop-link 450 185 \
+            "release/fixedcoin-29.0.0-x86_64-apple-darwin.dmg" \
+            "dmg_contents/"
+
+      - name: Upload tar.gz artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fixedcoin-29.0.0-x86_64-apple-darwin
+          name: fixedcoin-29.0.0-x86_64-apple-darwin-tar
           path: release/fixedcoin-29.0.0-x86_64-apple-darwin.tar.gz
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fixedcoin-29.0.0-x86_64-apple-darwin-dmg
+          path: release/fixedcoin-29.0.0-x86_64-apple-darwin.dmg
