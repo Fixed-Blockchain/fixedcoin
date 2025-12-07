@@ -406,31 +406,6 @@ fixedcoin-cli -datadir=/var/fixedcoin/data listtransactions
 fixedcoin-cli -datadir=/var/fixedcoin/data sendtoaddress "fix1..." 1.0
 ```
 
-## ⛏️ Mining FixedCoin
-
-FixedCoin uses **SHA-256** algorithm, making it compatible with Bitcoin ASIC miners.
-
-### Solo Mining Configuration
-
-Add to `/var/fixedcoin/data/fixedcoin.conf`:
-
-```ini
-# Mining Configuration
-gen=1
-genproclimit=4
-mineraddress=YOUR_FIXEDCOIN_ADDRESS
-```
-
-Restart daemon:
-```bash
-sudo systemctl restart fixedcoind
-```
-
-Check mining status:
-```bash
-fixedcoin-cli -datadir=/var/fixedcoin/data getmininginfo
-```
-
 ## 🔐 Security Best Practices
 
 ### Wallet Security
