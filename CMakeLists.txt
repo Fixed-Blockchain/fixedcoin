@@ -1,4 +1,5 @@
-# Copyright (c) 2023-present The FixedCoin Core developers
+# Copyright (c) 2023-present The Bitcoin Core developers
+# Copyright (c) 2025 The FixedCoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
@@ -24,7 +25,7 @@ endif()
 #=============================
 set(CLIENT_NAME "FixedCoin Core")
 set(CLIENT_VERSION_MAJOR 29)
-set(CLIENT_VERSION_MINOR 0)
+set(CLIENT_VERSION_MINOR 1)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_RC 0)
 set(CLIENT_VERSION_IS_RELEASE "true")
