@@ -1,11 +1,10 @@
 name: Build macOS
-
 on:
   workflow_dispatch:
   push:
     tags:
       - 'v*'
-
+      - 'V*'
 jobs:
   build-macos:
     runs-on: macos-13
@@ -13,16 +12,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Install dependencies
         run: |
           brew install automake libtool pkg-config cmake create-dmg
-
       - name: Build depends
         run: |
           cd depends
           make HOST=x86_64-apple-darwin -j$(sysctl -n hw.ncpu)
-
       - name: Build FixedCoin
         run: |
           mkdir build && cd build
@@ -30,27 +26,24 @@ jobs:
                 --toolchain ../depends/x86_64-apple-darwin/toolchain.cmake \
                 ..
           make -j$(sysctl -n hw.ncpu)
-
       - name: Create tar.gz package
         run: |
-          mkdir -p release/fixedcoin-29.0.0/bin
-          cp build/bin/fixedcoind release/fixedcoin-29.0.0/bin/
-          cp build/bin/fixedcoin-cli release/fixedcoin-29.0.0/bin/
-          cp build/bin/fixedcoin-qt release/fixedcoin-29.0.0/bin/
-          cp build/bin/fixedcoin-tx release/fixedcoin-29.0.0/bin/
-          cp build/bin/fixedcoin-wallet release/fixedcoin-29.0.0/bin/
-          cp build/bin/fixedcoin-util release/fixedcoin-29.0.0/bin/
+          mkdir -p release/fixedcoin-29.1.0/bin
+          cp build/bin/fixedcoind release/fixedcoin-29.1.0/bin/
+          cp build/bin/fixedcoin-cli release/fixedcoin-29.1.0/bin/
+          cp build/bin/fixedcoin-qt release/fixedcoin-29.1.0/bin/
+          cp build/bin/fixedcoin-tx release/fixedcoin-29.1.0/bin/
+          cp build/bin/fixedcoin-wallet release/fixedcoin-29.1.0/bin/
+          cp build/bin/fixedcoin-util release/fixedcoin-29.1.0/bin/
           
-          strip release/fixedcoin-29.0.0/bin/*
+          strip release/fixedcoin-29.1.0/bin/*
           
           cd release
-          tar -czvf fixedcoin-29.0.0-x86_64-apple-darwin.tar.gz fixedcoin-29.0.0/
-
+          tar -czvf fixedcoin-29.1.0-x86_64-apple-darwin.tar.gz fixedcoin-29.1.0/
       - name: Create DMG installer
         run: |
           mkdir -p dmg_contents
           
-          # Créer le bundle .app
           mkdir -p "dmg_contents/FixedCoin-Qt.app/Contents/MacOS"
           mkdir -p "dmg_contents/FixedCoin-Qt.app/Contents/Resources"
           
@@ -73,9 +66,9 @@ jobs:
               <key>CFBundlePackageType</key>
               <string>APPL</string>
               <key>CFBundleShortVersionString</key>
-              <string>29.0.0</string>
+              <string>29.1.0</string>
               <key>CFBundleVersion</key>
-              <string>29.0.0</string>
+              <string>29.1.0</string>
               <key>LSMinimumSystemVersion</key>
               <string>11.0</string>
               <key>NSHighResolutionCapable</key>
@@ -84,7 +77,6 @@ jobs:
           </plist>
           PLIST
           
-          # Créer le DMG
           create-dmg \
             --volname "FixedCoin Core" \
             --volicon "src/qt/res/icons/fixedcoin.icns" \
@@ -93,17 +85,15 @@ jobs:
             --icon-size 100 \
             --icon "FixedCoin-Qt.app" 150 185 \
             --app-drop-link 450 185 \
-            "release/fixedcoin-29.0.0-x86_64-apple-darwin.dmg" \
+            "release/fixedcoin-29.1.0-x86_64-apple-darwin.dmg" \
             "dmg_contents/"
-
       - name: Upload tar.gz artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fixedcoin-29.0.0-x86_64-apple-darwin-tar
-          path: release/fixedcoin-29.0.0-x86_64-apple-darwin.tar.gz
-
+          name: fixedcoin-29.1.0-x86_64-apple-darwin-tar
+          path: release/fixedcoin-29.1.0-x86_64-apple-darwin.tar.gz
       - name: Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fixedcoin-29.0.0-x86_64-apple-darwin-dmg
-          path: release/fixedcoin-29.0.0-x86_64-apple-darwin.dmg
+          name: fixedcoin-29.1.0-x86_64-apple-darwin-dmg
+          path: release/fixedcoin-29.1.0-x86_64-apple-darwin.dmg
