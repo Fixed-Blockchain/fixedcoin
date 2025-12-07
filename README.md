@@ -66,44 +66,44 @@ FixedCoin is an ultra-rare cryptocurrency with a total supply of only **10,000 F
 
 ### Latest Release: v29.1.0
 
-Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/releases/tag/V29.1.0)
+Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/releases/tag/v29.1)
 
 #### Windows
 
 **Setup Installer (Recommended)**
-- [fixedcoin-29.1.0-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-win64-setup.exe)
+- [fixedcoin-29.1.0-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-win64-setup.exe)
 
 **Portable Archive**
-- [fixedcoin-29.1.0-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-win64.zip)
+- [fixedcoin-29.1.0-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-win64.zip)
 
 #### macOS
 
 **Disk Image (Recommended)**
-- [fixedcoin-29.1.0-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-x86_64-apple-darwin.dmg)
+- [fixedcoin-29.1.0-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-x86_64-apple-darwin-dmg.zip)
 
 **Archive (Intel)**
-- [fixedcoin-29.1.0-x86_64-apple-darwin.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-x86_64-apple-darwin.tar.gz)
+- [fixedcoin-29.1.0-x86_64-apple-darwin.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-x86_64-apple-darwin-tar.zip)
 
 #### Linux
 
 **x86_64 (64-bit Intel/AMD)**
-- [fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz)
+- [fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz)
 
 **ARM64 (Raspberry Pi, ARM servers)**
-- [fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz)
+- [fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz)
 
 ## 🚀 Quick Start Guide
 
 ### Windows Installation
 
 **Using Installer (Recommended):**
-1. Download [fixedcoin-29.1.0-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-win64-setup.exe)
+1. Download [fixedcoin-29.1.0-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-win64-setup.exe)
 2. Run the installer and follow the setup wizard
 3. Launch FixedCoin from Start Menu
 4. Wait for blockchain synchronization
 
 **Using Portable Archive:**
-1. Download [fixedcoin-29.1.0-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-win64.zip)
+1. Download [fixedcoin-29.1.0-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-win64.zip)
 2. Extract the archive to a folder (e.g., `C:\FixedCoin`)
 3. Run `fixedcoin-qt.exe` to start the wallet
 4. Wait for blockchain synchronization
@@ -111,7 +111,7 @@ Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/re
 ### macOS Installation
 
 **Using Disk Image (Recommended):**
-1. Download [fixedcoin-29.1.0-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-x86_64-apple-darwin.dmg)
+1. Download [fixedcoin-29.1.0-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-x86_64-apple-darwin-dmg.zip)
 2. Open the DMG file
 3. Drag FixedCoin to Applications folder
 4. Launch FixedCoin from Applications
@@ -120,7 +120,7 @@ Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/re
 **Using Archive:**
 ```bash
 # Download
-curl -L -O https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-x86_64-apple-darwin.tar.gz
+curl -L -O https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-x86_64-apple-darwin-tar.zip
 
 # Extract
 tar -xzf fixedcoin-29.1.0-x86_64-apple-darwin.tar.gz
@@ -140,7 +140,7 @@ chmod +x fixedcoin-29.1.0/bin/*
 **For x86_64 systems:**
 ```bash
 # Download
-wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz
+wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz
 
 # Extract
 tar -xzf fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz
@@ -158,7 +158,7 @@ chmod +x fixedcoin-29.1.0/bin/*
 **For ARM64 systems (Raspberry Pi, etc.):**
 ```bash
 # Download
-wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz
+wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz
 
 # Extract
 tar -xzf fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz
@@ -204,10 +204,10 @@ sudo chown -R $USER:$USER /var/fixedcoin
 cd /var/fixedcoin/downloads
 
 # For x86_64 systems (Intel/AMD)
-wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz
+wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz
 
 # OR for ARM64 systems (Raspberry Pi, ARM servers)
-# wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/V29.1.0/fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz
+# wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1/fixedcoin-29.1.0-aarch64-linux-gnu.tar.gz
 
 # Extract
 tar -xzf fixedcoin-29.1.0-x86_64-linux-gnu.tar.gz
