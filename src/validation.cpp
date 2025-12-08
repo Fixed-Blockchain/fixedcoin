@@ -4251,12 +4251,6 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     const int nHeight = pindexPrev == nullptr ? 0 : pindexPrev->nHeight + 1;
     const Consensus::Params& consensusParams = chainman.GetConsensus();
 
-    // Fixedcoin: Block unused version bits after block 1000
-    if (nHeight >= 1000) {
-        if (!CheckVersionBitsValid(block, state, consensusParams)) {
-            return false;
-        }
-    }
 
     // Start enforcing BIP113 (Median Time Past) using versionbits logic.
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))

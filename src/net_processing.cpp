@@ -3378,12 +3378,6 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 {
     AssertLockHeld(g_msgproc_mutex);
 
-    if (m_best_height >= 1000 && pfrom.nVersion < 70018) {
-        LogDebug(BCLog::NET, "disconnecting peer=%d using obsolete version %i (protocol upgrade required at height 1000)\n", pfrom.GetId(), pfrom.nVersion.load());
-        pfrom.fDisconnect = true;
-        return;
-    }
-
     LogDebug(BCLog::NET, "received: %s (%u bytes) peer=%d\n", SanitizeString(msg_type), vRecv.size(), pfrom.GetId());
 
     PeerRef peer = GetPeerRef(pfrom.GetId());
