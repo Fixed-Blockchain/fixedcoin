@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2025 The Bitcoin Core developers
+// Copyright (c) 2025 FixedCoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -115,8 +116,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; 
 
-        consensus.nMinimumChainWork = uint256{"000000000000000000000000000000000000000000000c590abaf503466e7293"};
-        consensus.defaultAssumeValid = uint256{"0000000000000000018c2807d70584ee59b802566be062f21eed3737ec99f13d"}; // 931
+        consensus.nMinimumChainWork = uint256{"00000000000000000000000000000000000000000000104de20b19a2b764cb1b"};
+        consensus.defaultAssumeValid = uint256{"00000000000000043555bc5f5b812faeba648e3e0fc92be7cfa69638a155f89b"}; // 12300
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -166,7 +167,13 @@ public:
                 { 572, uint256{"00000000000000004be7d5f75ac5e4fa7dd1f484dcd7787a59b0e1c0b747ab1d"}},
                 { 609, uint256{"0000000000000000145f2d8bd8a74c547eb4a1079c972f39fac1eb6395db2971"}},
                 { 931, uint256{"0000000000000000018c2807d70584ee59b802566be062f21eed3737ec99f13d"}},
-
+                { 2000, uint256{"00000000000002c5b8e7682665ac6d60fd3dca051a5919cb5ee20d0526058b46"}},
+                { 4000, uint256{"00000000000274292b98c6b5d777ef0a1b16e53707f04a54ee3421d7cd3e4789"}},
+                { 6000, uint256{"000000000000083f2a842fc9f304383bf64f147ed4a7f1b63c0bd4b73029f521"}},
+                { 7800, uint256{"000000000000003b4db58d3fa89f36f4d798c1df158ec03e2641c838135be75c"}},
+                { 9900, uint256{"0000000000000000a4ff0233db7127417fae707a476d142c31adac167dc83af5"}},
+                { 11400, uint256{"00000000000000019b5bb93ff95cb81e836bb16e7a60002149ddd88a2f2ee22a"}},
+                { 12300, uint256{"00000000000000043555bc5f5b812faeba648e3e0fc92be7cfa69638a155f89b"}},
             }
         };
 
@@ -176,9 +183,9 @@ public:
 
         chainTxData = ChainTxData{
             // Data from RPC: getchaintxstats 
-            .nTime    = 1761734033,
-            .tx_count = 1345,
-            .dTxRate  = 0.001133540320324167,
+            .nTime    = 1767350111,
+            .tx_count = 15882,
+            .dTxRate  = 0.002349075729959531,
         };
     }
 };
