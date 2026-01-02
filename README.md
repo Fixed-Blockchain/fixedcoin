@@ -2,7 +2,7 @@
 
 ![FixedCoin Logo](https://github.com/Fixed-Blockchain/fixedcoin/blob/main/fix.png)
 
-![Version](https://img.shields.io/badge/version-29.1.1-blue.svg)
+![Version](https://img.shields.io/badge/version-29.1.2-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Supply](https://img.shields.io/badge/supply-10%2C000%20FIX-orange.svg)
 ![Algorithm](https://img.shields.io/badge/algorithm-SHA--256-blue.svg)
@@ -64,46 +64,46 @@ FixedCoin is an ultra-rare cryptocurrency with a total supply of only **10,000 F
 
 ## 📥 Downloads
 
-### Latest Release: v29.1.1
+### Latest Release: v29.1.2
 
-Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/releases/tag/v29.1.1)
+Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/releases/tag/v29.1.2)
 
 #### Windows
 
 **Setup Installer (Recommended)**
-- [fixedcoin-29.1.1-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-win64-setup.exe)
+- [fixedcoin-29.1.2-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-win64-setup.exe)
 
 **Portable Archive**
-- [fixedcoin-29.1.1-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-win64.zip)
+- [fixedcoin-29.1.2-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-win64.zip)
 
 #### macOS
 
 **Disk Image (Recommended)**
-- [fixedcoin-29.1.1-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-x86_64-apple-darwin-dmg.zip)
+- [fixedcoin-29.1.2-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-x86_64-apple-darwin-dmg.zip)
 
 **Archive (Intel)**
-- [fixedcoin-29.1.1-x86_64-apple-darwin.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-x86_64-apple-darwin-tar.zip)
+- [fixedcoin-29.1.2-x86_64-apple-darwin.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-x86_64-apple-darwin-tar.zip)
 
 #### Linux
 
 **x86_64 (64-bit Intel/AMD)**
-- [fixedcoin-29.1.1-x86_64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-x86_64-linux-gnu.tar.gz)
+- [fixedcoin-29.1.2-x86_64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-x86_64-linux-gnu.tar.gz)
 
 **ARM64 (Raspberry Pi, ARM servers)**
-- [fixedcoin-29.1.1-aarch64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-aarch64-linux-gnu.tar.gz)
+- [fixedcoin-29.1.2-aarch64-linux-gnu.tar.gz](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-aarch64-linux-gnu.tar.gz)
 
 ## 🚀 Quick Start Guide
 
 ### Windows Installation
 
 **Using Installer (Recommended):**
-1. Download [fixedcoin-29.1.1-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-win64-setup.exe)
+1. Download [fixedcoin-29.1.2-win64-setup.exe](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-win64-setup.exe)
 2. Run the installer and follow the setup wizard
 3. Launch FixedCoin from Start Menu
 4. Wait for blockchain synchronization
 
 **Using Portable Archive:**
-1. Download [fixedcoin-29.1.1-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-win64.zip)
+1. Download [fixedcoin-29.1.2-win64.zip](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-win64.zip)
 2. Extract the archive to a folder (e.g., `C:\FixedCoin`)
 3. Run `fixedcoin-qt.exe` to start the wallet
 4. Wait for blockchain synchronization
@@ -111,7 +111,7 @@ Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/re
 ### macOS Installation
 
 **Using Disk Image (Recommended):**
-1. Download [fixedcoin-29.1.1-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-x86_64-apple-darwin-dmg.zip)
+1. Download [fixedcoin-29.1.2-x86_64-apple-darwin.dmg](https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-x86_64-apple-darwin-dmg.zip)
 2. Open the DMG file
 3. Drag FixedCoin to Applications folder
 4. Launch FixedCoin from Applications
@@ -120,19 +120,19 @@ Download from [GitHub Releases](https://github.com/Fixed-Blockchain/fixedcoin/re
 **Using Archive:**
 ```bash
 # Download
-curl -L -O https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-x86_64-apple-darwin-tar.zip
+curl -L -O https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-x86_64-apple-darwin-tar.zip
 
 # Extract
-tar -xzf fixedcoin-29.1.1-x86_64-apple-darwin.tar.gz
+tar -xzf fixedcoin-29.1.2-x86_64-apple-darwin.tar.gz
 
 # Make binaries executable
-chmod +x fixedcoin-29.1.1/bin/*
+chmod +x fixedcoin-29.1.2/bin/*
 
 # Run GUI wallet
-./fixedcoin-29.1.1/bin/fixedcoin-qt
+./fixedcoin-29.1.2/bin/fixedcoin-qt
 
 # Or run daemon in background
-./fixedcoin-29.1.1/bin/fixedcoind -daemon
+./fixedcoin-29.1.2/bin/fixedcoind -daemon
 ```
 
 ### Linux Desktop Installation
@@ -140,37 +140,37 @@ chmod +x fixedcoin-29.1.1/bin/*
 **For x86_64 systems:**
 ```bash
 # Download
-wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-x86_64-linux-gnu.tar.gz
+wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-x86_64-linux-gnu.tar.gz
 
 # Extract
-tar -xzf fixedcoin-29.1.1-x86_64-linux-gnu.tar.gz
+tar -xzf fixedcoin-29.1.2-x86_64-linux-gnu.tar.gz
 
 # Make binaries executable
-chmod +x fixedcoin-29.1.1/bin/*
+chmod +x fixedcoin-29.1.2/bin/*
 
 # Run GUI wallet
-./fixedcoin-29.1.1/bin/fixedcoin-qt
+./fixedcoin-29.1.2/bin/fixedcoin-qt
 
 # Or run daemon in background
-./fixedcoin-29.1.1/bin/fixedcoind -daemon
+./fixedcoin-29.1.2/bin/fixedcoind -daemon
 ```
 
 **For ARM64 systems (Raspberry Pi, etc.):**
 ```bash
 # Download
-wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-aarch64-linux-gnu.tar.gz
+wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-aarch64-linux-gnu.tar.gz
 
 # Extract
-tar -xzf fixedcoin-29.1.1-aarch64-linux-gnu.tar.gz
+tar -xzf fixedcoin-29.1.2-aarch64-linux-gnu.tar.gz
 
 # Make binaries executable
-chmod +x fixedcoin-29.1.1/bin/*
+chmod +x fixedcoin-29.1.2/bin/*
 
 # Run GUI wallet
-./fixedcoin-29.1.1/bin/fixedcoin-qt
+./fixedcoin-29.1.2/bin/fixedcoin-qt
 
 # Or run daemon in background
-./fixedcoin-29.1.1/bin/fixedcoind -daemon
+./fixedcoin-29.1.2/bin/fixedcoind -daemon
 ```
 
 ## 🖥️ Ubuntu Server 22.04 Node Setup
@@ -178,13 +178,11 @@ chmod +x fixedcoin-29.1.1/bin/*
 Complete step-by-step guide to install and run a FixedCoin node on Ubuntu Server 22.04.
 
 ### Prerequisites
-
 ```bash
 sudo apt-get update && sudo apt-get upgrade -y
 ```
 
 ### Step 1: Create Directory Structure
-
 ```bash
 # Create main directory
 sudo mkdir -p /var/fixedcoin
@@ -199,24 +197,23 @@ sudo chown -R $USER:$USER /var/fixedcoin
 ```
 
 ### Step 2: Download and Install Binaries
-
 ```bash
 cd /var/fixedcoin/downloads
 
 # For x86_64 systems (Intel/AMD)
-wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-x86_64-linux-gnu.tar.gz
+wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-x86_64-linux-gnu.tar.gz
 
 # OR for ARM64 systems (Raspberry Pi, ARM servers)
-# wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.1/fixedcoin-29.1.1-aarch64-linux-gnu.tar.gz
+# wget https://github.com/Fixed-Blockchain/fixedcoin/releases/download/v29.1.2/fixedcoin-29.1.2-aarch64-linux-gnu.tar.gz
 
 # Extract
-tar -xzf fixedcoin-29.1.1-x86_64-linux-gnu.tar.gz
+tar -xzf fixedcoin-29.1.2-x86_64-linux-gnu.tar.gz
 
 # Make binaries executable
-chmod +x fixedcoin-29.1.1/bin/*
+chmod +x fixedcoin-29.1.2/bin/*
 
 # Move binaries to bin directory
-mv fixedcoin-29.1.1/bin/* /var/fixedcoin/bin/
+mv fixedcoin-29.1.2/bin/* /var/fixedcoin/bin/
 
 # Add to PATH
 echo 'export PATH="/var/fixedcoin/bin:$PATH"' >> ~/.bashrc
@@ -228,19 +225,17 @@ which fixedcoind
 
 Clean up:
 ```bash
-rm -rf fixedcoin-29.1.1 fixedcoin-29.1.1-*.tar.gz
+rm -rf fixedcoin-29.1.2 fixedcoin-29.1.2-*.tar.gz
 ```
 
 ### Step 3: Configure Node
 
 Create configuration file:
-
 ```bash
 nano /var/fixedcoin/data/fixedcoin.conf
 ```
 
 Paste the following configuration:
-
 ```ini
 # RPC Settings
 rpcuser=fixedcoin_rpc_user
@@ -270,7 +265,7 @@ zmqpubhashtx=tcp://127.0.0.1:24765
 zmqpubhashblock=tcp://127.0.0.1:24766
 
 # Wallet Configuration
-wallet=miningcore
+wallet=YOUR_WAALLET_NAME
 ```
 
 **Important:** Generate a secure password with:
@@ -281,19 +276,16 @@ openssl rand -hex 32
 ### Step 4: Create Wallet
 
 Start daemon manually for initial setup:
-
 ```bash
 fixedcoind -datadir=/var/fixedcoin/data
 ```
 
 Wait 5 seconds, then create wallet:
-
 ```bash
 fixedcoin-cli -datadir=/var/fixedcoin/data createwallet "miningcore"
 ```
 
 Generate receiving address:
-
 ```bash
 fixedcoin-cli -datadir=/var/fixedcoin/data getnewaddress
 ```
@@ -303,19 +295,16 @@ fixedcoin-cli -datadir=/var/fixedcoin/data getnewaddress
 ### Step 5: Setup Systemd Service
 
 Stop the manual daemon:
-
 ```bash
 fixedcoin-cli -datadir=/var/fixedcoin/data stop
 ```
 
 Create systemd service file:
-
 ```bash
 sudo nano /etc/systemd/system/fixedcoind.service
 ```
 
 Paste the following:
-
 ```ini
 [Unit]
 Description=FixedCoin Daemon
@@ -338,7 +327,6 @@ WantedBy=multi-user.target
 ```
 
 ### Step 6: Enable and Start Service
-
 ```bash
 # Reload systemd
 sudo systemctl daemon-reload
@@ -356,7 +344,6 @@ sudo systemctl status fixedcoind
 ## 🔧 Node Management Commands
 
 ### Service Management
-
 ```bash
 # Start service
 sudo systemctl start fixedcoind
@@ -375,7 +362,6 @@ sudo journalctl -u fixedcoind -f
 ```
 
 ### Blockchain Commands
-
 ```bash
 # Get blockchain information
 fixedcoin-cli -datadir=/var/fixedcoin/data getblockchaininfo
@@ -391,7 +377,6 @@ fixedcoin-cli -datadir=/var/fixedcoin/data getblockcount
 ```
 
 ### Wallet Commands
-
 ```bash
 # Get wallet balance
 fixedcoin-cli -datadir=/var/fixedcoin/data getbalance
@@ -416,7 +401,6 @@ fixedcoin-cli -datadir=/var/fixedcoin/data sendtoaddress "fix1..." 1.0
 - ✅ **Use strong RPC passwords:** Change default credentials in fixedcoin.conf
 
 ### Firewall Configuration
-
 ```bash
 # Enable UFW
 sudo ufw enable
@@ -436,7 +420,6 @@ sudo ufw status
 ## 🐛 Troubleshooting
 
 ### Node won't start
-
 ```bash
 # Check service status
 sudo systemctl status fixedcoind
@@ -449,7 +432,6 @@ tail -f /var/fixedcoin/data/debug.log
 ```
 
 ### No connections to network
-
 ```bash
 # Manually add nodes
 fixedcoin-cli -datadir=/var/fixedcoin/data addnode "node1.fixedcoin.org:24768" "add"
@@ -457,7 +439,6 @@ fixedcoin-cli -datadir=/var/fixedcoin/data addnode "node2.fixedcoin.org:24768" "
 ```
 
 ### Wallet issues
-
 ```bash
 # List loaded wallets
 fixedcoin-cli -datadir=/var/fixedcoin/data listwallets
