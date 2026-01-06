@@ -391,6 +391,45 @@ fixedcoin-cli -datadir=/var/fixedcoin/data listtransactions
 fixedcoin-cli -datadir=/var/fixedcoin/data sendtoaddress "fix1..." 1.0
 ```
 
+## 🔨 Build from Source
+
+### Quick Build (using system libraries)
+```bash
+# Install dependencies
+sudo apt install build-essential cmake pkg-config libboost-dev libevent-dev libsqlite3-dev
+
+# Optional: GUI support
+sudo apt install qtbase5-dev qttools5-dev qttools5-dev-tools
+
+# Optional: ZMQ support
+sudo apt install libzmq3-dev
+
+# Clone and build
+git clone https://github.com/Fixed-Blockchain/fixedcoin.git
+cd fixedcoin
+cmake -B build
+cmake --build build -j$(nproc)
+
+# Binaries are in build/bin/
+./build/bin/fixedcoind --version
+```
+
+### Static Build (using depends)
+
+For portable binaries, use the depends system:
+```bash
+# Build dependencies (takes 30-60 min)
+cd depends
+make HOST=x86_64-pc-linux-gnu -j$(nproc)
+cd ..
+
+# Build with static linking
+cmake -B build --toolchain depends/x86_64-pc-linux-gnu/toolchain.cmake
+cmake --build build -j$(nproc)
+```
+
+> **Note:** FixedCoin v29 uses CMake (not Autotools). There is no `./configure` or `autogen.sh`.
+
 ## 🔐 Security Best Practices
 
 ### Wallet Security
