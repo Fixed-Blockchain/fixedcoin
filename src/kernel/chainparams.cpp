@@ -116,8 +116,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; 
 
-        consensus.nMinimumChainWork = uint256{"00000000000000000000000000000000000000000000104de20b19a2b764cb1b"};
-        consensus.defaultAssumeValid = uint256{"00000000000000043555bc5f5b812faeba648e3e0fc92be7cfa69638a155f89b"}; // 12300
+        consensus.nMinimumChainWork = uint256{"00000000000000000000000000000000000000000000138f126f3dadee2ef40d"};
+        consensus.defaultAssumeValid = uint256{"0000000000000032310b8b5bd7d184c068eb178e81768e97d43e7637f9ad6349"}; // 25000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -143,8 +143,8 @@ public:
         // This is fine at runtime as we'll fall back to using them as an addrfetch if they don't support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        // No DNS seeds - using only fixed seeds
-        vSeeds.clear();
+        // DNS seeds for peer discovery
+        vSeeds.emplace_back("dnsseed.fixedcoin.org.");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,1);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,0);
@@ -174,6 +174,19 @@ public:
                 { 9900, uint256{"0000000000000000a4ff0233db7127417fae707a476d142c31adac167dc83af5"}},
                 { 11400, uint256{"00000000000000019b5bb93ff95cb81e836bb16e7a60002149ddd88a2f2ee22a"}},
                 { 12300, uint256{"00000000000000043555bc5f5b812faeba648e3e0fc92be7cfa69638a155f89b"}},
+                { 13000, uint256{"000000000000000025bc152f7a348bed60cf28de5a98a7336bad7e3e4609a7ce"}},
+                { 14000, uint256{"000000000000000dd8ad9835601b02ce279d1538eefed4c2d06ce557d5b8f3a3"}},
+                { 15000, uint256{"00000000000000008dc986cdc8a54ba2fa77060e3fc82d1c2b5fe89a07a7f592"}},
+                { 16000, uint256{"0000000000000001ebf6ee0d837ace8ea829a72e22c9bfb742f95956d58960e7"}},
+                { 17000, uint256{"000000000000001ac785f47dbba4daf7b5c56507a247eb0f98a8a4ed2b1a58ba"}},
+                { 18000, uint256{"0000000000000012d70ee8b43dcd35f0c36f0355fecd1e02bae4c4961cbf966e"}},
+                { 19000, uint256{"00000000000000159167815bcce532918492c039a4085b038479d3db3e8f689d"}},
+                { 20000, uint256{"0000000000000007464aaf494910bd2e50126a6ad6c2785aa02ddf7b8254e3e5"}},
+                { 21000, uint256{"0000000000000010642496247356f1a5b2cacc2f4bf1f7d57b6719169f17e2fc"}},
+                { 22000, uint256{"000000000000000253d9bbd0054224a00a4f7afddee906f2f04260bd4f6e9cb4"}},
+                { 23000, uint256{"0000000000000002442545ca080f157685e0a4f7561edd9d346c832983b57a23"}},
+                { 24000, uint256{"000000000000000018a564dfaf2cbe2dfcdf3b0caaa0e5b1abb3b31ebaac6508"}},
+                { 25000, uint256{"0000000000000032310b8b5bd7d184c068eb178e81768e97d43e7637f9ad6349"}},
             }
         };
 
@@ -248,7 +261,7 @@ public:
         assert(genesis.hashMerkleRoot == uint256{"bb181765a095c5e566995953d0f5360f6c79f4262184d9e4dc91135c658d7955"});
 
         vFixedSeeds.clear();
-        vSeeds.clear();
+        vSeeds.emplace_back("dnsseed.fixedcoin.org.");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,16);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,15);
@@ -347,7 +360,7 @@ public:
         assert(genesis.hashMerkleRoot == uint256{"7aa0a7ae1e223414cb807e40cd57e667b718e42aaf9306db9102fe28912b7b4e"});
 
         vFixedSeeds.clear();
-        vSeeds.clear();
+        vSeeds.emplace_back("dnsseed.fixedcoin.org.");
         // nodes with support for servicebits filtering should be at the top
         vSeeds.emplace_back("seed.testnet4.fixedcoin.sprovoost.nl."); // Sjors Provoost
         vSeeds.emplace_back("seed.testnet4.wiz.biz."); // Jason Maurice
@@ -394,7 +407,7 @@ public:
     {
         std::vector<uint8_t> bin;
         vFixedSeeds.clear();
-        vSeeds.clear();
+        vSeeds.emplace_back("dnsseed.fixedcoin.org.");
 
         if (!options.challenge) {
             bin = ParseHex("512103ad5e0edad18cb1f0fc0d28a3d4f1f3e445640337489abb10404f2d1e086be430210359ef5021964fe22d6f8e05b2463c9540ce96883fe3b278760f048f5189f2e6c452ae");
@@ -577,7 +590,7 @@ public:
         assert(genesis.hashMerkleRoot == uint256{"bb181765a095c5e566995953d0f5360f6c79f4262184d9e4dc91135c658d7955"});
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
-        vSeeds.clear();
+        vSeeds.emplace_back("dnsseed.fixedcoin.org.");
         vSeeds.emplace_back("dummySeed.invalid.");
 
         fDefaultConsistencyChecks = true;

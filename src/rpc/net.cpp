@@ -11,6 +11,7 @@
 #include <chainparams.h>
 #include <clientversion.h>
 #include <core_io.h>
+#include <net.h>
 #include <net_permissions.h>
 #include <net_processing.h>
 #include <net_types.h> // For banmap_t
@@ -1040,6 +1041,9 @@ static RPCHelpMan sendmsgtopeer()
             auto msg{TryParseHex<unsigned char>(request.params[2].get_str())};
             if (!msg.has_value()) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Error parsing input for msg");
+            }
+            if (msg.value().size() > MAX_PROTOCOL_MESSAGE_LENGTH) {
+                throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Error: msg too large (%d bytes), max protocol message length is %d", msg.value().size(), MAX_PROTOCOL_MESSAGE_LENGTH));
             }
 
             NodeContext& node = EnsureAnyNodeContext(request.context);

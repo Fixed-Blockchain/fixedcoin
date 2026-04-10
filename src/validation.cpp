@@ -4289,6 +4289,19 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
         return state.Invalid(BlockValidationResult::BLOCK_TIME_FUTURE, "time-too-new", "block timestamp too far in the future");
     }
 
+    // Timewarp monitoring (non-consensus, logging only)
+    // Logs a warning if a difficulty adjustment block has a suspicious timestamp,
+    // which could indicate a timewarp attack attempt.
+    if (!consensusParams.enforce_BIP94 && nHeight > 0 &&
+        nHeight % consensusParams.DifficultyAdjustmentInterval() == 0) {
+        if (block.GetBlockTime() < pindexPrev->GetBlockTime() - MAX_TIMEWARP) {
+            LogWarning("Potential timewarp attack: block %d timestamp %d is %d seconds before previous block timestamp %d",
+                       nHeight, block.GetBlockTime(),
+                       pindexPrev->GetBlockTime() - block.GetBlockTime(),
+                       pindexPrev->GetBlockTime());
+        }
+    }
+
     // Reject blocks with outdated version
     if ((block.nVersion < 2 && DeploymentActiveAfter(pindexPrev, chainman, Consensus::DEPLOYMENT_HEIGHTINCB)) ||
         (block.nVersion < 3 && DeploymentActiveAfter(pindexPrev, chainman, Consensus::DEPLOYMENT_DERSIG)) ||
